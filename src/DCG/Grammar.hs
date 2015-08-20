@@ -10,6 +10,9 @@ data Rhs = Seq [Rhs]
          | Alt Rhs Rhs
          | Lexem String
 
+infix 9 ~>
+(~>) :: Lhs -> Rhs -> Production
+lhs ~> rhs = Production lhs rhs
 
 validate :: Grammar -> Bool
 validate _ = True
