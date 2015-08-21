@@ -7,7 +7,7 @@ data-files:        resources/test_gram.dcg
 library
     build-depends: base -any, unification-fd ==0.10.0.1,
                    transformers -any, containers -any, mtl ==2.2.1
-    exposed-modules: DCG.Grammar
+    exposed-modules: DCG.Grammar, DCG.ChartParser, Util.Container
     exposed: True
     buildable: True
     hs-source-dirs: src
@@ -21,5 +21,5 @@ test-suite spec
     main-is: Spec.hs
     buildable: True
     hs-source-dirs: test
-    other-modules: DCG.GrammarSpec
+    other-modules: DCG.GrammarSpec, DCG.ChartParserSpec
     ghc-options: -Wall

@@ -4,25 +4,26 @@ import qualified Data.Map as Map
 
 data Grammar = Grammar {start :: String, productions :: [Production]}
 
-data Production = Production Lhs Rhs
+data Production = NonTerminal Term Rhs
+                | Terminal Term [String]
+                deriving (Eq, Ord, Show)
 
-data Lhs = Lhs String
+data Term = Term String deriving (Eq, Ord, Show)
 
-data Rhs = Seq [Rhs]
-         | Alt Rhs Rhs
+data Rhs = Seq [Term] deriving (Eq, Ord, Show)
 
-data LexProduction = LexProduction Lhs LexRhs
+type Lexicon = Map.Map String [Term]
 
-type LexRhs = [String]
-
-type Lexicon = Map.Map String [Lhs]
-
-findInLexicon :: Lexicon -> String -> Maybe [Lhs]
+findInLexicon :: Lexicon -> String -> Maybe [Term]
 findInLexicon l w = Map.lookup w l
 
-infix 9 ~>
-(~>) :: Lhs -> Rhs -> Production
-lhs ~> rhs = Production lhs rhs
+infix 9 ==>
+(==>) :: Term -> Rhs -> Production
+lhs ==> rhs = NonTerminal lhs rhs
+
+infix 9 ~~>
+(~~>) :: Term -> [String] -> Production
+lhs ~~> rhs = Terminal lhs rhs
 
 validate :: Grammar -> Bool
 validate _ = True
