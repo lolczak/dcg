@@ -19,7 +19,7 @@ type Chart = [State]
 data ParseTree t l = Leaf l | Node { t :: Term, children :: [ParseTree t l] } deriving (Eq, Ord)
 
 instance (Show t, Show l) => Show (ParseTree t l) where
-    show tree = "\n" ++ render 0 tree
+    show parseTree = "\n" ++ render 0 parseTree
 
 render :: (Show t, Show l) => Int -> ParseTree t l -> String
 render indent (Leaf l) = (replicate indent '\t') ++ "'" ++ show l ++ "'\n"
@@ -43,7 +43,7 @@ buildChart l g u =
 
 scan' :: String -> Int -> Lexicon -> State
 scan' w i l =  case findInLexicon l w of
-                   Just xs -> asSet $ map (\x -> Passive i (i+1) x $ Leaf w) xs
+                   Just xs -> asSet $ map (\x -> Passive i (i+1) x $ Node x [Leaf w]) xs
                    Nothing -> Set.empty
 
 scan :: [String] -> Lexicon -> Chart
@@ -51,7 +51,7 @@ scan ts l =
     map findTerminal $ zip [0..] ts
     where findTerminal :: (Int, String) -> State
           findTerminal (index, w) = case findInLexicon l w of
-                                    Just xs -> asSet $ map (\x -> Passive index (index+1) x $ Leaf w) xs
+                                    Just xs -> asSet $ map (\x -> Passive index (index+1) x $ Node x [Leaf w]) xs
                                     Nothing -> Set.empty
 
 predict :: Grammar -> State -> State
