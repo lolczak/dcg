@@ -12,5 +12,5 @@ spec :: Spec
 spec = do
   describe "DCG lang." $ do
     it "should not validate cyclic grammars" $ do
-        let grammar = Grammar "S" [(Term "S") ~~> ["dupa"]]
+        let grammar = Grammar "S" ["S" ==> ["dupa"]]
         (validate grammar) `shouldBe` True
