@@ -2,7 +2,7 @@ module DCG.Grammar where
 
 import qualified Data.Map as Map
 
-data Grammar = Grammar {start :: String, productions :: [Production]}
+data Grammar = Grammar {topTerm :: String, productions :: [Production]}
 
 data Production = Production Term [Term]
 --                | Terminal Term [String]

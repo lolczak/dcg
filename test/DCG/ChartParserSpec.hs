@@ -25,6 +25,7 @@ utterance = ["time", "flies", "like", "an", "arrow"]
 grammar = Grammar "S" ["S"  ==> ["NP", "VP"],
                        "VP" ==> ["Verb"],
                        "VP" ==> ["Verb", "NP"],
+                       "VP" ==> ["VP", "PP"],
                        "NP" ==> ["Noun"],
                        "NP" ==> ["Det", "Noun"],
                        "NP" ==> ["NP", "PP"],
@@ -50,3 +51,6 @@ spec = do
                             asSet [Passive 4 5 noun $ Leaf "arrow"]]
             let chart = scan utterance lexicon
             (map (predict grammar) chart) `shouldBe` expected
+
+    it "should parse new active rules" $ do
+        buildChart lexicon grammar utterance `shouldBe` []
