@@ -53,4 +53,4 @@ spec = do
             (map (predict grammar) chart) `shouldBe` expected
 
     it "should parse new active rules" $ do
-        buildChart lexicon grammar utterance `shouldBe` []
+        parse lexicon grammar utterance `shouldBe` []
