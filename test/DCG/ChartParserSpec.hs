@@ -53,4 +53,4 @@ spec = do
 --            (map (predict grammar) chart) `shouldBe` expected
 
     it "should parse new active rules" $ do
-        parse lexicon grammar utterance `shouldBe` []
+        parse lexicon grammar utterance `shouldBe` [Node {t = Term "S", children = [Node {t = Term "NP", children = [Node {t = Term "Noun", children = [Leaf "time"]}]},Node {t = Term "VP", children = [Node {t = Term "VP", children = [Node {t = Term "Verb", children = [Leaf "flies"]}]},Node {t = Term "PP", children = [Node {t = Term "Prep", children = [Leaf "like"]},Node {t = Term "NP", children = [Node {t = Term "Det", children = [Leaf "an"]},Node {t = Term "Noun", children = [Leaf "arrow"]}]}]}]}]}]
