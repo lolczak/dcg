@@ -1,0 +1,12 @@
+S -> NP VP
+VP -> Verb
+VP -> Verb, NP
+VP -> VP PP
+NP -> Noun
+NP -> Det Noun
+NP -> NP PP
+PP -> Prep NP
+Verb -> 'flies' | 'like'
+Noun -> 'flies' | 'time' | 'arrow'
+Det -> 'an'
+Prep -> 'like'

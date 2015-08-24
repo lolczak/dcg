@@ -55,7 +55,9 @@ scan w i l =  case findInLexicon l w of
 
 predict :: Grammar -> Edge -> State
 predict grammar (Passive s e edgeTerm parseTree) =
-    asSet $ [ if null rest then Passive s e ruleTerm (Node ruleTerm [parseTree]) else Active s e ruleTerm rest [parseTree]|
+    asSet $ [ if null rest
+              then Passive s e ruleTerm (Node ruleTerm [parseTree])
+              else Active s e ruleTerm rest [parseTree] |
              Production ruleTerm (prefix : rest) <- productions grammar,
              prefix == edgeTerm ]
 predict _ _ = S.empty

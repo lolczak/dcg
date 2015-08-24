@@ -2,24 +2,23 @@ name:              dcg
 version:           1.0
 Build-Type:        Simple
 cabal-version:     >=1.8
-data-files:        resources/test_gram.dcg
 
 library
-    build-depends: base -any, unification-fd ==0.10.0.1,
+    build-depends: base -any, unification-fd ==0.10.0.1, parsec == 3.1.9,
                    transformers -any, containers -any, mtl ==2.2.1
-    exposed-modules: DCG.Grammar, DCG.ChartParser, Util.Container
+    exposed-modules: DCG.Grammar, DCG.ChartParser, Util.Container, DCG.GrammarParser
     exposed: True
     buildable: True
     hs-source-dirs: src
 
 
 test-suite spec
-    build-depends: base -any, unification-fd ==0.10.0.1,
+    build-depends: base -any, unification-fd ==0.10.0.1, parsec == 3.1.9,
                    transformers -any, containers -any, mtl ==2.2.1, hspec == 2.*,
                    dcg -any
     type: exitcode-stdio-1.0
     main-is: Spec.hs
     buildable: True
     hs-source-dirs: test
-    other-modules: DCG.GrammarSpec, DCG.ChartParserSpec
+    other-modules: DCG.GrammarSpec, DCG.ChartParserSpec, DCG.GrammarParserSpec
     ghc-options: -Wall
