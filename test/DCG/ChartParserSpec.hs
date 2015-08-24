@@ -35,22 +35,22 @@ grammar = Grammar "S" ["S"  ==> ["NP", "VP"],
 spec :: Spec
 spec = do
   describe "Chart parser" $ do
-    it "should find all terminals" $ do
-        let expected = [asSet [Passive 0 1 noun $ Leaf "time"],
-                        asSet [Passive 1 2 noun $ Leaf "flies", Passive 1 2 verb $ Leaf "flies"],
-                        asSet [Passive 2 3 verb $ Leaf "like",  Passive 2 3 prep $ Leaf "like"],
-                        asSet [Passive 3 4 det  $ Leaf "an"],
-                        asSet [Passive 4 5 noun $ Leaf "arrow"]]
-        (scan utterance lexicon) `shouldBe` expected
-
-    it "should predict new active rules" $ do
-            let expected = [asSet [Passive 0 1 noun $ Leaf "time"],
-                            asSet [Passive 1 2 noun $ Leaf "flies", Passive 1 2 verb $ Leaf "flies"],
-                            asSet [Passive 2 3 verb $ Leaf "like",  Passive 2 3 prep $ Leaf "like"],
-                            asSet [Passive 3 4 det  $ Leaf "an"],
-                            asSet [Passive 4 5 noun $ Leaf "arrow"]]
-            let chart = scan utterance lexicon
-            (map (predict grammar) chart) `shouldBe` expected
+--    it "should find all terminals" $ do
+--        let expected = [asSet [Passive 0 1 noun $ Leaf "time"],
+--                        asSet [Passive 1 2 noun $ Leaf "flies", Passive 1 2 verb $ Leaf "flies"],
+--                        asSet [Passive 2 3 verb $ Leaf "like",  Passive 2 3 prep $ Leaf "like"],
+--                        asSet [Passive 3 4 det  $ Leaf "an"],
+--                        asSet [Passive 4 5 noun $ Leaf "arrow"]]
+--        (scan utterance lexicon) `shouldBe` expected
+--
+--    it "should predict new active rules" $ do
+--            let expected = [asSet [Passive 0 1 noun $ Leaf "time"],
+--                            asSet [Passive 1 2 noun $ Leaf "flies", Passive 1 2 verb $ Leaf "flies"],
+--                            asSet [Passive 2 3 verb $ Leaf "like",  Passive 2 3 prep $ Leaf "like"],
+--                            asSet [Passive 3 4 det  $ Leaf "an"],
+--                            asSet [Passive 4 5 noun $ Leaf "arrow"]]
+--            let chart = scan utterance lexicon
+--            (map (predict grammar) chart) `shouldBe` expected
 
     it "should parse new active rules" $ do
         parse lexicon grammar utterance `shouldBe` []
