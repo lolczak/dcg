@@ -4,11 +4,11 @@ import qualified Data.Map as Map
 
 data Grammar = Grammar {topTerm :: String, productions :: [Production]} deriving (Eq, Show)
 
-data Production = Production Term [Term]
+data Production = Production {lhs :: Term, rhs :: [Term]}
 --                | Terminal Term [String]
                 deriving (Eq, Ord, Show)
 
-data Term = Term String deriving (Eq, Ord, Show)
+data Term = Term {name :: String} deriving (Eq, Ord, Show)
 
 --data Rhs = Seq deriving (Eq, Ord, Show)
 

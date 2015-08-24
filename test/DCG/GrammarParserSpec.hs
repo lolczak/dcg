@@ -34,22 +34,23 @@ grammar = Grammar "S" ["S"  ==> ["NP", "VP"],
                        ]
 
 gramarString = "\
-\S -> NP VP \
+\--sdfwefwfwefwef \
+\S -> NP VP {-frefr-}\
 \VP -> Verb \
-\VP -> Verb, NP \
+\VP -> Verb NP \
 \VP -> VP PP \
 \NP -> Noun \
 \NP -> Det Noun \
 \NP -> NP PP \
-\PP -> Prep NP' \
-\Verb -> 'flies' | 'like' \
-\Noun -> 'flies' | 'time' | 'arrow' \
-\Det -> 'an' \
-\Prep -> 'like' \
+\PP -> Prep NP' \n\
+\Verb -> 'flies' | 'like' \n\
+\Noun -> 'flies' | 'time' | 'arrow' \n\
+\Det -> 'an' \n\
+\Prep -> 'like' \n\
 \"
 
 spec :: Spec
 spec = do
   describe "Grammar parser" $ do
     it "should parse grammar" $ do
-            parseGrammar gramarString `shouldBe` (lexicon, grammar)
+            parseGrammar gramarString `shouldBe` Right (lexicon, grammar)
