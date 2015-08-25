@@ -72,13 +72,13 @@ spec = do
 
     context "for rule end" $ do
         it "should match new line" $ do
-            parse ruleEnd "" "\n" `shouldBe` Right ()
+            parse productionEnd "" "\n" `shouldBe` Right ()
 
         it "should match new line with one space" $ do
-            parse ruleEnd "" " \n" `shouldBe` Right ()
+            parse productionEnd "" " \n" `shouldBe` Right ()
 
         it "should match new line with many spaces" $ do
-            parse ruleEnd "" "   \n" `shouldBe` Right ()
+            parse productionEnd "" "   \n" `shouldBe` Right ()
 
     it "should parse whole grammar" $ do
         parseGrammar grammarString `shouldBe` Right (lexicon, grammar)

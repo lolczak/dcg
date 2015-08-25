@@ -36,9 +36,9 @@ parseGrammar = parse grammarParser ""
 
 grammarParser :: Parsec String () (Lexicon, Grammar)
 grammarParser =
-    do (lexRules, productions) <- rulesParser
-       let grammar = Grammar (name $ lhs $ head productions) productions
-       let lexicon = foldl (\acc item -> updateLexicon acc item) M.empty lexRules
+    do (terminals, nonterminals) <- allProductions
+       let grammar = Grammar (name $ lhs $ head nonterminals) nonterminals
+       let lexicon = foldl (\acc item -> updateLexicon acc item) M.empty terminals
        return (lexicon, grammar)
 
 updateLexicon :: Lexicon -> LexProduction -> Lexicon
@@ -50,23 +50,23 @@ updateLexicon lexicon (term, words) =
                     Just ts -> M.insert w (Term term : ts) l
                     Nothing -> M.insert w [Term term] l
 
-rulesParser :: Parsec String () ([LexProduction], [Production])
-rulesParser =
-    do rules <- manyTill ruleParser $ try eof
+allProductions :: Parsec String () ([LexProduction], [Production])
+allProductions =
+    do rules <- manyTill production $ try eof
        let (ls , ps) = foldl (\(ls, ps) item -> case item of
                                                 Left lex -> (lex:ls, ps)
                                                 Right prod -> (ls, prod:ps)) ([], []) rules
        return (reverse ls, reverse ps)
 
-ruleParser :: Parsec String () (Either LexProduction Production)
-ruleParser = try (do { lexP <- terminal; return $ Left lexP }) <|> (do { prod <- nonterminal; return $ Right prod })
+production :: Parsec String () (Either LexProduction Production)
+production = try (do { prod <- terminal; return $ Left prod }) <|> (do { prod <- nonterminal; return $ Right prod })
 
 nonterminal :: Parsec String () Production
 nonterminal =
     do whiteSpace
        lhs <- lhsParser <?> "prod lhs"
        whiteSpace
-       rhs <- separatedSequence (termId <?> "rhs term") termSeparator ruleEnd
+       rhs <- separatedSequence (termId <?> "rhs term") termSeparator productionEnd
        return $ Production (Term lhs) $ map Term rhs
 
 terminal :: Parsec String () LexProduction
@@ -74,7 +74,7 @@ terminal =
     do whiteSpace
        lhs <- lhsParser <?> "lexer lhs"
        whiteSpace
-       rhs <- separatedSequence word wordSeparator ruleEnd
+       rhs <- separatedSequence word wordSeparator productionEnd
        return $ (lhs, rhs)
 
 separatedSequence :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m b -> ParsecT s u m end -> ParsecT s u m [a]
@@ -83,10 +83,11 @@ separatedSequence p s end =
        xs <- manyTill (s >> p) $ try end
        return (x:xs)
 
-ruleEnd :: Parsec String () ()
-ruleEnd = do whiteSpace
-             try eof <|> (lookAhead lhsParser >> return ())
-             return ()
+productionEnd :: Parsec String () ()
+productionEnd =
+    do whiteSpace
+       try eof <|> (lookAhead lhsParser >> return ())
+       return ()
 
 term :: Parsec String () Term
 term =
