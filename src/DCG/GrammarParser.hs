@@ -31,6 +31,9 @@ braces      = P.braces lexer
 identifier  = P.identifier lexer
 reserved    = P.reserved lexer
 
+parseGrammar :: String -> Either ParseError (Lexicon, Grammar)
+parseGrammar = parse grammarParser ""
+
 grammarParser :: Parsec String () (Lexicon, Grammar)
 grammarParser =
     do (lexRules, productions) <- rulesParser
@@ -71,7 +74,7 @@ terminal =
     do whiteSpace
        lhs <- lhsParser <?> "lexer lhs"
        whiteSpace
-       rhs <- sep wordParser (do {whiteSpace; char '|'; whiteSpace}) ruleEnd
+       rhs <- sep word (do {whiteSpace; char '|'; whiteSpace}) ruleEnd
        return $ (lhs, rhs)
 
 sep :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m b -> ParsecT s u m end -> ParsecT s u m [a]
@@ -82,7 +85,6 @@ sep p s end =
 
 ruleEnd :: Parsec String () ()
 ruleEnd = do whiteSpace
-             --(try eof <|> (endOfLine >> return ()))
              try eof <|> (lookAhead lhsParser >> return ())
              return ()
 
@@ -105,11 +107,9 @@ lhsParser =
        string "->"
        return lhs
 
-wordParser :: Parsec String () String
-wordParser = do char '\''
-                word <- many1 letter
-                char '\''
-                return word
-
-parseGrammar :: String -> Either ParseError (Lexicon, Grammar)
-parseGrammar = parse grammarParser ""
+word :: Parsec String () String
+word =
+    do char '\''
+       word <- many1 letter
+       char '\''
+       return word
