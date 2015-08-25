@@ -18,7 +18,7 @@ verb = Term "Verb"
 det  = Term "Det"
 prep = Term "Prep"
 
-lexicon = asMap [ "flies" ~> [verb, noun],
+lexicon = asMap [ "flies" ~> [noun, verb],
                   "like"  ~> [prep, verb],
                   "time"  ~> [noun],
                   "arrow" ~> [noun],
@@ -81,7 +81,7 @@ spec = do
             parse ruleEnd "" "   \n" `shouldBe` Right ()
 
     it "should parse whole grammar" $ do
-        parseGrammar grammarString `shouldBe` Right (M.empty, grammar)
+        parseGrammar grammarString `shouldBe` Right (lexicon, grammar)
 
 --    it "should parse whole grammar2" $ do
 --        let gram = "S -> NP VP \n T -> Verb R \nV -> Verb NP"

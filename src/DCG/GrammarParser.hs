@@ -6,6 +6,8 @@ import qualified Text.Parsec.Token as P
 import Control.Monad.Identity
 import qualified Data.Map as M
 
+type LexProduction = (String, [String])
+
 --grammarParser
 langDef :: P.GenLanguageDef String () Identity
 langDef = P.LanguageDef {
@@ -33,8 +35,17 @@ grammarParser :: Parsec String () (Lexicon, Grammar)
 grammarParser =
     do (lexRules, productions) <- rulesParser
        let grammar = Grammar (name $ lhs $ head productions) productions
-       let lexicon = foldl (\acc item -> acc) M.empty lexRules
+       let lexicon = foldl (\acc item -> updateLexicon acc item) M.empty lexRules
        return (lexicon, grammar)
+
+updateLexicon :: Lexicon -> LexProduction -> Lexicon
+updateLexicon lexicon (term, words) =
+    foldl add lexicon words
+    where
+        add :: Lexicon -> String -> Lexicon
+        add l w = case M.lookup w l of
+                    Just ts -> M.insert w (Term term : ts) l
+                    Nothing -> M.insert w [Term term] l
 
 rulesParser :: Parsec String () ([LexProduction], [Production])
 rulesParser =
@@ -54,8 +65,6 @@ nonterminal =
        whiteSpace
        rhs <- sep (termId <?> "rhs term") termSeparator ruleEnd
        return $ Production (Term lhs) $ map Term rhs
-
-type LexProduction = (String, [String])
 
 terminal :: Parsec String () LexProduction
 terminal =
