@@ -35,8 +35,8 @@ grammar = Grammar "S" ["S"  ==> ["NP", "VP"],
                        "PP" ==> ["Prep", "NP"]
                        ]
 
-grammarString = "\
-\S -> NP VP \n\
+grammarString = "-- comment \n\
+\S -> NP VP {- fwefwfwefwf -}\n\
 \VP -> Verb\n\
 \VP -> Verb NP   \n\
 \VP -> VP PP \n\
