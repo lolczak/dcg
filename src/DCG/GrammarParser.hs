@@ -6,7 +6,7 @@ import qualified Text.Parsec.Token as P
 import Control.Monad.Identity
 import qualified Data.Map as M
 
-type LexProduction = (String, [String])
+type LexProduction = (Term, [String])
 
 --grammarParser
 langDef :: P.GenLanguageDef String () Identity
@@ -47,8 +47,8 @@ updateLexicon lexicon (term, words) =
     where
         add :: Lexicon -> String -> Lexicon
         add l w = case M.lookup w l of
-                    Just ts -> M.insert w (Term term : ts) l
-                    Nothing -> M.insert w [Term term] l
+                    Just ts -> M.insert w (term : ts) l
+                    Nothing -> M.insert w [term] l
 
 allProductions :: Parsec String () ([LexProduction], [Production])
 allProductions =
@@ -67,7 +67,7 @@ nonterminal =
        lhs <- productionLhs <?> "prod lhs"
        whiteSpace
        rhs <- separatedSequence (termId <?> "rhs term") termSeparator productionEnd
-       return $ Production (Term lhs) $ map Term rhs
+       return $ Production lhs $ map Term rhs
 
 terminal :: Parsec String () LexProduction
 terminal =
@@ -100,10 +100,10 @@ termId = identifier
 termSeparator :: Parsec String () ()
 termSeparator = whiteSpace
 
-productionLhs :: Parsec String () String
+productionLhs :: Parsec String () Term
 productionLhs =
     do whiteSpace
-       lhs <- termId
+       lhs <- term
        whiteSpace
        string "->"
        return lhs

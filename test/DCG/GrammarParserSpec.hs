@@ -65,10 +65,10 @@ spec = do
 
     context "for terminal productions" $ do
         it "should parse rhs containing one constituent" $ do
-            parse terminal "" "Verb -> 'like'\n" `shouldBe` Right ("Verb", ["like"])
+            parse terminal "" "Verb -> 'like'\n" `shouldBe` Right (Term "Verb", ["like"])
 
         it "should parse rhs ending on new line" $ do
-            parse terminal "" "Verb -> 'like' | 'test' \n" `shouldBe` Right ("Verb", ["like", "test"])
+            parse terminal "" "Verb -> 'like' | 'test' \n" `shouldBe` Right (Term "Verb", ["like", "test"])
 
     context "for rule end" $ do
         it "should match new line" $ do
