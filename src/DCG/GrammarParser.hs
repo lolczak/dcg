@@ -59,7 +59,7 @@ allProductions =
        return (reverse ls, reverse ps)
 
 production :: Parsec String () (Either LexProduction Production)
-production = try (do { prod <- terminal; return $ Left prod }) <|> (do { prod <- nonterminal; return $ Right prod })
+production = try (fmap Left terminal) <|> (fmap Right nonterminal)
 
 nonterminal :: Parsec String () Production
 nonterminal =
