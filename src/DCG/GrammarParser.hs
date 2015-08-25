@@ -64,7 +64,7 @@ production = try (do { prod <- terminal; return $ Left prod }) <|> (do { prod <-
 nonterminal :: Parsec String () Production
 nonterminal =
     do whiteSpace
-       lhs <- lhsParser <?> "prod lhs"
+       lhs <- productionLhs <?> "prod lhs"
        whiteSpace
        rhs <- separatedSequence (termId <?> "rhs term") termSeparator productionEnd
        return $ Production (Term lhs) $ map Term rhs
@@ -72,7 +72,7 @@ nonterminal =
 terminal :: Parsec String () LexProduction
 terminal =
     do whiteSpace
-       lhs <- lhsParser <?> "lexer lhs"
+       lhs <- productionLhs <?> "lexer lhs"
        whiteSpace
        rhs <- separatedSequence word wordSeparator productionEnd
        return $ (lhs, rhs)
@@ -86,7 +86,7 @@ separatedSequence p s end =
 productionEnd :: Parsec String () ()
 productionEnd =
     do whiteSpace
-       try eof <|> (lookAhead lhsParser >> return ())
+       try eof <|> (lookAhead productionLhs >> return ())
        return ()
 
 term :: Parsec String () Term
@@ -100,8 +100,8 @@ termId = identifier
 termSeparator :: Parsec String () ()
 termSeparator = whiteSpace
 
-lhsParser :: Parsec String () String
-lhsParser =
+productionLhs :: Parsec String () String
+productionLhs =
     do whiteSpace
        lhs <- termId
        whiteSpace
