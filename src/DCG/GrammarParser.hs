@@ -19,8 +19,8 @@ langDef = P.LanguageDef {
     P.identLetter = letter,
     P.opStart = char '#',
     P.opLetter = char '$',
-    P.reservedNames = [],
-    P.reservedOpNames = [],
+    P.reservedNames = ["->"],
+    P.reservedOpNames = ["->"],
     P.caseSensitive = True
 }
 
@@ -66,7 +66,7 @@ nonterminal =
     do whiteSpace
        lhs <- lhsParser <?> "prod lhs"
        whiteSpace
-       rhs <- sep (termId <?> "rhs term") termSeparator ruleEnd
+       rhs <- separatedSequence (termId <?> "rhs term") termSeparator ruleEnd
        return $ Production (Term lhs) $ map Term rhs
 
 terminal :: Parsec String () LexProduction
@@ -74,11 +74,11 @@ terminal =
     do whiteSpace
        lhs <- lhsParser <?> "lexer lhs"
        whiteSpace
-       rhs <- sep word (do {whiteSpace; char '|'; whiteSpace}) ruleEnd
+       rhs <- separatedSequence word wordSeparator ruleEnd
        return $ (lhs, rhs)
 
-sep :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m b -> ParsecT s u m end -> ParsecT s u m [a]
-sep p s end =
+separatedSequence :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m b -> ParsecT s u m end -> ParsecT s u m [a]
+separatedSequence p s end =
     do x <- p
        xs <- manyTill (s >> p) $ try end
        return (x:xs)
@@ -106,6 +106,9 @@ lhsParser =
        whiteSpace
        string "->"
        return lhs
+
+wordSeparator :: Parsec String () ()
+wordSeparator = whiteSpace >> char '|' >> whiteSpace
 
 word :: Parsec String () String
 word =
