@@ -13,10 +13,10 @@ langDef = P.LanguageDef {
     P.commentEnd = "-}",
     P.commentLine = "--",
     P.nestedComments = False,
-    P.identStart = letter <|> char '_',
-    P.identLetter = alphaNum <|> char '_',
-    P.opStart = char '-',
-    P.opLetter = char '>',
+    P.identStart = letter,
+    P.identLetter = letter,
+    P.opStart = char '#',
+    P.opLetter = char '$',
     P.reservedNames = [],
     P.reservedOpNames = [],
     P.caseSensitive = True
@@ -45,31 +45,62 @@ rulesParser =
        return (reverse ls, reverse ps)
 
 ruleParser :: Parsec String () (Either LexProduction Production)
-ruleParser = try (do { lexP <- lexerProductionParser; return $ Left lexP }) <|> try  (do { prod <- productionParser; return $ Right prod })
+ruleParser = {-try (do { lexP <- terminal; return $ Left lexP }) <|> -} (do { prod <- nonterminal; return $ Right prod })
 
-productionParser :: Parsec String () Production
-productionParser =
+nonterminal :: Parsec String () Production
+nonterminal =
     do whiteSpace
        lhs <- lhsParser <?> "prod lhs"
-       rhs <- sepBy1 identifier whiteSpace
+       whiteSpace
+       rhs <- sep (termId <?> "rhs term") termSeparator ruleEnd
        return $ Production (Term lhs) $ map Term rhs
 
 type LexProduction = (String, [String])
 
-lexerProductionParser :: Parsec String () LexProduction
-lexerProductionParser =
+terminal :: Parsec String () LexProduction
+terminal =
     do whiteSpace
        lhs <- lhsParser <?> "lexer lhs"
-       rhs <- sepBy1 wordParser $ try $ do {whiteSpace; char '|'; whiteSpace}
+       whiteSpace
+       rhs <- sep wordParser (do {whiteSpace; char '|'; whiteSpace}) ruleEnd
        return $ (lhs, rhs)
+
+sep :: (Stream s m t) => ParsecT s u m a -> ParsecT s u m b -> ParsecT s u m end -> ParsecT s u m [a]
+sep p s end =
+    do x <- p
+       xs <- manyTill (s >> p) $ try end
+       return (x:xs)
+
+ruleEnd :: Parsec String () ()
+ruleEnd = do whiteSpace
+             --(try eof <|> (endOfLine >> return ()))
+             try eof <|> (lookAhead lhsParser >> return ())
+             return ()
+
+term :: Parsec String () Term
+term =
+    do id <- ident
+       return $ Term id
+
+termId :: Parsec String () String
+termId = try ident
+
+ident :: Parsec String () String
+ident =
+    do c <- P.identStart langDef
+       cs <- many (P.identLetter langDef)
+       return (c:cs)
+    <?> "identifier"
+
+termSeparator :: Parsec String () ()
+termSeparator = space >> return ()
 
 lhsParser :: Parsec String () String
 lhsParser =
     do whiteSpace
-       lhs <- identifier
+       lhs <- termId
        whiteSpace
        string "->"
-       whiteSpace
        return lhs
 
 wordParser :: Parsec String () String

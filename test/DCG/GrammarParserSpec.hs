@@ -5,6 +5,7 @@ import DCG.Grammar
 import DCG.ChartParser
 import Util.Container
 import DCG.GrammarParser
+import Text.Parsec
 
 -- `main` is here so that this module can be run from GHCi on its own.  It is
 -- not needed for automatic spec discovery.
@@ -33,16 +34,15 @@ grammar = Grammar "S" ["S"  ==> ["NP", "VP"],
                        "PP" ==> ["Prep", "NP"]
                        ]
 
-gramarString = "\
-\--sdfwefwfwefwef \
-\S -> NP VP {-frefr-}\
-\VP -> Verb \
-\VP -> Verb NP \
-\VP -> VP PP \
-\NP -> Noun \
-\NP -> Det Noun \
-\NP -> NP PP \
-\PP -> Prep NP' \n\
+grammarString = "\
+\S -> NP VP \n\
+\VP -> Verb\n\
+\VP -> Verb NP   \n\
+\VP -> VP PP \n\
+\NP -> Noun \n\
+\NP -> Det Noun \n\
+\NP -> NP PP \n\
+\PP -> Prep NP\n\
 \Verb -> 'flies' | 'like' \n\
 \Noun -> 'flies' | 'time' | 'arrow' \n\
 \Det -> 'an' \n\
@@ -52,5 +52,36 @@ gramarString = "\
 spec :: Spec
 spec = do
   describe "Grammar parser" $ do
-    it "should parse grammar" $ do
-            parseGrammar gramarString `shouldBe` Right (lexicon, grammar)
+    context "for nonterminal productions" $ do
+        it "should parse rhs containing one constituent" $ do
+            parse nonterminal "" "S -> NP \n" `shouldBe` Right (Production (Term "S") [Term "NP"])
+
+        it "should parse rhs ending on new line" $ do
+            parse nonterminal "" "S -> NP VP \n" `shouldBe` Right (Production (Term "S") [Term "NP", Term "VP"])
+
+        it "should parse rhs ending on eof" $ do
+            parse nonterminal "" "S -> NP VP Det" `shouldBe` Right (Production (Term "S") [Term "NP", Term "VP", Term "Det"])
+
+    context "for terminal productions" $ do
+        it "should parse rhs containing one constituent" $ do
+            parse terminal "" "Verb -> 'like'\n" `shouldBe` Right ("Verb", ["like"])
+
+        it "should parse rhs ending on new line" $ do
+            parse terminal "" "Verb -> 'like' | 'test' \n" `shouldBe` Right ("Verb", ["like", "test"])
+
+    context "for rule end" $ do
+        it "should match new line" $ do
+            parse ruleEnd "" "\n" `shouldBe` Right ()
+
+        it "should match new line with one space" $ do
+            parse ruleEnd "" " \n" `shouldBe` Right ()
+
+        it "should match new line with many spaces" $ do
+            parse ruleEnd "" "   \n" `shouldBe` Right ()
+
+--    it "should parse whole grammar" $ do
+--        parseGrammar grammarString `shouldBe` Right (lexicon, grammar)
+
+    it "should parse whole grammar2" $ do
+        let gram = "S -> NP VP \n T -> Verb R \nV -> Verb NP"
+        parseGrammar gram `shouldBe` Right (lexicon, grammar)

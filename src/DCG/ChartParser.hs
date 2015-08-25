@@ -25,8 +25,8 @@ render :: (Show t, Show l) => Int -> ParseTree t l -> String
 render indent (Leaf l) = (replicate indent '\t') ++ "'" ++ show l ++ "'\n"
 render indent (Node t nodes) = (replicate indent '\t') ++ show t ++ "\n" ++ (foldl (\x y -> x ++ render (indent+1) y) "" nodes)
 
-parse :: Lexicon -> Grammar -> [String] -> [ParseTree Term String]
-parse l g u =
+parseGCD :: Lexicon -> Grammar -> [String] -> [ParseTree Term String]
+parseGCD l g u =
     [ parseTree | Passive 0 _ found parseTree <- S.elems $ last chart, found == (Term $ topTerm g)]
     where chart = buildChart l g u
 
