@@ -45,7 +45,7 @@ rulesParser =
        return (reverse ls, reverse ps)
 
 ruleParser :: Parsec String () (Either LexProduction Production)
-ruleParser = {-try (do { lexP <- terminal; return $ Left lexP }) <|> -} (do { prod <- nonterminal; return $ Right prod })
+ruleParser = try (do { lexP <- terminal; return $ Left lexP }) <|> (do { prod <- nonterminal; return $ Right prod })
 
 nonterminal :: Parsec String () Production
 nonterminal =

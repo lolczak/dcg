@@ -6,6 +6,7 @@ import DCG.ChartParser
 import Util.Container
 import DCG.GrammarParser
 import Text.Parsec
+import qualified Data.Map as M
 
 -- `main` is here so that this module can be run from GHCi on its own.  It is
 -- not needed for automatic spec discovery.
@@ -79,9 +80,9 @@ spec = do
         it "should match new line with many spaces" $ do
             parse ruleEnd "" "   \n" `shouldBe` Right ()
 
---    it "should parse whole grammar" $ do
---        parseGrammar grammarString `shouldBe` Right (lexicon, grammar)
+    it "should parse whole grammar" $ do
+        parseGrammar grammarString `shouldBe` Right (M.empty, grammar)
 
-    it "should parse whole grammar2" $ do
-        let gram = "S -> NP VP \n T -> Verb R \nV -> Verb NP"
-        parseGrammar gram `shouldBe` Right (lexicon, grammar)
+--    it "should parse whole grammar2" $ do
+--        let gram = "S -> NP VP \n T -> Verb R \nV -> Verb NP"
+--        parseGrammar gram `shouldBe` Right (M.empty, grammar)
