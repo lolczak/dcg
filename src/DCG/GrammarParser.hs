@@ -88,21 +88,14 @@ ruleEnd = do whiteSpace
 
 term :: Parsec String () Term
 term =
-    do id <- ident
+    do id <- termId
        return $ Term id
 
 termId :: Parsec String () String
-termId = try ident
-
-ident :: Parsec String () String
-ident =
-    do c <- P.identStart langDef
-       cs <- many (P.identLetter langDef)
-       return (c:cs)
-    <?> "identifier"
+termId = identifier
 
 termSeparator :: Parsec String () ()
-termSeparator = space >> return ()
+termSeparator = whiteSpace
 
 lhsParser :: Parsec String () String
 lhsParser =
