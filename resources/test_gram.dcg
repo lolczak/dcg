@@ -1,4 +1,6 @@
-S -> NP VP
+-- comment
+
+S -> NP VP {- fwefwfwefwf -}
 VP -> Verb
 VP -> Verb NP
 VP -> VP PP

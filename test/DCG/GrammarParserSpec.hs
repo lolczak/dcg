@@ -7,48 +7,12 @@ import Util.Container
 import DCG.GrammarParser
 import Text.Parsec
 import qualified Data.Map as M
+import DCG.TestData
 
 -- `main` is here so that this module can be run from GHCi on its own.  It is
 -- not needed for automatic spec discovery.
 main :: IO ()
 main = hspec spec
-
-noun = Term "Noun"
-verb = Term "Verb"
-det  = Term "Det"
-prep = Term "Prep"
-
-lexicon = asMap [ "flies" ~> [noun, verb],
-                  "like"  ~> [prep, verb],
-                  "time"  ~> [noun],
-                  "arrow" ~> [noun],
-                  "an"    ~> [det] ]
-utterance = ["time", "flies", "like", "an", "arrow"]
-
-grammar = Grammar "S" ["S"  ==> ["NP", "VP"],
-                       "VP" ==> ["Verb"],
-                       "VP" ==> ["Verb", "NP"],
-                       "VP" ==> ["VP", "PP"],
-                       "NP" ==> ["Noun"],
-                       "NP" ==> ["Det", "Noun"],
-                       "NP" ==> ["NP", "PP"],
-                       "PP" ==> ["Prep", "NP"]
-                       ]
-
-grammarString = "-- comment \n\
-\S -> NP VP {- fwefwfwefwf -}\n\
-\VP -> Verb\n\
-\VP -> Verb NP   \n\
-\VP -> VP PP \n\
-\NP -> Noun \n\
-\NP -> Det Noun \n\
-\NP -> NP PP \n\
-\PP -> Prep NP\n\
-\Verb -> 'flies' | 'like' \n\
-\Noun -> 'flies' | 'time' | 'arrow' \n\
-\Det -> 'an' \n\
-\Prep -> 'like' \n\
-\"
 
 spec :: Spec
 spec = do
@@ -80,7 +44,7 @@ spec = do
         it "should match new line with many spaces" $ do
             parse productionEnd "" "   \n" `shouldBe` Right ()
 
-    it "should parse whole grammar" $ do
+    it "should parse whole grammar" $ getResource "test_gram.dcg" $ \grammarString -> do
         parseGrammar grammarString `shouldBe` Right (lexicon, grammar)
 
 --    it "should parse whole grammar2" $ do

@@ -27,5 +27,5 @@ test-suite spec
     main-is: Spec.hs
     buildable: True
     hs-source-dirs: test
-    other-modules: DCG.GrammarSpec, DCG.ChartParserSpec, DCG.GrammarParserSpec
+    other-modules: DCG.GrammarSpec, DCG.ChartParserSpec, DCG.GrammarParserSpec, DCG.TestData
     ghc-options: -Wall
