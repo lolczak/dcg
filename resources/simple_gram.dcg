@@ -1,6 +1,6 @@
--- comment
+-- Simple grammar
 
-S -> NP VP {- fwefwfwefwf -}
+S -> NP VP {- main symbol -}
 VP -> Verb
 VP -> Verb NP
 VP -> VP PP
@@ -9,6 +9,6 @@ NP -> Det Noun
 NP -> NP PP
 PP -> Prep NP
 Verb -> 'flies' | 'like'
-Noun -> 'flies' | 'time' | 'arrow'
+Noun -> 'flies' | 'time' | 'arrow' {- terminal symbols -}
 Det -> 'an'
 Prep -> 'like'
