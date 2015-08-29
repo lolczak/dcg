@@ -10,6 +10,10 @@ data Production = Production {lhs :: Term, rhs :: [Term]}
 
 data Term = Term {name :: String} deriving (Eq, Ord, Show)
 
+data FValue = Value String | Var String
+type Feature = (String, FValue)
+type AVM = [Feature]
+
 --data Rhs = Seq deriving (Eq, Ord, Show)
 
 type Lexicon = Map.Map String [Term]

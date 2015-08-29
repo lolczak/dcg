@@ -1,6 +1,6 @@
 S -> NP VP
 VP -> Verb
-VP -> Verb, NP
+VP -> Verb NP
 VP -> VP PP
 NP -> Noun
 NP -> Det Noun
