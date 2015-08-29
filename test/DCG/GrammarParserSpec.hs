@@ -46,7 +46,3 @@ spec = do
 
     it "should parse whole grammar" $ getResource "test_gram.dcg" $ \grammarString -> do
         parseGrammar grammarString `shouldBe` Right (lexicon, grammar)
-
---    it "should parse whole grammar2" $ do
---        let gram = "S -> NP VP \n T -> Verb R \nV -> Verb NP"
---        parseGrammar gram `shouldBe` Right (M.empty, grammar)
