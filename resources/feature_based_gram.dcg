@@ -11,10 +11,10 @@ NP[Num=?n] -> NP[Num=?n] PP
 PP -> Prep NP
 
 -- terminal symbols
-Verb -> 'flies'
+Verb -> 'fly'
 Verb -> 'like'
-Noun[Num=pl] -> 'flies' | 'planes'
-Noun[Num=sg] -> 'time' | 'arrow'
+Noun[Num=pl] -> 'planes'
+Noun[Num=sg] -> 'arrow' | 'fly'
 Det[Num=sg] -> 'an'
 Det[Num=pl] -> 'these'
 Prep -> 'like'

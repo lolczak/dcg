@@ -27,6 +27,10 @@ spec = do
         it "should parse rhs ending on eof" $ do
             parse nonterminal "" "S -> NP VP Det" `shouldBe` Right (Production (Term "S" []) [Term "NP" [], Term "VP" [], Term "Det" []])
 
+        it "should parse term with features" $ do
+            parse term "" "S[Num=?n]" `shouldBe` Right (Term "S" [("Num", Var "n")])
+
+
     context "for terminal productions" $ do
         it "should parse rhs containing one constituent" $ do
             parse terminal "" "Verb -> 'like'\n" `shouldBe` Right (Term "Verb" [], ["like"])
@@ -46,3 +50,7 @@ spec = do
 
     it "should parse grammar whithout F-Structure" $ getResource "simple_gram.dcg" $ \grammarString -> do
         parseGrammar grammarString `shouldBe` Right (lexicon, grammar)
+
+    it "should parse feature based grammar" $ getResource "feature_based_gram.dcg" $ \grammarString -> do
+        parseGrammar grammarString `shouldBe` Right (featuredLexicon, featureGrammar)
+

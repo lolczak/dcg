@@ -5,6 +5,7 @@ import Text.Parsec
 import qualified Text.Parsec.Token as P
 import Control.Monad.Identity
 import qualified Data.Map as M
+import qualified Data.Foldable as F
 
 type LexProduction = (Term, [String])
 
@@ -66,8 +67,8 @@ nonterminal =
     do whiteSpace
        lhs <- productionLhs <?> "prod lhs"
        whiteSpace
-       rhs <- separatedSequence (termId <?> "rhs term") termSeparator productionEnd
-       return $ Production lhs $ map (\x -> Term x []) rhs
+       rhs <- separatedSequence (term <?> "rhs term") termSeparator productionEnd
+       return $ Production lhs rhs
 
 terminal :: Parsec String () LexProduction
 terminal =
@@ -92,10 +93,45 @@ productionEnd =
 term :: Parsec String () Term
 term =
     do id <- termId
-       return $ Term id []
+       fStruct <- optionMaybe avm
+       return $ Term id $ F.foldl (\list x -> x ++ list) [] fStruct
 
 termId :: Parsec String () String
 termId = identifier
+
+avm :: Parsec String () [Feature]
+avm =
+    do whiteSpace
+       char '['
+       whiteSpace
+       features <- separatedSequence feature featureSeparator featureEnd
+       return features
+
+feature :: Parsec String () Feature
+feature =
+    do whiteSpace
+       featureName <- identifier
+       whiteSpace
+       char '='
+       whiteSpace
+       varName <- choice [fvariable, fvalue]
+       return (featureName, varName)
+
+fvalue :: Parsec String () FValue
+fvalue = do val <- identifier
+            return $ Value val
+
+fvariable :: Parsec String () FValue
+fvariable =
+    do char '?'
+       varName <- identifier
+       return $ Var varName
+
+featureSeparator :: Parsec String () ()
+featureSeparator = whiteSpace >> char ',' >> whiteSpace
+
+featureEnd :: Parsec String () ()
+featureEnd = whiteSpace >> char ']' >> return ()
 
 termSeparator :: Parsec String () ()
 termSeparator = whiteSpace
