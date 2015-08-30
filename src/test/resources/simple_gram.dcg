@@ -1,6 +1,6 @@
--- Simple grammar
+// Simple grammar
 
-S -> NP VP {- main symbol -}
+S -> NP VP /* main symbol */
 VP -> Verb
 VP -> Verb NP
 VP -> VP PP
@@ -9,7 +9,7 @@ NP -> Det Noun
 NP -> NP PP
 PP -> Prep NP
 
--- terminal symbols
+// terminal symbols
 Verb -> 'fly' | 'like'
 Noun -> 'fly' | 'time' | 'arrow' | 'planes'
 Det -> 'an' | 'these'

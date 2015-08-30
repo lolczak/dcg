@@ -1,3 +1,19 @@
+package org.lolczak.dcg.grammar
+
+case class Grammar(start: String, productions: List[Production])
+
+case class Production(lhs:Term, rhs: List[Term])
+
+case class Term(name: String, fStruct: FeatureStruct)
+
+case class FeatureStruct(features: Map[String, FValue])
+
+sealed trait FValue
+case class FConst(value: String)
+case class FVariable(name: String)
+case class FList(elements: List[FValue])
+
+/*
 module DCG.Grammar where
 
 import qualified Data.Map as Map
@@ -12,7 +28,7 @@ data Term = Term {name :: String, fStruct :: AVM} deriving (Eq, Ord, Show)
 
 data FValue = Value String | Var String | List [String]  deriving (Eq, Ord, Show)
 type Feature = (String, FValue)
-type AVM = [Feature]
+type AVM = [Feature] --todo change f struct to map
 
 --data Rhs = Seq deriving (Eq, Ord, Show)
 
@@ -31,3 +47,4 @@ lhs ~~> rhs = error "Not implemented"
 
 validate :: Grammar -> Bool
 validate _ = True
+ */
