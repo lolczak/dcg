@@ -44,5 +44,5 @@ spec = do
         it "should match new line with many spaces" $ do
             parse productionEnd "" "   \n" `shouldBe` Right ()
 
-    it "should parse whole grammar" $ getResource "simple_gram.dcg" $ \grammarString -> do
+    it "should parse grammar whithout F-Structure" $ getResource "simple_gram.dcg" $ \grammarString -> do
         parseGrammar grammarString `shouldBe` Right (lexicon, grammar)
