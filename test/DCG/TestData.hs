@@ -8,12 +8,15 @@ verb = Term "Verb"
 det  = Term "Det"
 prep = Term "Prep"
 
-lexicon = asMap [ "flies" ~> [noun, verb],
-                  "like"  ~> [prep, verb],
-                  "time"  ~> [noun],
-                  "arrow" ~> [noun],
-                  "an"    ~> [det] ]
-utterance = ["time", "flies", "like", "an", "arrow"]
+lexicon = asMap [ "fly"  ~> [noun, verb],
+                  "like"   ~> [prep, verb],
+                  "time"   ~> [noun],
+                  "arrow"  ~> [noun],
+                  "these"  ~> [det],
+                  "planes" ~> [noun],
+                  "an"     ~> [det] ]
+
+utterance = ["these", "planes", "fly", "like", "an", "arrow"]
 
 grammar = Grammar "S" ["S"  ==> ["NP", "VP"],
                        "VP" ==> ["Verb"],

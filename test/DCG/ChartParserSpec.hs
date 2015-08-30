@@ -31,5 +31,5 @@ spec = do
 --            let chart = scan utterance lexicon
 --            (map (predict grammar) chart) `shouldBe` expected
 
-    it "should parse new active rules" $ do
-        parseGCD lexicon grammar utterance `shouldBe` [Node {t = Term "S", children = [Node {t = Term "NP", children = [Node {t = Term "Noun", children = [Leaf "time"]}]},Node {t = Term "VP", children = [Node {t = Term "VP", children = [Node {t = Term "Verb", children = [Leaf "flies"]}]},Node {t = Term "PP", children = [Node {t = Term "Prep", children = [Leaf "like"]},Node {t = Term "NP", children = [Node {t = Term "Det", children = [Leaf "an"]},Node {t = Term "Noun", children = [Leaf "arrow"]}]}]}]}]}]
+    it "should parse correct utterance" $ do
+        parseGCD lexicon grammar utterance `shouldBe` [Node {t = Term "S", children = [Node {t = Term "NP", children = [Node {t = Term "Det", children = [Leaf "these"]},Node {t = Term "Noun", children = [Leaf "planes"]}]},Node {t = Term "VP", children = [Node {t = Term "VP", children = [Node {t = Term "Verb", children = [Leaf "fly"]}]},Node {t = Term "PP", children = [Node {t = Term "Prep", children = [Leaf "like"]},Node {t = Term "NP", children = [Node {t = Term "Det", children = [Leaf "an"]},Node {t = Term "Noun", children = [Leaf "arrow"]}]}]}]}]}]

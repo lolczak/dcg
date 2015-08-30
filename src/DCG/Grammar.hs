@@ -10,7 +10,7 @@ data Production = Production {lhs :: Term, rhs :: [Term]}
 
 data Term = Term {name :: String} deriving (Eq, Ord, Show)
 
-data FValue = Value String | Var String
+data FValue = Value String | Var String | List [String]
 type Feature = (String, FValue)
 type AVM = [Feature]
 
