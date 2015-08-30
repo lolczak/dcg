@@ -1,4 +1,4 @@
-package org.lolczak.dcg.grammar
+package org.lolczak.dcg
 
 case class Grammar(start: String, productions: List[Production])
 
