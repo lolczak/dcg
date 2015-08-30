@@ -8,9 +8,9 @@ data Production = Production {lhs :: Term, rhs :: [Term]}
 --                | Terminal Term [String]
                 deriving (Eq, Ord, Show)
 
-data Term = Term {name :: String} deriving (Eq, Ord, Show)
+data Term = Term {name :: String, fStruct :: AVM} deriving (Eq, Ord, Show)
 
-data FValue = Value String | Var String | List [String]
+data FValue = Value String | Var String | List [String]  deriving (Eq, Ord, Show)
 type Feature = (String, FValue)
 type AVM = [Feature]
 
@@ -23,7 +23,7 @@ findInLexicon l w = Map.lookup w l
 
 infix 9 ==>
 (==>) :: String -> [String] -> Production
-lhs ==> rhs = Production (Term lhs) $ map Term rhs
+lhs ==> rhs = Production (Term lhs []) $ map (\x -> Term x []) rhs
 
 infix 9 ~~>
 (~~>) :: Term -> [String] -> Lexicon

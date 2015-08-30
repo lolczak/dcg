@@ -27,7 +27,7 @@ render indent (Node t nodes) = (replicate indent '\t') ++ show t ++ "\n" ++ (fol
 
 parseGCD :: Lexicon -> Grammar -> [String] -> [ParseTree Term String]
 parseGCD l g u =
-    [ parseTree | Passive 0 _ found parseTree <- S.elems $ last chart, found == (Term $ topTerm g)]
+    [ parseTree | Passive 0 _ found parseTree <- S.elems $ last chart, found == (Term (topTerm g) [])]
     where chart = buildChart l g u
 
 buildChart :: Lexicon -> Grammar -> [String] -> Chart

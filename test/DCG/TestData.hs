@@ -3,10 +3,10 @@ module DCG.TestData where
 import DCG.Grammar
 import Util.Container
 
-noun = Term "Noun"
-verb = Term "Verb"
-det  = Term "Det"
-prep = Term "Prep"
+noun = Term "Noun" []
+verb = Term "Verb" []
+det  = Term "Det" []
+prep = Term "Prep" []
 
 lexicon = asMap [ "fly"  ~> [noun, verb],
                   "like"   ~> [prep, verb],

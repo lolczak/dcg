@@ -67,7 +67,7 @@ nonterminal =
        lhs <- productionLhs <?> "prod lhs"
        whiteSpace
        rhs <- separatedSequence (termId <?> "rhs term") termSeparator productionEnd
-       return $ Production lhs $ map Term rhs
+       return $ Production lhs $ map (\x -> Term x []) rhs
 
 terminal :: Parsec String () LexProduction
 terminal =
@@ -92,7 +92,7 @@ productionEnd =
 term :: Parsec String () Term
 term =
     do id <- termId
-       return $ Term id
+       return $ Term id []
 
 termId :: Parsec String () String
 termId = identifier
