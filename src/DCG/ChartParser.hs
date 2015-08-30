@@ -3,6 +3,7 @@ module DCG.ChartParser where
 import DCG.Grammar
 import Util.Container
 import qualified Data.Set as S
+import qualified Data.Map as M
 
 data Edge = Passive {start :: Int, end :: Int, found :: Term, tree :: ParseTree Term String}
           | Active  {start :: Int, end :: Int, found :: Term, remaining :: [Term], pchildren :: [ParseTree Term String]}
@@ -68,3 +69,21 @@ combine chart (Passive j k rightTerm parseTree) =
             Active i j' leftTerm (prefix:rest) cs <- if j == 0 then [] else S.elems $ chart !! (j-1),
             prefix == rightTerm && j == j']
 combine _ _ = S.empty
+
+isBindable :: Production -> [ParseTree Term String] -> Bool
+isBindable production nodes =
+    if length (rhs production) /= length nodes
+    then False
+    else checkConsistency a
+    where
+        z = zip (rhs production) $ map t nodes
+        a = map evalAssignments z
+
+evalAssignments :: (Term, Term) -> M.Map String String
+evalAssignments (l, r) = error "ni"
+
+checkConsistency :: [M.Map String String] -> Bool
+checkConsistency = error "ni"
+
+bindVar :: Production -> [ParseTree Term String] -> Term
+bindVar = error "ni"

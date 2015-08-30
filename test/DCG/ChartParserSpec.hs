@@ -31,5 +31,26 @@ spec = do
 --            let chart = scan utterance lexicon
 --            (map (predict grammar) chart) `shouldBe` expected
 
+    context "variables in production" $ do
+        it "should return true for bindable rule" $ do
+            let prod = Production {lhs = Term {name = "NP", fStruct = [("Num",Var "n")]}, rhs = [Term {name = "Det", fStruct = [("Num",Var "n")]},Term {name = "Noun", fStruct = [("Num",Var "n")]}]}
+            let parseTree = [Node (Term "Det" [("Num",Value "pl")]) [], Node (Term "Noun" [("Num", Value "pl")]) []]
+            isBindable prod parseTree `shouldBe` True
+
+        it "should return false for unbindable rule" $ do
+            let prod = Production {lhs = Term {name = "NP", fStruct = [("Num",Var "n")]}, rhs = [Term {name = "Det", fStruct = [("Num",Var "n")]},Term {name = "Noun", fStruct = [("Num",Var "n")]}]}
+            let parseTree = [Node (Term "Det" [("Num", Value "pl")]) [], Node (Term "Noun" [("Num", Value "sg")]) []]
+            isBindable prod parseTree `shouldBe` False
+
+        it "should return false for missing value" $ do
+            let prod = Production {lhs = Term {name = "NP", fStruct = [("Num",Var "n")]}, rhs = [Term {name = "Det", fStruct = [("Num",Var "n")]},Term {name = "Noun", fStruct = [("Num",Var "n")]}]}
+            let parseTree = [Node (Term "Det" [("Num", Value "pl")]) [], Node (Term "Noun" []) []]
+            isBindable prod parseTree `shouldBe` False
+
+        it "should bind variables in production" $ do
+            let prod = Production {lhs = Term {name = "NP", fStruct = [("Num",Var "n")]}, rhs = [Term {name = "Det", fStruct = [("Num",Var "n")]},Term {name = "Noun", fStruct = [("Num",Var "n")]}]}
+            let parseTree = [Node (Term "Det" [("Num",Value "pl")]) [], Node (Term "Noun" [("Num", Value "pl")]) []]
+            bindVar prod parseTree `shouldBe` Term "NP" [("Num", Value "pl")]
+
     it "should parse correct utterance" $ do
         parseGCD lexicon grammar utterance `shouldBe` [Node {t = Term "S" [], children = [Node {t = Term "NP" [], children = [Node {t = Term "Det" [], children = [Leaf "these"]},Node {t = Term "Noun" [], children = [Leaf "planes"]}]},Node {t = Term "VP" [], children = [Node {t = Term "VP" [], children = [Node {t = Term "Verb" [], children = [Leaf "fly"]}]},Node {t = Term "PP" [], children = [Node {t = Term "Prep" [], children = [Leaf "like"]},Node {t = Term "NP" [], children = [Node {t = Term "Det" [], children = [Leaf "an"]},Node {t = Term "Noun" [], children = [Leaf "arrow"]}]}]}]}]}]

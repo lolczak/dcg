@@ -12,7 +12,7 @@ data Term = Term {name :: String, fStruct :: AVM} deriving (Eq, Ord, Show)
 
 data FValue = Value String | Var String | List [String]  deriving (Eq, Ord, Show)
 type Feature = (String, FValue)
-type AVM = [Feature]
+type AVM = [Feature] --todo change f struct to map
 
 --data Rhs = Seq deriving (Eq, Ord, Show)
 
