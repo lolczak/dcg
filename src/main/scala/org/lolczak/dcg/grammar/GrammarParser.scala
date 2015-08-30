@@ -1,11 +1,13 @@
 package org.lolczak.dcg.grammar
 
+import org.lolczak.dcg.{FeatureStruct, Term}
+
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
 
 object GrammarParser extends StandardTokenParsers {
   lexical.reserved ++= List("->")
 
-  val term = ident
+  val term = ident ^^ {name => Term(name, FeatureStruct.empty)}
 
 }
 

@@ -13,6 +13,10 @@ case class FConst(value: String)
 case class FVariable(name: String)
 case class FList(elements: List[FValue])
 
+object FeatureStruct {
+  val empty = FeatureStruct(Map.empty)
+}
+
 /*
 module DCG.Grammar where
 

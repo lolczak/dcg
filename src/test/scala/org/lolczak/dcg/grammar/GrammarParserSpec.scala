@@ -1,5 +1,7 @@
 package org.lolczak.dcg.grammar
 
+import org.lolczak.dcg.{Term, FeatureStruct}
+import org.lolczak.dcg.grammar.GrammarParser._
 import org.scalatest.{Matchers, WordSpec}
 
 class GrammarParserSpec extends WordSpec with Matchers {
@@ -9,10 +11,11 @@ class GrammarParserSpec extends WordSpec with Matchers {
       //given
       val termString = "Verb"
       //when
-      val result: GrammarParser.ParseResult[String] = GrammarParser.term(new GrammarParser.lexical.Scanner(termString))
+      val result: ParseResult[Term] = term(new GrammarParser.lexical.Scanner(termString))
       //then
-      result should matchPattern {case GrammarParser.Success("Verb", _) => }
+      result should matchPattern {case Success(Term("Verb", FeatureStruct.empty), _) => }
     }
+
   }
 
 }
