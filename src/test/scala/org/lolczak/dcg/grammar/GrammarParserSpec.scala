@@ -101,10 +101,22 @@ class GrammarParserSpec extends WordSpec with Matchers {
         "planes" -> List("Noun"("Num" -> FConst("pl"))),
         "an" -> List("Det"("Num" -> FConst("sg")))
       )
+      val ExpectedGrammar = Grammar("S",
+        List(
+          "S" ~>("NP", "VP"),
+          "VP" ~> "Verb",
+          "VP" ~>("Verb", "NP"),
+          "VP" ~>("VP", "PP"),
+          "NP"("Num" -> FVariable("n")) ~> "Noun"("Num" -> FVariable("n")),
+          "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n"))),
+          "NP"("Num" -> FVariable("n")) ~>("NP"("Num" -> FVariable("n")), "PP"),
+          "PP" ~>("Prep", "NP")
+        )
+      )
       //when
       val result = parseGrammar(grammarString)
       //then
-      result should matchPattern { case Success((ExpectedLexicon, _), _) => }
+      result should matchPattern { case Success((ExpectedLexicon, ExpectedGrammar), _) => }
     }
 
   }
