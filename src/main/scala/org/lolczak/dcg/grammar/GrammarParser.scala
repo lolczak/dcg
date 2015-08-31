@@ -5,8 +5,14 @@ import org.lolczak.dcg._
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
 
 object GrammarParser extends StandardTokenParsers {
-  lexical.reserved ++= List("->")
-  lexical.delimiters ++= List("{", "}", "[", "]", "=", ",", "?")
+  lexical.delimiters ++= List("{", "}", "[", "]", "=", ",", "?", "->")
+
+  lazy val nonterminal: Parser[Production] =
+    lhs ~ repTill(term, productionEnd) ^^ {case l ~ r => Production(l,r)}
+
+  lazy val lhs: Parser[Term] = term <~ "->"
+
+  lazy val productionEnd: Parser[Any] = eoi | guard(lhs)
 
   lazy val term: Parser[Term] =
     for {
@@ -26,6 +32,8 @@ object GrammarParser extends StandardTokenParsers {
   lazy val featureSeparator: Parser[Unit] = "," ^^^ ()
 
   lazy val featureEnd: Parser[Unit] = "]" ^^^ ()
+
+  lazy val eoi: Parser[Any] = Parser {in => if (in.atEnd) Success((), in) else Failure("not end", in)}
 
   //  def char(char: Char): Parser[Char] = elem("", _.chars == char.toString) ^^ { _ => char }
 

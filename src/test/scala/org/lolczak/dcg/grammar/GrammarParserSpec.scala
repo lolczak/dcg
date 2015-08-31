@@ -1,8 +1,9 @@
 package org.lolczak.dcg.grammar
 
 import org.lolczak.dcg.grammar.GrammarParser._
-import org.lolczak.dcg.{FConst, FVariable, FeatureStruct, Term}
+import org.lolczak.dcg._
 import org.scalatest.{Matchers, WordSpec}
+import org.lolczak.dcg.Grammar._
 
 class GrammarParserSpec extends WordSpec with Matchers {
 
@@ -36,6 +37,18 @@ class GrammarParserSpec extends WordSpec with Matchers {
       result should matchPattern { case Success(Term("Verb", ExpectedFStruct), _) => }
     }
 
+  }
+
+  "Production parser" should {
+    "parser simple nonterminal production" in {
+      //given
+      val nonterminalString = "S -> NP VP "
+      val ExpectedProduction = "S" ~> ("NP", "VP")
+      //when
+      val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
+      //then
+      result should matchPattern { case Success(ExpectedProduction, _) => }
+    }
   }
 
 }

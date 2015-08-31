@@ -1,5 +1,7 @@
 package org.lolczak.dcg
 
+import scala.language.implicitConversions
+
 case class Grammar(start: String, productions: List[Production])
 
 case class Production(lhs:Term, rhs: List[Term])
@@ -15,6 +17,16 @@ case class FList(elements: List[FValue]) extends FValue
 
 object FeatureStruct {
   val empty = FeatureStruct(Map.empty)
+}
+
+object Grammar {
+
+  implicit def string2Term(symbol: String): Term = Term(symbol, FeatureStruct.empty)
+
+  implicit class Lhs(term: String) {
+    def ~>(rhs:String*): Production = Production(term, List(rhs: _*) map string2Term)
+  }
+
 }
 
 /*
