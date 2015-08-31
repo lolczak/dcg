@@ -1,4 +1,4 @@
-package org.lolczak.dcg.grammar
+package org.lolczak.dcg.parser.grammar
 
 import org.lolczak.dcg._
 
