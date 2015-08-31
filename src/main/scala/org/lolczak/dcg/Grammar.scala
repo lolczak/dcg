@@ -6,6 +6,8 @@ case class Grammar(start: String, productions: List[Production])
 
 case class Production(lhs: Term, rhs: List[Term])
 
+case class LexProduction(lhs: Term, rhs: List[String])
+
 case class Term(name: String, fStruct: FeatureStruct)
 
 case class FeatureStruct(features: Map[String, FValue])

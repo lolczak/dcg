@@ -5,10 +5,13 @@ import org.lolczak.dcg._
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
 
 object GrammarParser extends StandardTokenParsers {
-  lexical.delimiters ++= List("{", "}", "[", "]", "=", ",", "?", "->")
+  lexical.delimiters ++= List("{", "}", "[", "]", "=", ",", "?", "->", "|")
 
   lazy val nonterminal: Parser[Production] =
     lhs ~ repTill(term, productionEnd) ^^ { case l ~ r => Production(l, r) }
+
+  lazy val terminal: Parser[LexProduction] =
+    lhs ~ separatedSequence(stringLit, "|", productionEnd) ^^ { case l ~ r => LexProduction(l, r)}
 
   lazy val lhs: Parser[Term] = term <~ "->"
 
