@@ -4,7 +4,9 @@ import org.lolczak.dcg.Grammar._
 import org.lolczak.dcg._
 import org.lolczak.dcg.grammar.GrammarParser.{keyword => _, _}
 import org.scalatest.{Matchers, WordSpec}
-import Predef.{augmentString => _, wrapString => _, _}
+
+import scala.Predef.{augmentString => _, wrapString => _, _}
+import scala.io.Source
 
 class GrammarParserSpec extends WordSpec with Matchers {
 
@@ -54,7 +56,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
     "parse nonterminal production containing features" in {
       //given
       val nonterminalString = "NP[Num=?n, Gen=male] -> Det[Num=?n] Noun[Num=?n] "
-      val ExpectedProduction = "NP"("Num" -> FVariable("n"), "Gen" -> FConst("male")) ~> ("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n")))
+      val ExpectedProduction = "NP"("Num" -> FVariable("n"), "Gen" -> FConst("male")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n")))
       //when
       val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
       //then
@@ -82,6 +84,27 @@ class GrammarParserSpec extends WordSpec with Matchers {
       val result = terminal(new GrammarParser.lexical.Scanner(terminalString))
       //then
       result should matchPattern { case Success(ExpectedProduction, _) => }
+    }
+
+  }
+
+  "Grammar parser" should {
+
+    "parse whole grammar" in {
+      //given
+      val grammarString = Source.fromURL(Thread.currentThread().getContextClassLoader.getResource("feature_based_gram.dcg"), "UTF-8").mkString
+      val ExpectedLexicon = Map[String, List[Term]](
+        "fly" -> List("Verb", "Noun"("Num" -> FConst("sg"))),
+        "like" -> List("Verb", "Prep"),
+        "arrow" -> List("Noun"("Num" -> FConst("sg"))),
+        "these" -> List("Det"("Num" -> FConst("pl"))),
+        "planes" -> List("Noun"("Num" -> FConst("pl"))),
+        "an" -> List("Det"("Num" -> FConst("sg")))
+      )
+      //when
+      val result = parseGrammar(grammarString)
+      //then
+      result should matchPattern { case Success((ExpectedLexicon, _), _) => }
     }
 
   }

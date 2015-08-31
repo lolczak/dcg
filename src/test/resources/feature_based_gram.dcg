@@ -1,7 +1,7 @@
--- Simple grammar
+// Simple grammar
 
--- nonterminal symbols
-S -> NP VP {- main symbol -}
+// nonterminal symbols
+S -> NP VP /* main symbol */
 VP -> Verb
 VP -> Verb NP
 VP -> VP PP
@@ -10,7 +10,7 @@ NP[Num=?n] -> Det[Num=?n] Noun[Num=?n]
 NP[Num=?n] -> NP[Num=?n] PP
 PP -> Prep NP
 
--- terminal symbols
+// terminal symbols
 Verb -> 'fly'
 Verb -> 'like'
 Noun[Num=pl] -> 'planes'
