@@ -1,13 +1,71 @@
 package org.lolczak.dcg.grammar
 
-import org.lolczak.dcg.{FeatureStruct, Term}
+import org.lolczak.dcg._
 
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
 
 object GrammarParser extends StandardTokenParsers {
   lexical.reserved ++= List("->")
+  lexical.delimiters ++= List("{", "}", "[", "]", "=", ",", "?")
 
-  val term = ident ^^ {name => Term(name, FeatureStruct.empty)}
+  lazy val term: Parser[Term] =
+    for {
+      symbolName <- ident
+      maybeFStruct <- opt(featureStruct)
+    } yield Term(symbolName, maybeFStruct.getOrElse(FeatureStruct.empty))
+
+  lazy val featureStruct: Parser[FeatureStruct] =
+    "[" ~> separatedSequence(feature, featureSeparator, featureEnd) ^^ { f => FeatureStruct(Map(f: _*)) }
+
+  lazy val feature: Parser[(String, FValue)] = (ident <~ "=") ~ (fvariable | fvalue) ^^ { case name ~ fval => (name, fval) }
+
+  lazy val fvariable: Parser[FVariable] = "?" ~> ident ^^ { varName => FVariable(varName) }
+
+  lazy val fvalue: Parser[FConst] = ident ^^ { varName => FConst(varName) }
+
+  lazy val featureSeparator: Parser[Unit] = "," ^^ { _ => () }
+
+  lazy val featureEnd: Parser[Unit] = "]" ^^ { _ => () }
+
+  //  def char(char: Char): Parser[Char] = elem("", _.chars == char.toString) ^^ { _ => char }
+
+  def repTill[T](p: => Parser[T], end: => Parser[Any]): Parser[List[T]] =
+    end ^^ { _ => List.empty } | (p ~ repTill(p, end)) ^^ { case x ~ xs => x :: xs }
+
+  def separatedSequence[T](p: => Parser[T], s: => Parser[Any], end: => Parser[Any]): Parser[List[T]] =
+    for {
+      x <- p
+      xs <- repTill(s ~> p, end)
+    } yield x :: xs
+
+  /*
+
+feature :: Parsec String () Feature
+feature =
+    do whiteSpace
+       featureName <- identifier
+       whiteSpace
+       char '='
+       whiteSpace
+       varName <- choice [fvariable, fvalue]
+       return (featureName, varName)
+
+fvalue :: Parsec String () FValue
+fvalue = do val <- identifier
+            return $ Value val
+
+fvariable :: Parsec String () FValue
+fvariable =
+    do char '?'
+       varName <- identifier
+       return $ Var varName
+
+featureSeparator :: Parsec String () ()
+featureSeparator = whiteSpace >> char ',' >> whiteSpace
+
+featureEnd :: Parsec String () ()
+featureEnd = whiteSpace >> char ']' >> return ()
+   */
 
 }
 

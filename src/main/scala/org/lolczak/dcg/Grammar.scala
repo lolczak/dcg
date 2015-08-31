@@ -9,9 +9,9 @@ case class Term(name: String, fStruct: FeatureStruct)
 case class FeatureStruct(features: Map[String, FValue])
 
 sealed trait FValue
-case class FConst(value: String)
-case class FVariable(name: String)
-case class FList(elements: List[FValue])
+case class FConst(value: String) extends FValue
+case class FVariable(name: String) extends FValue
+case class FList(elements: List[FValue]) extends FValue
 
 object FeatureStruct {
   val empty = FeatureStruct(Map.empty)
