@@ -1,9 +1,10 @@
 package org.lolczak.dcg.grammar
 
-import org.lolczak.dcg.grammar.GrammarParser._
-import org.lolczak.dcg._
-import org.scalatest.{Matchers, WordSpec}
 import org.lolczak.dcg.Grammar._
+import org.lolczak.dcg._
+import org.lolczak.dcg.grammar.GrammarParser.{keyword => _, _}
+import org.scalatest.{Matchers, WordSpec}
+import Predef.{augmentString => _, wrapString => _, _}
 
 class GrammarParserSpec extends WordSpec with Matchers {
 
@@ -40,15 +41,26 @@ class GrammarParserSpec extends WordSpec with Matchers {
   }
 
   "Production parser" should {
-    "parser simple nonterminal production" in {
+    "parse simple nonterminal production" in {
       //given
-      val nonterminalString = "S -> NP VP "
-      val ExpectedProduction = "S" ~> ("NP", "VP")
+      val nonterminalString = "S -> NP VP"
+      val ExpectedProduction = "S" ~>("NP", "VP")
       //when
       val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
       //then
       result should matchPattern { case Success(ExpectedProduction, _) => }
     }
+
+    "parse nonterminal production containing features" in {
+      //given
+      val nonterminalString = "NP[Num=?n, Gen=male] -> Det[Num=?n] Noun[Num=?n] "
+      val ExpectedProduction = "NP"("Num" -> FVariable("n"), "Gen" -> FConst("male")) ~> ("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n")))
+      //when
+      val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
+      //then
+      result should matchPattern { case Success(ExpectedProduction, _) => }
+    }
+
   }
 
 }

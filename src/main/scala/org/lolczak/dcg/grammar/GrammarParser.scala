@@ -8,7 +8,7 @@ object GrammarParser extends StandardTokenParsers {
   lexical.delimiters ++= List("{", "}", "[", "]", "=", ",", "?", "->")
 
   lazy val nonterminal: Parser[Production] =
-    lhs ~ repTill(term, productionEnd) ^^ {case l ~ r => Production(l,r)}
+    lhs ~ repTill(term, productionEnd) ^^ { case l ~ r => Production(l, r) }
 
   lazy val lhs: Parser[Term] = term <~ "->"
 
@@ -29,11 +29,11 @@ object GrammarParser extends StandardTokenParsers {
 
   lazy val fvalue: Parser[FConst] = ident ^^ { varName => FConst(varName) }
 
-  lazy val featureSeparator: Parser[Unit] = "," ^^^ ()
+  lazy val featureSeparator: Parser[Unit] = "," ^^^()
 
-  lazy val featureEnd: Parser[Unit] = "]" ^^^ ()
+  lazy val featureEnd: Parser[Unit] = "]" ^^^()
 
-  lazy val eoi: Parser[Any] = Parser {in => if (in.atEnd) Success((), in) else Failure("not end", in)}
+  lazy val eoi: Parser[Any] = Parser { in => if (in.atEnd) Success((), in) else Failure("not end", in) }
 
   //  def char(char: Char): Parser[Char] = elem("", _.chars == char.toString) ^^ { _ => char }
 

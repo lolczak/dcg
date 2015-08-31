@@ -4,7 +4,7 @@ import scala.language.implicitConversions
 
 case class Grammar(start: String, productions: List[Production])
 
-case class Production(lhs:Term, rhs: List[Term])
+case class Production(lhs: Term, rhs: List[Term])
 
 case class Term(name: String, fStruct: FeatureStruct)
 
@@ -23,8 +23,16 @@ object Grammar {
 
   implicit def string2Term(symbol: String): Term = Term(symbol, FeatureStruct.empty)
 
-  implicit class Lhs(term: String) {
-    def ~>(rhs:String*): Production = Production(term, List(rhs: _*) map string2Term)
+  implicit class LhsString(term: String) {
+    def ~>(rhs: String*): Production = Production(term, List(rhs: _*) map string2Term)
+  }
+
+  implicit class LhsTerm(term: Term) {
+    def ~>(rhs: Term*): Production = Production(term, List(rhs: _*))
+  }
+
+  implicit class TermString(name: String) {
+    def apply(features: (String, FValue)*) = Term(name, FeatureStruct(Map(features: _*)))
   }
 
 }
