@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser
 
-import org.lolczak.dcg.{Grammar, Lexicon, Term}
+import org.lolczak.dcg.{Production, Grammar, Lexicon, Term}
 
 object ChartParser {
 
@@ -10,10 +10,17 @@ object ChartParser {
 
   def parseDcg(grammar: Grammar, lexicon: Lexicon, utterance: String): List[ParseTree[String, Term]] = ???
 
-  def scan(word: String, index: Int, lexicon: Lexicon): State =
-    lexicon.findAllForms(word).map(t => Passive(index, index+1, t, Node(t, List(Leaf(word)))))
+  def scan(word: String, index: Int, lexicon: Lexicon): State = {
+    require(index >= 0)
+    lexicon.findAllForms(word).map(t => Passive(index, index + 1, t, Node(t, List(Leaf(word)))))
+  }
 
-  def predict(grammar: Grammar, edge: Edge): State = ???
+  def predict(grammar: Grammar, edge: Passive): Set[Edge] =
+    for {
+      Production(lhs, rhs) <- Set(grammar.productions: _*)
+      if edge.found == rhs.head
+    } yield if (rhs.tail.isEmpty) Passive(edge.start, edge.end, lhs, Node(lhs, List(edge.tree))) : Edge
+            else Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree)): Edge
 
   def combine(chart: Chart, edge: Edge): State = ???
 
