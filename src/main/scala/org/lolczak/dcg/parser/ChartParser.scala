@@ -10,7 +10,8 @@ object ChartParser {
 
   def parseDcg(grammar: Grammar, lexicon: Lexicon, utterance: String): List[ParseTree[String, Term]] = ???
 
-  def scan(word: String, index: Int, lexicon: Lexicon): State = ???
+  def scan(word: String, index: Int, lexicon: Lexicon): State =
+    lexicon.findAllForms(word).map(t => Passive(index, index+1, t, Node(t, List(Leaf(word)))))
 
   def predict(grammar: Grammar, edge: Edge): State = ???
 

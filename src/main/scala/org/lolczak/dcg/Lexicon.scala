@@ -16,8 +16,6 @@ case class Lexicon(private val content: Map[String, Set[Term]]) {
 
   def this(tuples: (String, Set[Term])*) = this(Map(tuples: _*))
 
-//  def this(prods: LexProduction*) = this(Lexicon.convert(prods: _*))
-
   def findAllForms(word: String): Set[Term] = content.get(word).getOrElse(Set.empty)
 
 }
