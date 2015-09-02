@@ -2,7 +2,13 @@ package org.lolczak.dcg
 
 import scala.language.implicitConversions
 
-case class Grammar(start: String, productions: List[Production])
+case class Grammar(start: String, productions: List[Production]) {
+
+  private val prefixes: Map[Term, Set[Production]] = productions.map(p => (p.rhs.head, p)).groupBy(_._1).mapValues(t => Set(t.map(_._2): _*))
+
+  def findProductionsWithHead(head: Term): Set[Production] = prefixes(head)
+
+}
 
 case class Production(lhs: Term, rhs: List[Term])
 
