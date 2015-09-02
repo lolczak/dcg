@@ -93,13 +93,13 @@ class GrammarParserSpec extends WordSpec with Matchers {
     "parse whole grammar" in {
       //given
       val grammarString = Source.fromURL(Thread.currentThread().getContextClassLoader.getResource("feature_based_gram.dcg"), "UTF-8").mkString
-      val ExpectedLexicon = Map[String, List[Term]](
-        "fly" -> List("Verb", "Noun"("Num" -> FConst("sg"))),
-        "like" -> List("Verb", "Prep"),
-        "arrow" -> List("Noun"("Num" -> FConst("sg"))),
-        "these" -> List("Det"("Num" -> FConst("pl"))),
-        "planes" -> List("Noun"("Num" -> FConst("pl"))),
-        "an" -> List("Det"("Num" -> FConst("sg")))
+      val ExpectedLexicon = new Lexicon(
+        "fly" -> Set[Term]("Verb", "Noun"("Num" -> FConst("sg"))),
+        "like" -> Set[Term]("Verb", "Prep"),
+        "arrow" -> Set[Term]("Noun"("Num" -> FConst("sg"))),
+        "these" -> Set[Term]("Det"("Num" -> FConst("pl"))),
+        "planes" -> Set[Term]("Noun"("Num" -> FConst("pl"))),
+        "an" -> Set[Term]("Det"("Num" -> FConst("sg")))
       )
       val ExpectedGrammar = Grammar("S",
         List(

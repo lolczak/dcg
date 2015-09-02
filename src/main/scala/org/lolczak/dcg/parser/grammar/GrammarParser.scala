@@ -15,7 +15,7 @@ object GrammarParser extends StandardTokenParsers {
       productions <- rep(production)
       nonterminals = productions filter (_.isRight) map {case \/-(r) => r}
       terminals = productions filter (_.isLeft) map {case -\/(l) => l}
-      lexicon = terminals flatMap(item => item.rhs.map(x => (x, item.lhs))) groupBy(_._1) mapValues(_.map(_._2))
+      lexicon = Lexicon.fromProductions(terminals: _*)
     } yield (lexicon, Grammar(nonterminals.head.lhs.name, nonterminals))
 
   lazy val production: Parser[LexProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
