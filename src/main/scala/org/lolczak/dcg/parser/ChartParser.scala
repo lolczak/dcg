@@ -23,16 +23,12 @@ object ChartParser {
     val indexedUtterance = utterance zip Stream.from(0) toIndexedSeq
     val initialChart: Chart = indexedUtterance map { case (word, idx) => scan(word, idx, lexicon) }
     val f: Chart => Edge => Set[Edge] = (chart: Chart) => {
-      case edge: Passive =>
-        predict(grammar, edge) ++ combine(chart, edge)
+      case edge: Passive => predict(grammar, edge) ++ combine(chart, edge)
       case _ => Set.empty
     }
-    val finalChart = initialChart.foldLeft(IndexedSeq.empty[State]) {
-      case (prefix, currentState) =>
-        val generated = generate(f(prefix), currentState)
-        prefix :+ generated
+    initialChart.foldLeft(IndexedSeq.empty[State]) {
+      case (prefix, currentState) => prefix :+ generate(f(prefix), currentState)
     }
-    finalChart
   }
 
   def generate[A](f: A => Set[A], source: Set[A]): Set[A] = {
@@ -52,9 +48,9 @@ object ChartParser {
 
   def predict(grammar: Grammar, edge: Passive): Set[Edge] =
     for {
-      Production(lhs, rhs) <- grammar.findProductionsWithHead(edge.found)
+      Production(lhs, rhs) <- grammar.findProductionsWithHead(edge.found.name)
     } yield if (rhs.tail.isEmpty) Passive(edge.start, edge.end, lhs, Node(lhs, List(edge.tree))): Edge
-    else Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree)): Edge
+            else Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree)): Edge
 
   def combine(chart: Chart, edge: Passive): Set[Edge] =
     if (edge.start <= 0) Set.empty
@@ -62,6 +58,6 @@ object ChartParser {
       Active(start, end, leftTerm, prefix :: rest, parsedPrefix) <- chart(edge.start - 1) //todo find edges with prefix
       if prefix.name == edge.found.name && end == edge.start
     } yield if (rest.isEmpty) Passive(start, edge.end, leftTerm, Node(leftTerm, parsedPrefix :+ edge.tree)): Edge
-      else Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree): Edge
+            else Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree): Edge
 
 }
