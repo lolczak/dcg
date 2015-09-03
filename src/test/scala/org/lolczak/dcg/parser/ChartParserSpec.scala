@@ -58,11 +58,19 @@ class ChartParserSpec extends WordSpec with Matchers {
 
   }
 
+  "A parser" should {
+    "find parse tree for correct utterance" in {
+      //when
+      val result = ChartParser.parseDcg(TestData.grammar, TestData.lexicon, TestData.uterrance)
+      //then
+      result should have size 1
+      result.head should matchPattern {
+        case Node(Term("S", _), List(Node(Term("NP", _), List(Node(Term("Det", _), List(Leaf(these))), Node(Term("Noun", _), List(Leaf("planes"))))), Node(Term("VP", _), List(Node(Term("VP", _), List(Node(Term("Verb", _), List(Leaf(fly))))), Node(Term("PP", _), List(Node(Term("Prep", _), List(Leaf("like"))), Node(Term("NP", _), List(Node(Term("Det", _), List(Leaf("an"))), Node(Term("Noun", _), List(Leaf("arrow"))))))))))) =>
+      }
+    }
 
-  //given
+    //    "return empty list for incorrrect utterance" in {}
+  }
 
-  //when
-
-  //then
 
 }
