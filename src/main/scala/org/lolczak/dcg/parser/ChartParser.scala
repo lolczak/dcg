@@ -48,7 +48,7 @@ object ChartParser {
 
   def predict(grammar: Grammar, edge: Passive): Set[Edge] =
     for {
-      Production(lhs, rhs) <- grammar.findProductionsWithHead(edge.found.name)
+      Production(lhs, rhs) <- grammar.findStartingWith(edge.found.name)
     } yield if (rhs.tail.isEmpty) Passive(edge.start, edge.end, lhs, Node(lhs, List(edge.tree))): Edge
             else Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree)): Edge
 

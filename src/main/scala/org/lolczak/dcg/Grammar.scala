@@ -6,7 +6,7 @@ case class Grammar(start: String, productions: List[Production]) {
 
   private val prefixes: Map[String, Set[Production]] = productions.map(p => (p.rhs.head.name, p)).groupBy(_._1).mapValues(t => Set(t.map(_._2): _*)).withDefaultValue(Set.empty)
 
-  def findProductionsWithHead(symbol: String): Set[Production] = prefixes(symbol)
+  def findStartingWith(symbol: String): Set[Production] = prefixes(symbol)
 
 }
 
