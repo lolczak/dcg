@@ -6,15 +6,13 @@ import scala.annotation.tailrec
 
 object ChartParser {
 
-  type State = Set[Edge] //todo refactor
-
   type Chart = IndexedSeq[State]
 
   def parseDcg(grammar: Grammar, lexicon: Lexicon, utterance: String): List[ParseTree[Term, String]] = {
     val splittedUtterance = utterance.split(' ').toList
     val finalChart = buildChart(grammar, lexicon, splittedUtterance)
     for {
-      Passive(0, end, found, tree) <- finalChart.last.toList
+      Passive(0, end, found, tree) <- finalChart.last.edges.toList
       if found.name == grammar.start
     } yield tree
   }
@@ -27,7 +25,7 @@ object ChartParser {
       case _ => Set.empty
     }
     initialChart.foldLeft(IndexedSeq.empty[State]) {
-      case (prefix, currentState) => prefix :+ generate(f(prefix), currentState)
+      case (prefix, currentState) => prefix :+ State(generate(f(prefix), currentState.edges))
     }
   }
 
@@ -43,7 +41,7 @@ object ChartParser {
 
   def scan(word: String, index: Int, lexicon: Lexicon): State = {
     require(index >= 0)
-    lexicon.findAllForms(word).map(t => Passive(index, index + 1, t, Node(t, List(Leaf(word)))))
+    State(lexicon.findAllForms(word).map(t => Passive(index, index + 1, t, Node(t, List(Leaf(word))))))
   }
 
   def predict(grammar: Grammar, edge: Passive): Set[Edge] =
@@ -55,8 +53,8 @@ object ChartParser {
   def combine(chart: Chart, edge: Passive): Set[Edge] =
     if (edge.start <= 0) Set.empty
     else for {
-      Active(start, end, leftTerm, prefix :: rest, parsedPrefix) <- chart(edge.start - 1) //todo find edges with prefix
-      if prefix.name == edge.found.name && end == edge.start
+      Active(start, end, leftTerm, prefix :: rest, parsedPrefix) <- chart(edge.start - 1).findActiveStartingWith(edge.found.name)
+      if end == edge.start
     } yield if (rest.isEmpty) Passive(start, edge.end, leftTerm, Node(leftTerm, parsedPrefix :+ edge.tree)): Edge
             else Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree): Edge
 

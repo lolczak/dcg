@@ -14,10 +14,10 @@ class ChartParserSpec extends WordSpec with Matchers {
       //when
       val result = ChartParser.scan("fly", 1, lexicon)
       //then
-      result shouldBe Set(
+      result shouldBe State(Set(
         Passive(1, 2, Term("Noun"), Node(Term("Noun"), List(Leaf("fly")))),
         Passive(1, 2, Term("Verb"), Node(Term("Verb"), List(Leaf("fly"))))
-      )
+      ))
     }
 
   }
@@ -43,10 +43,10 @@ class ChartParserSpec extends WordSpec with Matchers {
     "combine active nodes with passive ones" in {
       //given
       val edge = Passive(1, 2, Term("Verb"), Leaf("tail"))
-      val chart: Chart = IndexedSeq(Set(
+      val chart: Chart = IndexedSeq(State(Set(
         Active(0, 1, Term("VP"), List(Term("Verb")), List(Leaf("prefix"))),
         Active(0, 1, Term("VP"), List(Term("Verb"), Term("PP")), List(Leaf("prefix")))
-      ), Set())
+      )), State(Set()))
       //when
       val result = ChartParser.combine(chart, edge)
       //then
