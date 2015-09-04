@@ -1,8 +1,12 @@
 package org.lolczak.dcg.parser
 
+import org.lolczak.dcg.Grammar._
 import org.lolczak.dcg.parser.ChartParser.Chart
-import org.lolczak.dcg.{Lexicon, Term}
+import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
+import org.lolczak.dcg.{FVariable, Grammar, Lexicon, Term, _}
 import org.scalatest.{Matchers, WordSpec}
+
+import scala.Predef.{augmentString => _, wrapString => _, _}
 
 class ChartParserSpec extends WordSpec with Matchers {
 
@@ -59,9 +63,47 @@ class ChartParserSpec extends WordSpec with Matchers {
   }
 
   "A parser" should {
+
+    "match rhs terms with matching features" in {
+      //given
+      val grammar = Grammar("S",
+        List(
+          "NP"("Num" -> FConst("pl")) ~>("Det"("Num" -> FConst("pl")), "Noun"("Num" -> FConst("pl"))),
+          "NP"("Num" -> FConst("sg")) ~>("Det"("Num" -> FConst("sg")), "Noun"("Num" -> FConst("sg"))),
+          "PP" ~>("Prep", "NP")
+        )
+      )
+      //when
+      val result = ChartParser.parseDcg(grammar, TestData.lexicon, "these planes", Some("NP"))
+      //then
+      val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
+      result should have size 1
+      result.head should matchPattern {
+        case Node(Term("NP", ExpectedFeatures), _) =>
+      }
+    }
+
+    "bind variables when they are consistent" in {
+      //given
+      val grammar = Grammar("S",
+        List(
+          "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n"))),
+          "PP" ~>("Prep", "NP")
+        )
+      )
+      //when
+      val result = ChartParser.parseDcg(grammar, TestData.lexicon, "these planes", Some("NP"))
+      //then
+      val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
+      result should have size 1
+      result.head should matchPattern {
+        case Node(Term("S", ExpectedFeatures), _) =>
+      }
+    }
+
     "find parse tree for correct utterance" in {
       //when
-      val result = ChartParser.parseDcg(TestData.grammar, TestData.lexicon, TestData.uterrance)
+      val result = ChartParser.parseDcg(TestData.grammar, TestData.lexicon, TestData.utterance)
       //then
       result should have size 1
       result.head should matchPattern {
@@ -69,8 +111,13 @@ class ChartParserSpec extends WordSpec with Matchers {
       }
     }
 
-    //    "return empty list for incorrrect utterance" in {}
-  }
+   "return empty list for incorrrect utterance" in {
+     //when
+     val result = ChartParser.parseDcg(TestData.grammar, TestData.lexicon, TestData.incorrectUtterance)
+     //then
+     result shouldBe empty
+   }
 
+  }
 
 }

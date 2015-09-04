@@ -6,7 +6,6 @@ import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 
 import scala.Predef.{augmentString => _, wrapString => _, _}
 
-
 object TestData {
 
   val lexicon = new Lexicon(
@@ -14,6 +13,7 @@ object TestData {
     "like" -> Set[Term]("Verb", "Prep"),
     "arrow" -> Set[Term]("Noun"("Num" -> FConst("sg"))),
     "these" -> Set[Term]("Det"("Num" -> FConst("pl"))),
+    "this" -> Set[Term]("Det"("Num" -> FConst("sg"))),
     "planes" -> Set[Term]("Noun"("Num" -> FConst("pl"))),
     "an" -> Set[Term]("Det"("Num" -> FConst("sg")))
   )
@@ -31,6 +31,8 @@ object TestData {
     )
   )
 
-  val uterrance = "these planes fly like an arrow"
+  val utterance = "these planes fly like an arrow"
+
+  val incorrectUtterance = "this planes fly like an arrow"
 
 }

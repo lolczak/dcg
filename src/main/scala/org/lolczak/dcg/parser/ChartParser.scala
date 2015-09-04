@@ -1,5 +1,6 @@
 package org.lolczak.dcg.parser
 
+import org.lolczak.dcg.parser.language.binding.VarAssignments
 import org.lolczak.dcg.{Grammar, Lexicon, Production, Term}
 
 import scala.annotation.tailrec
@@ -8,12 +9,12 @@ object ChartParser {
 
   type Chart = IndexedSeq[State]
 
-  def parseDcg(grammar: Grammar, lexicon: Lexicon, utterance: String): List[ParseTree[Term, String]] = {
+  def parseDcg(grammar: Grammar, lexicon: Lexicon, utterance: String, rootSymbol: Option[String] = None): List[ParseTree[Term, String]] = {
     val splittedUtterance = utterance.split(' ').toList
     val finalChart = buildChart(grammar, lexicon, splittedUtterance)
     for {
       Passive(0, end, found, tree) <- finalChart.last.edges.toList
-      if found.name == grammar.start
+      if found.name == rootSymbol.getOrElse(grammar.start)
     } yield tree
   }
 
@@ -47,6 +48,7 @@ object ChartParser {
   def predict(grammar: Grammar, edge: Passive): Set[Edge] =
     for {
       Production(lhs, rhs) <- grammar.findStartingWith(edge.found.name)
+      if rhs.head.matches(edge.found) //todo refactor feature agreement
     } yield if (rhs.tail.isEmpty) Passive(edge.start, edge.end, lhs, Node(lhs, List(edge.tree))): Edge
             else Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree)): Edge
 
@@ -54,8 +56,15 @@ object ChartParser {
     if (edge.start <= 0) Set.empty
     else for {
       Active(start, end, leftTerm, prefix :: rest, parsedPrefix) <- chart(edge.start - 1).findActiveStartingWith(edge.found.name)
-      if end == edge.start
+      if end == edge.start && prefix.matches(edge.found) //todo refactor feature agreement
     } yield if (rest.isEmpty) Passive(start, edge.end, leftTerm, Node(leftTerm, parsedPrefix :+ edge.tree)): Edge
             else Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree): Edge
+
+//  def createPassiveEdge(start: Int, end: Int, lhs: Term, rhs: List[ParseTree[Term, String]]): Edge = {
+//    val assignments= rhs.map {
+//      case _: Leaf => VarAssignments.empty
+//      case node: Node[Term, String] => VarAssignments.fromFStruct(node.term.fStruct)
+//    }
+//  }
 
 }

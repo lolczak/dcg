@@ -7,6 +7,11 @@ sealed trait Edge {
   val isPassive: Boolean
 }
 
+case object NullEdge extends Edge {
+  override val isActive: Boolean = false
+  override val isPassive: Boolean = false
+}
+
 case class Passive(start: Int, end: Int, found: Term, tree: ParseTree[Term, String]) extends Edge {
   override val isActive: Boolean = false
   override val isPassive: Boolean = true

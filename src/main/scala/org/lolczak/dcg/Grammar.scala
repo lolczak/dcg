@@ -14,9 +14,31 @@ case class Production(lhs: Term, rhs: List[Term])
 
 case class LexProduction(lhs: Term, rhs: List[String])
 
-case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty)
+case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty) {
 
-case class FeatureStruct(features: Map[String, FValue])
+  def matches(that: Term): Boolean =
+    this.name == that.name && (this.fStruct matches that.fStruct)
+
+}
+
+case class FeatureStruct(features: Map[String, FValue]) {
+
+  def matches(that: FeatureStruct): Boolean = {
+    val keys = this.features.keySet
+    val isConsistent: (FValue, FValue) => Boolean = {
+      case (FConst(c1), FConst(c2)) => c1 == c2
+      case _ => true
+    }
+    keys.forall { name =>
+      val consistent = for {
+        v1 <- this.features.get(name)
+        v2 <- that.features.get(name)
+      } yield isConsistent(v1, v2)
+      consistent.getOrElse(true)
+    }
+  }
+
+}
 
 sealed trait FValue
 case class FConst(value: String) extends FValue
