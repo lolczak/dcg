@@ -1,4 +1,4 @@
-package org.lolczak.dcg.parser
+package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.Term
 

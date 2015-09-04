@@ -1,8 +1,9 @@
-package org.lolczak.dcg.parser
+package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.Grammar._
-import org.lolczak.dcg.parser.ChartParser.Chart
+import org.lolczak.dcg.parser.TestData
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
+import org.lolczak.dcg.parser.language.ChartParser.Chart
 import org.lolczak.dcg.{FVariable, Grammar, Lexicon, Term, _}
 import org.scalatest.{Matchers, WordSpec}
 

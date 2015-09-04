@@ -1,6 +1,6 @@
-package org.lolczak.dcg.parser
+package org.lolczak.dcg.parser.language
 
-import org.lolczak.dcg.parser.language.binding.VarAssignments
+import org.lolczak.dcg.parser._
 import org.lolczak.dcg.{Grammar, Lexicon, Production, Term}
 
 import scala.annotation.tailrec

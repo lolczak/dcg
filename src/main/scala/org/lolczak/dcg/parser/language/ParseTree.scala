@@ -1,4 +1,4 @@
-package org.lolczak.dcg.parser
+package org.lolczak.dcg.parser.language
 
 sealed trait ParseTree[+A,+B]
 case class Leaf[+A,+B](value:B) extends ParseTree[A,B]

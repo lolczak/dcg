@@ -1,4 +1,4 @@
-package org.lolczak.dcg.parser
+package org.lolczak.dcg.parser.language
 
 case class State(edges: Set[Edge]) {
 
