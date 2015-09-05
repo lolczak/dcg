@@ -18,7 +18,7 @@ case class VarAssignments(assignments: Map[String, FValue]) {
     } yield (varName, left, right)
     val inconsistents = tuples.find {
       case (varName, left, right) =>
-        val diff = for (l<-left; r<-right) yield (l!=r)
+        val diff = for (l<-left; r<-right) yield l!=r
         diff.getOrElse(false)
     } map (_._1)
     if (inconsistents.nonEmpty) -\/(s"Inconsistency for $inconsistents")

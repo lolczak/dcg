@@ -49,18 +49,25 @@ object ChartParser {
   def predict(grammar: Grammar, edge: Passive): Set[Edge] =
     for {
       p@Production(lhs, rhs) <- grammar.findStartingWith(edge.found.name)
-      newEdge = if (rhs.tail.isEmpty) VarAssignments.createPassive(edge.start, edge.end, p, List(edge.tree)) //Some(Passive(edge.start, edge.end, lhs, Node(lhs, List(edge.tree))))
-                else Some(Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree), p))
-      if FeatureAgreement.isConsistent(rhs.head, edge.found) && newEdge.isDefined
-    } yield newEdge.get : Edge
+      maybeNewEdge = tryCreatePredictedEdge(edge, p, lhs, rhs)
+      if FeatureAgreement.isConsistent(rhs.head, edge.found) && maybeNewEdge.isDefined
+    } yield maybeNewEdge.get
+
+  def tryCreatePredictedEdge(edge: Passive, p: Production, lhs: Term, rhs: List[Term]): Option[Edge] = {
+    if (rhs.tail.isEmpty) VarAssignments.createPassive(edge.start, edge.end, p, List(edge.tree))
+    else Some(Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree), p))
+  }
 
   def combine(chart: Chart, edge: Passive): Set[Edge] =
     if (edge.start <= 0) Set.empty
     else for {
       Active(start, end, leftTerm, prefix :: rest, parsedPrefix, p) <- chart(edge.start - 1).findActiveStartingWith(edge.found.name)
-      newEdge =  if (rest.isEmpty)  VarAssignments.createPassive(start, edge.end, p, parsedPrefix :+ edge.tree) //Some(Passive(start, edge.end, leftTerm, Node(leftTerm, parsedPrefix :+ edge.tree)))
-                 else Some(Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p))
-      if end == edge.start && FeatureAgreement.isConsistent(prefix, edge.found) && newEdge.isDefined
-    } yield newEdge.get : Edge
+      maybeNewEdge = tryCreateCombinedEdge(edge, start, leftTerm, rest, parsedPrefix, p)
+      if end == edge.start && FeatureAgreement.isConsistent(prefix, edge.found) && maybeNewEdge.isDefined
+    } yield maybeNewEdge.get
 
+  def tryCreateCombinedEdge(edge: Passive, start: Int, leftTerm: Term, rest: List[Term], parsedPrefix: List[ParseTree[Term, String]], p: Production): Option[Edge] = {
+    if (rest.isEmpty) VarAssignments.createPassive(start, edge.end, p, parsedPrefix :+ edge.tree)
+    else Some(Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p))
+  }
 }
