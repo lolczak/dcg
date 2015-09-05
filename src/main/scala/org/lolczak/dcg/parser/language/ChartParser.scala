@@ -49,15 +49,17 @@ object ChartParser {
     for {
       p@Production(lhs, rhs) <- grammar.findStartingWith(edge.found.name)
       if FeatureAgreement.isConsistent(rhs.head, edge.found)
-    } yield if (rhs.tail.isEmpty) Passive(edge.start, edge.end, lhs, Node(lhs, List(edge.tree))): Edge
-            else Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree), p): Edge
+      newEdge = if (rhs.tail.isEmpty) Passive(edge.start, edge.end, lhs, Node(lhs, List(edge.tree))): Edge
+                else Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree), p): Edge
+    } yield newEdge
 
   def combine(chart: Chart, edge: Passive): Set[Edge] =
     if (edge.start <= 0) Set.empty
     else for {
       Active(start, end, leftTerm, prefix :: rest, parsedPrefix, p) <- chart(edge.start - 1).findActiveStartingWith(edge.found.name)
       if end == edge.start && FeatureAgreement.isConsistent(prefix, edge.found)
-    } yield if (rest.isEmpty) Passive(start, edge.end, leftTerm, Node(leftTerm, parsedPrefix :+ edge.tree)): Edge
-            else Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p): Edge
+      newEdge =  if (rest.isEmpty) Passive(start, edge.end, leftTerm, Node(leftTerm, parsedPrefix :+ edge.tree)): Edge
+                 else Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p): Edge
+    } yield newEdge
 
 }
