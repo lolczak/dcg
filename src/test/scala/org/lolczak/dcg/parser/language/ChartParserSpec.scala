@@ -37,7 +37,7 @@ class ChartParserSpec extends WordSpec with Matchers {
       val result = ChartParser.predict(grammar, edge)
       //then
       result should contain only(
-        Active(0, 1, Term("VP"), List(Term("NP")), List(Leaf("fly"))),
+        Active(0, 1, Term("VP"), List(Term("NP")), List(Leaf("fly")), "VP" ~>("Verb", "NP")),
         Passive(0, 1, Term("VP"), Node(Term("VP"), List(Leaf("fly"))))
         )
     }
@@ -48,15 +48,16 @@ class ChartParserSpec extends WordSpec with Matchers {
     "combine active nodes with passive ones" in {
       //given
       val edge = Passive(1, 2, Term("Verb"), Leaf("tail"))
+      val testProduction = "NP"("Num" -> FVariable("n")) ~> "Noun"("Num" -> FVariable("n"))
       val chart: Chart = IndexedSeq(State(Set(
-        Active(0, 1, Term("VP"), List(Term("Verb")), List(Leaf("prefix"))),
-        Active(0, 1, Term("VP"), List(Term("Verb"), Term("PP")), List(Leaf("prefix")))
+        Active(0, 1, Term("VP"), List(Term("Verb")), List(Leaf("prefix")), testProduction),
+        Active(0, 1, Term("VP"), List(Term("Verb"), Term("PP")), List(Leaf("prefix")), testProduction)
       )), State(Set()))
       //when
       val result = ChartParser.combine(chart, edge)
       //then
       result should contain only(
-        Active(0, 2, Term("VP"), List(Term("PP")), List(Leaf("prefix"), Leaf("tail"))),
+        Active(0, 2, Term("VP"), List(Term("PP")), List(Leaf("prefix"), Leaf("tail")), testProduction),
         Passive(0, 2, Term("VP"), Node(Term("VP"), List(Leaf("prefix"), Leaf("tail"))))
         )
     }

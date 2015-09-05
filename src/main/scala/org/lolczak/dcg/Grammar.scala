@@ -18,10 +18,18 @@ case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty)
 
 case class FeatureStruct(features: Map[String, FValue])
 
-sealed trait FValue
-case class FConst(value: String) extends FValue
-case class FVariable(name: String) extends FValue
-case class FList(elements: List[FValue]) extends FValue
+sealed trait FValue {
+  val isVariable: Boolean
+}
+case class FConst(value: String) extends FValue {
+  override val isVariable: Boolean = false
+}
+case class FVariable(name: String) extends FValue {
+  override val isVariable: Boolean = true
+}
+case class FList(elements: List[FValue]) extends FValue {
+  override val isVariable: Boolean = false
+}
 
 object FeatureStruct {
   val empty = FeatureStruct(Map.empty)
