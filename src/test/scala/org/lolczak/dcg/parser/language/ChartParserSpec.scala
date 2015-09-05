@@ -47,7 +47,7 @@ class ChartParserSpec extends WordSpec with Matchers {
   "A completer" should {
     "combine active nodes with passive ones" in {
       //given
-      val edge = Passive(1, 2, Term("Verb"), Leaf("tail"))
+      val edge = Passive(1, 2, Term("Verb"), Node(Term("Verb"), List(Leaf("tail"))))
       val testProduction = "NP"("Num" -> FVariable("n")) ~> "Noun"("Num" -> FVariable("n"))
       val chart: Chart = IndexedSeq(State(Set(
         Active(0, 1, Term("VP"), List(Term("Verb")), List(Leaf("prefix")), testProduction),
@@ -87,7 +87,7 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "bind variables when they are consistent" in {
       //given
-      val grammar = Grammar("S",
+      val grammar = Grammar("NP",
         List(
           "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n"))),
           "PP" ~>("Prep", "NP")
@@ -99,7 +99,7 @@ class ChartParserSpec extends WordSpec with Matchers {
       val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
       result should have size 1
       result.head should matchPattern {
-        case Node(Term("S", ExpectedFeatures), _) =>
+        case Node(Term("NP", ExpectedFeatures), _) =>
       }
     }
 

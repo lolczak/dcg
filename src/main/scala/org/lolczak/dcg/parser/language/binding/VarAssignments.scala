@@ -23,7 +23,7 @@ case class VarAssignments(assignments: Map[String, FValue]) {
     } map (_._1)
     if (inconsistents.nonEmpty) -\/(s"Inconsistency for $inconsistents")
     else {
-      val pairs: Set[(String, FValue)] = tuples.map(x=>(x._1, x._2.orElse(x._2).get))
+      val pairs: Set[(String, FValue)] = tuples.map(x=>(x._1, x._2.orElse(x._3).get))
       val map: Map[String, FValue] = pairs.foldLeft(Map.empty[String, FValue]) {
         case (acc, pair) => acc.+(pair)
       }

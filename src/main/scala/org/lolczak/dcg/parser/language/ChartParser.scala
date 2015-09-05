@@ -1,6 +1,7 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.parser.language.agreement.FeatureAgreement
+import org.lolczak.dcg.parser.language.binding.VarAssignments
 import org.lolczak.dcg.{Grammar, Lexicon, Production, Term}
 
 import scala.annotation.tailrec
@@ -48,18 +49,18 @@ object ChartParser {
   def predict(grammar: Grammar, edge: Passive): Set[Edge] =
     for {
       p@Production(lhs, rhs) <- grammar.findStartingWith(edge.found.name)
-      if FeatureAgreement.isConsistent(rhs.head, edge.found)
-      newEdge = if (rhs.tail.isEmpty) Passive(edge.start, edge.end, lhs, Node(lhs, List(edge.tree))): Edge
-                else Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree), p): Edge
-    } yield newEdge
+      newEdge = if (rhs.tail.isEmpty) VarAssignments.createPassive(edge.start, edge.end, p, List(edge.tree)) //Some(Passive(edge.start, edge.end, lhs, Node(lhs, List(edge.tree))))
+                else Some(Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree), p))
+      if FeatureAgreement.isConsistent(rhs.head, edge.found) && newEdge.isDefined
+    } yield newEdge.get : Edge
 
   def combine(chart: Chart, edge: Passive): Set[Edge] =
     if (edge.start <= 0) Set.empty
     else for {
       Active(start, end, leftTerm, prefix :: rest, parsedPrefix, p) <- chart(edge.start - 1).findActiveStartingWith(edge.found.name)
-      if end == edge.start && FeatureAgreement.isConsistent(prefix, edge.found)
-      newEdge =  if (rest.isEmpty) Passive(start, edge.end, leftTerm, Node(leftTerm, parsedPrefix :+ edge.tree)): Edge
-                 else Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p): Edge
-    } yield newEdge
+      newEdge =  if (rest.isEmpty)  VarAssignments.createPassive(start, edge.end, p, parsedPrefix :+ edge.tree) //Some(Passive(start, edge.end, leftTerm, Node(leftTerm, parsedPrefix :+ edge.tree)))
+                 else Some(Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p))
+      if end == edge.start && FeatureAgreement.isConsistent(prefix, edge.found) && newEdge.isDefined
+    } yield newEdge.get : Edge
 
 }
