@@ -31,14 +31,14 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "create edges for all productions having prefix equal to provided passive edge" in {
       //given
-      val edge = Passive(0, 1, Term("Verb"), Leaf("fly"))
+      val edge = Passive(0, 1, Term("Verb"), Node(Term("Verb"), List(Leaf("fly"))))
       val grammar = TestData.grammar
       //when
       val result = ChartParser.predict(grammar, edge)
       //then
       result should contain only(
-        Active(0, 1, Term("VP"), List(Term("NP")), List(Leaf("fly")), "VP" ~>("Verb", "NP")),
-        Passive(0, 1, Term("VP"), Node(Term("VP"), List(Leaf("fly"))))
+        Active(0, 1, Term("VP"), List(Term("NP")), List(Node(Term("Verb"), List(Leaf("fly")))), "VP" ~>("Verb", "NP")),
+        Passive(0, 1, Term("VP"), Node(Term("VP"), List(Node(Term("Verb"), List(Leaf("fly"))))))
         )
     }
 
