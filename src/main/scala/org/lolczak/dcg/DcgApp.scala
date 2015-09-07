@@ -2,12 +2,13 @@ package org.lolczak.dcg
 
 import java.io.File
 
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.lolczak.dcg.parser.grammar.GrammarParser
 import org.lolczak.dcg.parser.language.{Leaf, Node, ChartParser, ParseTree}
 
 import scala.io.Source
 
-object DcgApp extends App {
+object DcgApp extends App with LazyLogging {
 
   val grammarPath = args(0)
 
@@ -16,7 +17,9 @@ object DcgApp extends App {
     System.exit(1)
   }
   val utterance = args(1)
+  logger.info(s"Parsing grammar $grammarPath")
   val (lexicon, grammar) = GrammarParser.parseGrammar(Source.fromFile(new File(grammarPath), "UTF-8").mkString).get
+  logger.info(s"Parsing language... ")
   val results = ChartParser.parseDcg(grammar, lexicon, utterance)
 
   def printHelp() = {
