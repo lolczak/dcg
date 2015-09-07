@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.language.agreement
 
-import org.lolczak.dcg.{FConst, FValue, FeatureStruct, Term}
+import org.lolczak.dcg.{FConst, FeatureRhsOperand, FeatureStruct, Term}
 
 object FeatureAgreement {
 
@@ -10,7 +10,7 @@ object FeatureAgreement {
 
   def featuresAreConsistent(feat1: FeatureStruct, feat2: FeatureStruct): Boolean = {
     val keys = feat1.features.keySet //++ feat2.features.keySet
-    val checkConsistency: (FValue, FValue) => Boolean = {
+    val checkConsistency: (FeatureRhsOperand, FeatureRhsOperand) => Boolean = {
       case (FConst(c1), FConst(c2)) => c1 == c2
       case _ => true
     }

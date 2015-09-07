@@ -5,7 +5,7 @@ import org.lolczak.dcg.parser.language.{Node, ParseTree, Passive}
 
 import scalaz.{-\/, \/, \/-}
 
-case class VarAssignments(assignments: Map[String, FValue]) {
+case class VarAssignments(assignments: Map[String, FeatureRhsOperand]) {
 
   /**
    * Combines variable assignments.
@@ -15,7 +15,7 @@ case class VarAssignments(assignments: Map[String, FValue]) {
    */
   def combine(that: VarAssignments): VarAssignments.Error \/ VarAssignments = {
     val varNames: Set[String] = this.assignments.keySet ++ that.assignments.keySet
-    val tuples: Set[(String, Option[FValue], Option[FValue])] = for {
+    val tuples: Set[(String, Option[FeatureRhsOperand], Option[FeatureRhsOperand])] = for {
       varName <- varNames
       left = this.assignments.get(varName)
       right = that.assignments.get(varName)
@@ -27,8 +27,8 @@ case class VarAssignments(assignments: Map[String, FValue]) {
     } map (_._1)
     if (inconsistents.nonEmpty) -\/(s"Inconsistency for $inconsistents")
     else {
-      val pairs: Set[(String, FValue)] = tuples.map(x => (x._1, x._2.orElse(x._3).get))
-      val map: Map[String, FValue] = pairs.foldLeft(Map.empty[String, FValue]) {
+      val pairs: Set[(String, FeatureRhsOperand)] = tuples.map(x => (x._1, x._2.orElse(x._3).get))
+      val map: Map[String, FeatureRhsOperand] = pairs.foldLeft(Map.empty[String, FeatureRhsOperand]) {
         case (acc, pair) => acc.+(pair)
       }
       \/-(VarAssignments(map))
@@ -89,7 +89,7 @@ object VarAssignments {
    */
   def fromFeatures(ruleFeatures: FeatureStruct, parsedFeatures: FeatureStruct): VarAssignments = {
     val varNames = ruleFeatures.features.filter(_._2.isVariable) map { case (featName, FVariable(varName)) => (varName, featName) }
-    val assignments: Map[String, FValue] = for {
+    val assignments: Map[String, FeatureRhsOperand] = for {
       (varName, featName) <- varNames
       if parsedFeatures.features.contains(featName) && !parsedFeatures.features(featName).isVariable //todo encapsulate it
     } yield (varName, parsedFeatures.features(featName))
@@ -105,11 +105,11 @@ object VarAssignments {
    * @return
    */
   def bind(termFeatures: FeatureStruct, assignments: VarAssignments): Error \/ FeatureStruct = {
-    val map = termFeatures.features.foldLeft[Error \/ Map[String, FValue]](\/-(Map.empty)) {
+    val map = termFeatures.features.foldLeft[Error \/ Map[String, FeatureRhsOperand]](\/-(Map.empty)) {
       case (result@ -\/(_), _) => result
       case (\/-(feats), (feature, FVariable(varName))) =>
         val value = assignments.find(varName)
-        value.fold[Error \/ Map[String, FValue]](-\/(s"Cannot find value for variable $varName"))(value => \/-(feats.+((feature, value))))
+        value.fold[Error \/ Map[String, FeatureRhsOperand]](-\/(s"Cannot find value for variable $varName"))(value => \/-(feats.+((feature, value))))
       case (\/-(feats), tuple) => \/-(feats.+(tuple))
     }
     map.map(FeatureStruct(_))

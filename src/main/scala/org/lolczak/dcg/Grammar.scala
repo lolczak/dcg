@@ -16,18 +16,19 @@ case class LexProduction(lhs: Term, rhs: List[String])
 
 case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty)
 
-case class FeatureStruct(features: Map[String, FValue])
+case class FeatureStruct(features: Map[String, FeatureRhsOperand])
 
-sealed trait FValue {
+sealed trait FeatureRhsOperand {
   val isVariable: Boolean
 }
-case class FConst(value: String) extends FValue {
-  override val isVariable: Boolean = false
-}
-case class FVariable(name: String) extends FValue {
+case class FVariable(name: String) extends FeatureRhsOperand {
   override val isVariable: Boolean = true
 }
-case class FList(elements: List[FValue]) extends FValue {
+sealed trait FeatureValue extends FeatureRhsOperand
+case class FConst(value: String) extends FeatureValue {
+  override val isVariable: Boolean = false
+}
+case class FList(elements: List[FeatureRhsOperand]) extends FeatureValue {
   override val isVariable: Boolean = false
 }
 
@@ -48,7 +49,7 @@ object Grammar {
   }
 
   implicit class TermString(name: String) {
-    def apply(features: (String, FValue)*) = Term(name, FeatureStruct(Map(features: _*)))
+    def apply(features: (String, FeatureRhsOperand)*) = Term(name, FeatureStruct(Map(features: _*)))
   }
 
 }
