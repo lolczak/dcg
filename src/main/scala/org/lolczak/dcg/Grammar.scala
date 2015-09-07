@@ -14,9 +14,19 @@ case class Production(lhs: Term, rhs: List[Term])
 
 case class LexProduction(lhs: Term, rhs: List[String])
 
-case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty)
+case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty) {
 
-case class FeatureStruct(features: Map[String, FeatureRhsOperand])
+  override def toString: String = name + fStruct.toString
+
+}
+
+case class FeatureStruct(features: Map[String, FeatureRhsOperand]) {
+
+  override def toString: String =
+    if (features.isEmpty) ""
+    else features.mkString("[", ",", "]")
+
+}
 
 sealed trait FeatureRhsOperand {
   val isVariable: Boolean

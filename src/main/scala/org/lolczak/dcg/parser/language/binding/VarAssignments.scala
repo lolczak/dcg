@@ -70,7 +70,7 @@ object VarAssignments {
       //todo loging add to validator
       val edge = for {
         assignment <- finalAss
-        bindedFeatures <- bind(production.lhs.fStruct, assignment)
+        bindedFeatures <- substitute(production.lhs.fStruct, assignment)
         term = Term(production.lhs.name, bindedFeatures)
         tree = Node(term, parsedTerms)
       } yield Passive(start, end, term, tree)
@@ -104,7 +104,7 @@ object VarAssignments {
    * @param assignments
    * @return
    */
-  def bind(termFeatures: FeatureStruct, assignments: VarAssignments): Error \/ FeatureStruct = {
+  def substitute(termFeatures: FeatureStruct, assignments: VarAssignments): Error \/ FeatureStruct = {
     val map = termFeatures.features.foldLeft[Error \/ Map[String, FeatureRhsOperand]](\/-(Map.empty)) {
       case (result@ -\/(_), _) => result
       case (\/-(feats), (feature, FVariable(varName))) =>
