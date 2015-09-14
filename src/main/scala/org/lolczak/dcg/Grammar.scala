@@ -22,6 +22,8 @@ case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty) {
 
 case class FeatureStruct(features: Map[String, FeatureRhsOperand]) {
 
+  def apply(featName: String):Option[FeatureRhsOperand] = features.get(featName)
+
   override def toString: String =
     if (features.isEmpty) ""
     else features.mkString("[", ",", "]")

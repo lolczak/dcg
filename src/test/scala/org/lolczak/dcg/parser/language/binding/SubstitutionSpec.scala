@@ -38,6 +38,21 @@ class SubstitutionSpec extends WordSpec with Matchers {
         result shouldBe None
       }
 
+      "there is no feature in parsed struct" in {
+        //given
+        val ruleFeatures = FeatureStruct(Map(
+          "feat1" -> FVariable("x"),
+          "feat2" -> FVariable("y")
+        ))
+        val parsedFeatures = FeatureStruct(Map(
+          "feat1" -> FConst("test1")
+        ))
+        //when
+        val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
+        //then
+        result shouldBe None
+      }
+
     }
 
     "create most general substitution" when {

@@ -5,10 +5,17 @@ import org.lolczak.dcg.{FeatureStruct, FeatureValue}
 case class VariableAssignment(varName: String, value: FeatureValue)
 
 case class Substitution(assignments: Set[VariableAssignment]) {
-  val substitutionMap: Map[String, FeatureValue] = ???
+  val substitutionMap: Map[String, FeatureValue] = assignments.map(x=> (x.varName, x.value)).toMap
+
+  def add(another: VariableAssignment): Option[Substitution] = {
+    if(substitutionMap.contains(another.varName) && substitutionMap(another.varName) != another.value) None
+    else Some(Substitution(assignments + another))
+  }
 }
 
 object Substitution {
+
+  val empty:Substitution = Substitution(Set.empty)
 
   /**
    * Creates variable assignments based on rule features and features values derived from parsed nodes.
@@ -18,18 +25,17 @@ object Substitution {
    * @return
    */
   def fromFeatures(ruleFeatures: FeatureStruct, parsedFeatures: FeatureStruct): Option[Substitution] = {
-    val bindings = VariableBinding.findVariableBindings(ruleFeatures)
-    //todo implement constraint
-    /*
-    val varNames: Map[String, String] = ruleFeatures.features.filter(_._2.isVariable) map { case (featName, FVariable(varName)) => (varName, featName) }
-    val assignments: Map[String, FeatureRhsOperand] = for {
-      (varName, featName) <- varNames
-      if parsedFeatures.features.contains(featName) && !parsedFeatures.features(featName).isVariable //todo encapsulate it
-    } yield (varName, parsedFeatures.features(featName))
+    val bindings: Set[VariableBinding] = VariableBinding.findVariableBindings(ruleFeatures)
 
-    VarAssignments(assignments)
-     */
-    None
+    bindings.foldLeft[Option[Substitution]](Some(Substitution.empty)) {
+      case (maybeSubstitution, binding) =>
+        for {
+          substitution <- maybeSubstitution
+          value <- parsedFeatures(binding.featureName)
+          if !value.isVariable
+          result <- substitution.add(VariableAssignment(binding.varName, value.asInstanceOf[FeatureValue]))
+        } yield result
+    }
   }
 
 }
