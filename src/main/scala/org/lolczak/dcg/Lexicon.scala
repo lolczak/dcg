@@ -1,6 +1,7 @@
 package org.lolczak.dcg
 
 object Lexicon {
+  
   private def convert(productions: LexProduction*): Map[String, Set[Term]] = {
     val tuples: Seq[(String, Term)] = productions flatMap (item => item.rhs.map(x => (x, item.lhs)))
     val grouped: Map[String, Seq[(String, Term)]] = tuples groupBy (_._1)

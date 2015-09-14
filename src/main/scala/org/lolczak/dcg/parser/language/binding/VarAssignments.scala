@@ -5,6 +5,8 @@ import org.lolczak.dcg.parser.language.{Node, ParseTree, Passive}
 
 import scalaz.{-\/, \/, \/-}
 
+
+
 case class VarAssignments(assignments: Map[String, FeatureRhsOperand]) {
 
   /**
@@ -88,7 +90,7 @@ object VarAssignments {
    * @return
    */
   def fromFeatures(ruleFeatures: FeatureStruct, parsedFeatures: FeatureStruct): VarAssignments = {
-    val varNames = ruleFeatures.features.filter(_._2.isVariable) map { case (featName, FVariable(varName)) => (varName, featName) }
+    val varNames: Map[String, String] = ruleFeatures.features.filter(_._2.isVariable) map { case (featName, FVariable(varName)) => (varName, featName) }
     val assignments: Map[String, FeatureRhsOperand] = for {
       (varName, featName) <- varNames
       if parsedFeatures.features.contains(featName) && !parsedFeatures.features(featName).isVariable //todo encapsulate it

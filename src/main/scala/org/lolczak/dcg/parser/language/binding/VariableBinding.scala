@@ -1,7 +1,20 @@
 package org.lolczak.dcg.parser.language.binding
 
-import org.lolczak.dcg.FeatureValue
+import org.lolczak.dcg.{FeatureStruct, FVariable}
 
-case class VariableBinding(varName: String, value: FeatureValue)
+case class VariableBinding(varName: String, featureName: String)
 
-case class VariableAssignment(varName: String, value: FeatureValue)
+object VariableBinding {
+
+  /**
+   * Finds all variable bindings in productions features.
+   *
+   * @param ruleFeatures
+   * @return
+   */
+  def findVariableBindings(ruleFeatures: FeatureStruct): Set[VariableBinding] =
+    ruleFeatures.features.filter(_._2.isVariable) map {
+      case (featName, FVariable(varName)) => VariableBinding(varName, featName)
+    } toSet
+
+}
