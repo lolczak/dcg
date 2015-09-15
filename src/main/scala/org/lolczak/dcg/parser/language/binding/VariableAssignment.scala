@@ -10,12 +10,15 @@ case class Substitution(private val assignments: Map[String, FeatureValue]) {
 
   def find(varName: String): Option[FeatureValue] = assignments.get(varName)
 
-  //def union(that: Substitution): Option[Substitution]
+  def union(that: Substitution): Option[Substitution] = ???
+
 }
 
 object Substitution {
 
-  val empty = Substitution(Map.empty)
+  val empty = Substitution()
+
+  def apply(elems: (String, FeatureValue)*): Substitution = Substitution(Map(elems: _*))
 
   /**
    * Creates variable assignments based on rule features and features values derived from parsed nodes.

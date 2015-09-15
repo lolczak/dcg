@@ -74,10 +74,10 @@ class SubstitutionSpec extends WordSpec with Matchers {
         val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
         //then
         result shouldBe Some(
-          Substitution(Map(
+          Substitution(
             "x" -> FConst("test1"),
             "y" -> FConst("test2")
-          ))
+          )
         )
       }
 
@@ -99,9 +99,9 @@ class SubstitutionSpec extends WordSpec with Matchers {
         val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
         //then
         result shouldBe Some(
-          Substitution(Map(
+          Substitution(
             "x" -> FConst("test1")
-          ))
+          )
         )
       }
     }
@@ -110,10 +110,10 @@ class SubstitutionSpec extends WordSpec with Matchers {
   "A substitution object" should {
     "find variable by name" in {
       //given
-      val substitution = Substitution(Map(
+      val substitution = Substitution(
         "x" -> FConst("test1"),
         "y" -> FConst("test2")
-      ))
+      )
       //when
       val result = substitution.find("x")
       //then
@@ -122,15 +122,79 @@ class SubstitutionSpec extends WordSpec with Matchers {
 
     "return None if there is no substitution for variable name" in {
       //given
-      val substitution = Substitution(Map(
+      val substitution = Substitution(
         "x" -> FConst("test1"),
         "y" -> FConst("test2")
-      ))
+      )
       //when
       val result = substitution.find("z")
       //then
       result shouldBe None
     }
+
+    "combine two substitution" when {
+      "there is no conflicts" in {
+        //given
+        val substitution1 = Substitution(
+          "x" -> FConst("test1"),
+          "y" -> FConst("test2")
+        )
+        val substitution2 = Substitution(
+          "z" -> FConst("test1")
+        )
+        //when
+        val result = substitution1.union(substitution2)
+        //then
+        result shouldBe Some(
+          Substitution(
+            "x" -> FConst("test1"),
+            "y" -> FConst("test2"),
+            "z" -> FConst("test1")
+          )
+        )
+      }
+
+      "substitutions are consistent" in {
+        //given
+        val substitution1 = Substitution(
+          "x" -> FConst("test1"),
+          "y" -> FConst("test2")
+        )
+        val substitution2 = Substitution(
+          "x" -> FConst("test1"),
+          "z" -> FConst("test1")
+        )
+        //when
+        val result = substitution1.union(substitution2)
+        //then
+        result shouldBe Some(
+          Substitution(
+            "x" -> FConst("test1"),
+            "y" -> FConst("test2"),
+            "z" -> FConst("test1")
+          )
+        )
+      }
+    }
+
+    "not combine two substitution" when {
+      "there is conflict" in {
+        //given
+        val substitution1 = Substitution(
+          "x" -> FConst("test1"),
+          "y" -> FConst("test2")
+        )
+        val substitution2 = Substitution(
+          "x" -> FConst("test1"),
+          "y" -> FConst("test3")
+        )
+        //when
+        val result = substitution1.union(substitution2)
+        //then
+        result shouldBe None
+      }
+    }
+
   }
 
 }
