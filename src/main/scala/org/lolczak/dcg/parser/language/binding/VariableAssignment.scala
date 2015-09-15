@@ -4,18 +4,21 @@ import org.lolczak.dcg.{FeatureStruct, FeatureValue}
 
 case class VariableAssignment(varName: String, value: FeatureValue)
 
-case class Substitution(assignments: Set[VariableAssignment]) {
-  val substitutionMap: Map[String, FeatureValue] = assignments.map(x=> (x.varName, x.value)).toMap
+case class Substitution(private val assignments: Map[String, FeatureValue]) {
 
   def add(another: VariableAssignment): Option[Substitution] = {
-    if(substitutionMap.contains(another.varName) && substitutionMap(another.varName) != another.value) None
-    else Some(Substitution(assignments + another))
+    if (assignments.contains(another.varName) && assignments(another.varName) != another.value) None
+    else Some(Substitution(assignments + ((another.varName, another.value))))
   }
+
+  //def find(varName: String): Option[FConst]
+
+  //def union(that: Substitution): Option[Substitution]
 }
 
 object Substitution {
 
-  val empty:Substitution = Substitution(Set.empty)
+  val empty = Substitution(Map.empty)
 
   /**
    * Creates variable assignments based on rule features and features values derived from parsed nodes.

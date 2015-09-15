@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.language.binding
 
-import org.lolczak.dcg.{FVariable, FConst, FeatureStruct}
+import org.lolczak.dcg.{FConst, FVariable, FeatureStruct}
 import org.scalatest.{Matchers, WordSpec}
 
 class SubstitutionSpec extends WordSpec with Matchers {
@@ -74,9 +74,9 @@ class SubstitutionSpec extends WordSpec with Matchers {
         val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
         //then
         result shouldBe Some(
-          Substitution(Set(
-            VariableAssignment("x", FConst("test1")),
-            VariableAssignment("y", FConst("test2"))
+          Substitution(Map(
+            "x" -> FConst("test1"),
+            "y" -> FConst("test2")
           ))
         )
       }
@@ -99,8 +99,8 @@ class SubstitutionSpec extends WordSpec with Matchers {
         val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
         //then
         result shouldBe Some(
-          Substitution(Set(
-            VariableAssignment("x", FConst("test1"))
+          Substitution(Map(
+            "x" -> FConst("test1")
           ))
         )
       }
