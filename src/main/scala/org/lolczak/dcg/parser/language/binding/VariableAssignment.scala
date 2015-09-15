@@ -2,16 +2,17 @@ package org.lolczak.dcg.parser.language.binding
 
 import org.lolczak.dcg.{FeatureStruct, FeatureValue}
 
+//todo remove it
 case class VariableAssignment(varName: String, value: FeatureValue)
 
 case class Substitution(private val assignments: Map[String, FeatureValue]) {
 
   def add(another: VariableAssignment): Option[Substitution] = {
     if (assignments.contains(another.varName) && assignments(another.varName) != another.value) None
-    else Some(Substitution(assignments + ((another.varName, another.value))))
+    else Some(Substitution(assignments + (another.varName -> another.value)))
   }
 
-  //def find(varName: String): Option[FConst]
+  def find(varName: String): Option[FeatureValue] = assignments.get(varName)
 
   //def union(that: Substitution): Option[Substitution]
 }

@@ -107,4 +107,30 @@ class SubstitutionSpec extends WordSpec with Matchers {
     }
   }
 
+  "A substitution object" should {
+    "find variable by name" in {
+      //given
+      val substitution = Substitution(Map(
+        "x" -> FConst("test1"),
+        "y" -> FConst("test2")
+      ))
+      //when
+      val result = substitution.find("x")
+      //then
+      result shouldBe Some(FConst("test1"))
+    }
+
+    "return None if there is no substitution for variable name" in {
+      //given
+      val substitution = Substitution(Map(
+        "x" -> FConst("test1"),
+        "y" -> FConst("test2")
+      ))
+      //when
+      val result = substitution.find("z")
+      //then
+      result shouldBe None
+    }
+  }
+
 }
