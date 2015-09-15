@@ -4,6 +4,8 @@ import org.lolczak.dcg.{FeatureStruct, FeatureValue}
 
 case class Substitution(private val assignments: Map[String, FeatureValue]) {
 
+  val variables = assignments.keySet
+
   def add(varName: String, value: FeatureValue): Option[Substitution] =
     if (assignments.contains(varName) && assignments(varName) != value) None
     else Some(Substitution(assignments + (varName -> value)))
@@ -12,7 +14,14 @@ case class Substitution(private val assignments: Map[String, FeatureValue]) {
 
   def union(that: Substitution): Option[Substitution] = {
     val consistent = assignments.forall { case (varName, value) => that.find(varName).map(_ == value).getOrElse(true)}
-    if (consistent)  ???
+    if (consistent) {
+      val allVariables = this.variables ++ that.variables
+      val allAssignments = for {
+        varName <- allVariables
+        value = this.find(varName).orElse(that.find(varName)).get
+      } yield (varName, value)
+      Some(Substitution(allAssignments.toMap))
+    }
     else None
   }
 
