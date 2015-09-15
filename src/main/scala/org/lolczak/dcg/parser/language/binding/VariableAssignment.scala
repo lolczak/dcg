@@ -13,18 +13,19 @@ case class Substitution(private val assignments: Map[String, FeatureValue]) {
   def find(varName: String): Option[FeatureValue] = assignments.get(varName)
 
   def union(that: Substitution): Option[Substitution] = {
-    val consistent = assignments.forall { case (varName, value) => that.find(varName).map(_ == value).getOrElse(true)}
-    if (consistent) {
-      val allVariables = this.variables ++ that.variables
-      val allAssignments = for {
-        varName <- allVariables
-        value = this.find(varName).orElse(that.find(varName)).get
-      } yield (varName, value)
-      Some(Substitution(allAssignments.toMap))
-    }
+    val consistent = assignments.forall { case (varName, value) => that.find(varName).map(_ == value).getOrElse(true) }
+    if (consistent) combine(that)
     else None
   }
 
+  private def combine(that: Substitution): Some[Substitution] = {
+    val allVariables = this.variables ++ that.variables
+    val allAssignments = for {
+      varName <- allVariables
+      value = this.find(varName).orElse(that.find(varName)).get
+    } yield (varName, value)
+    Some(Substitution(allAssignments.toMap))
+  }
 }
 
 object Substitution {
