@@ -43,7 +43,6 @@ object Substitution {
    */
   def fromFeatures(ruleFeatures: FeatureStruct, parsedFeatures: FeatureStruct): Option[Substitution] = {
     val bindings: Set[VariableBinding] = VariableBinding.findVariableBindings(ruleFeatures)
-
     bindings.foldLeft[Option[Substitution]](Some(Substitution.empty)) {
       case (maybeSubstitution, binding) =>
         for {

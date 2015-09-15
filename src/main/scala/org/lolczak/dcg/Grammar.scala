@@ -1,5 +1,7 @@
 package org.lolczak.dcg
 
+import org.lolczak.dcg.parser.language.binding.Substitution
+
 import scala.language.implicitConversions
 
 case class Grammar(start: String, productions: List[Production]) {
@@ -20,9 +22,20 @@ case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty) {
 
 }
 
+//todo extract to separate file
 case class FeatureStruct(features: Map[String, FeatureRhsOperand]) {
 
   def apply(featName: String):Option[FeatureRhsOperand] = features.get(featName)
+
+  val containsVariables = features.exists(_._2.isVariable)
+
+  def substitute(substitution: Substitution): FeatureStruct = {
+    val substituted = features.mapValues {
+      case v@FVariable(name) => substitution.find(name).getOrElse(v)
+      case x => x
+    }
+    FeatureStruct(substituted)
+  }
 
   override def toString: String =
     if (features.isEmpty) ""
