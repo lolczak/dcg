@@ -2,15 +2,11 @@ package org.lolczak.dcg.parser.language.binding
 
 import org.lolczak.dcg.{FeatureStruct, FeatureValue}
 
-//todo remove it
-case class VariableAssignment(varName: String, value: FeatureValue)
-
 case class Substitution(private val assignments: Map[String, FeatureValue]) {
 
-  def add(another: VariableAssignment): Option[Substitution] = {
-    if (assignments.contains(another.varName) && assignments(another.varName) != another.value) None
-    else Some(Substitution(assignments + (another.varName -> another.value)))
-  }
+  def add(varName: String, value: FeatureValue): Option[Substitution] =
+    if (assignments.contains(varName) && assignments(varName) != value) None
+    else Some(Substitution(assignments + (varName -> value)))
 
   def find(varName: String): Option[FeatureValue] = assignments.get(varName)
 
@@ -37,7 +33,7 @@ object Substitution {
           substitution <- maybeSubstitution
           value <- parsedFeatures(binding.featureName)
           if !value.isVariable
-          result <- substitution.add(VariableAssignment(binding.varName, value.asInstanceOf[FeatureValue]))
+          result <- substitution.add(binding.varName, value.asInstanceOf[FeatureValue])
         } yield result
     }
   }
