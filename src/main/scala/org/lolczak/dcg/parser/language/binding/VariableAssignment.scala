@@ -10,7 +10,11 @@ case class Substitution(private val assignments: Map[String, FeatureValue]) {
 
   def find(varName: String): Option[FeatureValue] = assignments.get(varName)
 
-  def union(that: Substitution): Option[Substitution] = ???
+  def union(that: Substitution): Option[Substitution] = {
+    val consistent = assignments.forall { case (varName, value) => that.find(varName).map(_ == value).getOrElse(true)}
+    if (consistent)  ???
+    else None
+  }
 
 }
 
