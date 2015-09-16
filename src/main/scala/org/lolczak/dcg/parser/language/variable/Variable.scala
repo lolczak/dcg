@@ -12,10 +12,10 @@ object Variable {
     val parsedRhs = parsedTerms.map { case Node(term, _) => term }
     require(rhs.length == parsedRhs.length)
     val zipped = rhs zip parsedRhs
-    val substitutions: List[Option[Substitution]] = zipped map { case (rule, parsed) => Substitution.fromFeatures(rule.fStruct, parsed.fStruct) }
-    val maybeSubstitutions: Option[List[Substitution]] = substitutions.sequence[Option, Substitution]
+    val substitutions: List[Option[VariableAssignment]] = zipped map { case (rule, parsed) => VariableAssignment.fromFeatures(rule.fStruct, parsed.fStruct) }
+    val maybeSubstitutions: Option[List[VariableAssignment]] = substitutions.sequence[Option, VariableAssignment]
     val maybeSubstitution = maybeSubstitutions.flatMap { list =>
-      list.foldLeft[Option[Substitution]](Some(Substitution.empty)) {
+      list.foldLeft[Option[VariableAssignment]](Some(VariableAssignment.empty)) {
         case (None, _) => None
         case (Some(acc), item) => acc union item
       }

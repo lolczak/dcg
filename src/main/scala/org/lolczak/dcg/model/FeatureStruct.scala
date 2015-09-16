@@ -1,6 +1,6 @@
 package org.lolczak.dcg.model
 
-import org.lolczak.dcg.parser.language.variable.Substitution
+import org.lolczak.dcg.parser.language.variable.VariableAssignment
 
 case class FeatureStruct(features: Map[String, FeatureRhsOperand]) {
 
@@ -8,7 +8,7 @@ case class FeatureStruct(features: Map[String, FeatureRhsOperand]) {
 
   val containsVariables = features.exists(_._2.isVariable)
 
-  def substitute(substitution: Substitution): FeatureStruct = {
+  def substitute(substitution: VariableAssignment): FeatureStruct = {
     val substituted = features.mapValues {
       case v@FVariable(name) => substitution.find(name).getOrElse(v)
       case x => x

@@ -3,9 +3,9 @@ package org.lolczak.dcg.parser.language.variable
 import org.lolczak.dcg.model.{FConst, FVariable, FeatureStruct}
 import org.scalatest.{Matchers, WordSpec}
 
-class SubstitutionSpec extends WordSpec with Matchers {
+class VariableAssignmentSpec extends WordSpec with Matchers {
 
-  "A substitution factory method" should {
+  "VariableAssignment factory method" should {
     "not create substitution" when {
       "parsed feature is a variable" in {
         //given
@@ -18,7 +18,7 @@ class SubstitutionSpec extends WordSpec with Matchers {
           "feat2" -> FVariable("n")
         ))
         //when
-        val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
+        val result = VariableAssignment.fromFeatures(ruleFeatures, parsedFeatures)
         //then
         result shouldBe None
       }
@@ -33,7 +33,7 @@ class SubstitutionSpec extends WordSpec with Matchers {
           "feat2" -> FConst("test2")
         ))
         //when
-        val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
+        val result = VariableAssignment.fromFeatures(ruleFeatures, parsedFeatures)
         //then
         result shouldBe None
       }
@@ -48,7 +48,7 @@ class SubstitutionSpec extends WordSpec with Matchers {
           "feat1" -> FConst("test1")
         ))
         //when
-        val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
+        val result = VariableAssignment.fromFeatures(ruleFeatures, parsedFeatures)
         //then
         result shouldBe None
       }
@@ -71,10 +71,10 @@ class SubstitutionSpec extends WordSpec with Matchers {
           "feat4" -> FConst("test")
         ))
         //when
-        val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
+        val result = VariableAssignment.fromFeatures(ruleFeatures, parsedFeatures)
         //then
         result shouldBe Some(
-          Substitution(
+          VariableAssignment(
             "x" -> FConst("test1"),
             "y" -> FConst("test2")
           )
@@ -96,10 +96,10 @@ class SubstitutionSpec extends WordSpec with Matchers {
           "feat4" -> FConst("test")
         ))
         //when
-        val result = Substitution.fromFeatures(ruleFeatures, parsedFeatures)
+        val result = VariableAssignment.fromFeatures(ruleFeatures, parsedFeatures)
         //then
         result shouldBe Some(
-          Substitution(
+          VariableAssignment(
             "x" -> FConst("test1")
           )
         )
@@ -107,10 +107,10 @@ class SubstitutionSpec extends WordSpec with Matchers {
     }
   }
 
-  "A substitution object" should {
+  "VariableAssignment object" should {
     "find variable by name" in {
       //given
-      val substitution = Substitution(
+      val substitution = VariableAssignment(
         "x" -> FConst("test1"),
         "y" -> FConst("test2")
       )
@@ -122,7 +122,7 @@ class SubstitutionSpec extends WordSpec with Matchers {
 
     "return None if there is no substitution for variable name" in {
       //given
-      val substitution = Substitution(
+      val substitution = VariableAssignment(
         "x" -> FConst("test1"),
         "y" -> FConst("test2")
       )
@@ -135,18 +135,18 @@ class SubstitutionSpec extends WordSpec with Matchers {
     "combine two substitution" when {
       "there is no conflicts" in {
         //given
-        val substitution1 = Substitution(
+        val substitution1 = VariableAssignment(
           "x" -> FConst("test1"),
           "y" -> FConst("test2")
         )
-        val substitution2 = Substitution(
+        val substitution2 = VariableAssignment(
           "z" -> FConst("test1")
         )
         //when
         val result = substitution1.union(substitution2)
         //then
         result shouldBe Some(
-          Substitution(
+          VariableAssignment(
             "x" -> FConst("test1"),
             "y" -> FConst("test2"),
             "z" -> FConst("test1")
@@ -156,11 +156,11 @@ class SubstitutionSpec extends WordSpec with Matchers {
 
       "substitutions are consistent" in {
         //given
-        val substitution1 = Substitution(
+        val substitution1 = VariableAssignment(
           "x" -> FConst("test1"),
           "y" -> FConst("test2")
         )
-        val substitution2 = Substitution(
+        val substitution2 = VariableAssignment(
           "x" -> FConst("test1"),
           "z" -> FConst("test1")
         )
@@ -168,7 +168,7 @@ class SubstitutionSpec extends WordSpec with Matchers {
         val result = substitution1.union(substitution2)
         //then
         result shouldBe Some(
-          Substitution(
+          VariableAssignment(
             "x" -> FConst("test1"),
             "y" -> FConst("test2"),
             "z" -> FConst("test1")
@@ -180,11 +180,11 @@ class SubstitutionSpec extends WordSpec with Matchers {
     "not combine two substitution" when {
       "there is conflict" in {
         //given
-        val substitution1 = Substitution(
+        val substitution1 = VariableAssignment(
           "x" -> FConst("test1"),
           "y" -> FConst("test2")
         )
-        val substitution2 = Substitution(
+        val substitution2 = VariableAssignment(
           "x" -> FConst("test1"),
           "y" -> FConst("test3")
         )
