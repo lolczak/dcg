@@ -1,6 +1,5 @@
 package org.lolczak.dcg.parser.grammar
 
-import org.lolczak.dcg._
 import org.lolczak.dcg.model._
 
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
