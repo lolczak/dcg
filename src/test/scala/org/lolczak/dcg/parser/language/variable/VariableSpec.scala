@@ -1,4 +1,4 @@
-package org.lolczak.dcg.parser.language.binding
+package org.lolczak.dcg.parser.language.variable
 
 import org.lolczak.dcg.Grammar._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}

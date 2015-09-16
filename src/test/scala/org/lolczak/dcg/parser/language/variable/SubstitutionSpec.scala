@@ -1,4 +1,4 @@
-package org.lolczak.dcg.parser.language.binding
+package org.lolczak.dcg.parser.language.variable
 
 import org.lolczak.dcg.{FConst, FVariable, FeatureStruct}
 import org.scalatest.{Matchers, WordSpec}

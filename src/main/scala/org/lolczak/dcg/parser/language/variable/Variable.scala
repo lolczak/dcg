@@ -1,4 +1,4 @@
-package org.lolczak.dcg.parser.language.binding
+package org.lolczak.dcg.parser.language.variable
 
 import org.lolczak.dcg.parser.language.{Node, ParseTree}
 import org.lolczak.dcg.{Production, Term}

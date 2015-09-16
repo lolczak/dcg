@@ -1,4 +1,4 @@
-package org.lolczak.dcg.parser.language.agreement
+package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.{FConst, FeatureRhsOperand, FeatureStruct, Term}
 

@@ -1,6 +1,6 @@
 package org.lolczak.dcg
 
-import org.lolczak.dcg.parser.language.binding.Substitution
+import org.lolczak.dcg.parser.language.variable.Substitution
 
 import scala.language.implicitConversions
 
