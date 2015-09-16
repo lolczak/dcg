@@ -34,24 +34,4 @@ object VariableAssignment {
 
   def apply(elems: (String, FeatureValue)*): VariableAssignment = VariableAssignment(Map(elems: _*))
 
-  /**
-   * Creates variable assignments based on rule features and features values derived from parsed nodes.
-   *
-   * @param ruleFeatures
-   * @param parsedFeatures
-   * @return
-   */
-  def fromFeatures(ruleFeatures: FeatureStruct, parsedFeatures: FeatureStruct): Option[VariableAssignment] = {
-    val bindings: Set[VariableBinding] = VariableBinding.findVariableBindings(ruleFeatures)
-    bindings.foldLeft[Option[VariableAssignment]](Some(VariableAssignment.empty)) {
-      case (maybeSubstitution, binding) =>
-        for {
-          substitution <- maybeSubstitution
-          value <- parsedFeatures(binding.featureName)
-          if !value.isVariable
-          result <- substitution.add(binding.varName, value.asInstanceOf[FeatureValue])
-        } yield result
-    }
-  }
-
 }
