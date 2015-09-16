@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.model.{FeatureValue, FeatureStruct}
+import org.lolczak.dcg.model.FeatureValue
 
 case class VariableAssignment(private val assignments: Map[String, FeatureValue]) {
 
