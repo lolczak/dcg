@@ -5,9 +5,9 @@ import org.lolczak.dcg.parser.language.{Node, ParseTree}
 
 import scalaz.Scalaz._
 
-object Variable {
+object Substitution {
 
-  def unify(production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Term] = {
+  def substitute(production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Term] = {
     val rhs = production.rhs
     val parsedRhs = parsedTerms.map { case Node(term, _) => term }
     require(rhs.length == parsedRhs.length)

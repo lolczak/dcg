@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model.{Lexicon, Term, Production, Grammar}
-import org.lolczak.dcg.parser.language.variable.Variable
+import org.lolczak.dcg.parser.language.variable.Substitution
 
 import scala.annotation.tailrec
 
@@ -72,7 +72,7 @@ object ChartParser {
 
   def createPassive(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Passive] =
     for {
-      term <- Variable.unify(production, parsedTerms)
+      term <- Substitution.substitute(production, parsedTerms)
       tree = Node(term, parsedTerms)
     } yield Passive(start, end, term, tree)
 
