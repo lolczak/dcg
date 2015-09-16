@@ -1,10 +1,9 @@
 package org.lolczak.dcg.parser.language.binding
 
 import org.lolczak.dcg.parser.language.{Node, ParseTree}
-import org.lolczak.dcg.{Term, Production, FeatureStruct}
+import org.lolczak.dcg.{Production, Term}
 
-import scalaz._
-import Scalaz._
+import scalaz.Scalaz._
 
 object Variable {
 
@@ -13,9 +12,9 @@ object Variable {
     val parsedRhs = parsedTerms.map { case Node(term, _) => term }
     require(rhs.length == parsedRhs.length)
     val zipped = rhs zip parsedRhs
-    val varAss: List[Option[Substitution]] = zipped map { case (rule, parsed) => Substitution.fromFeatures(rule.fStruct, parsed.fStruct) }
-    val maybeList: Option[List[Substitution]] = varAss.sequence[Option, Substitution]
-    val maybeSubstitution = maybeList.flatMap { list =>
+    val substitutions: List[Option[Substitution]] = zipped map { case (rule, parsed) => Substitution.fromFeatures(rule.fStruct, parsed.fStruct) }
+    val maybeSubstitutions: Option[List[Substitution]] = substitutions.sequence[Option, Substitution]
+    val maybeSubstitution = maybeSubstitutions.flatMap { list =>
       list.foldLeft[Option[Substitution]](Some(Substitution.empty)) {
         case (None, _) => None
         case (Some(acc), item) => acc union item
@@ -26,22 +25,6 @@ object Variable {
       features = production.lhs.fStruct.substitute(substitution)
       if !features.containsVariables
     } yield Term(production.lhs.name, features)
-
-    /*
-    val zipped = rhs zip parsedRhs
-      val varAss = zipped map { case (rule, parsed) => fromFeatures(rule.fStruct, parsed.fStruct) }
-      val finalAss: Error \/ VarAssignments = varAss.foldLeft[Error \/ VarAssignments](\/-(empty)) {
-        case (prevResult, item) => prevResult.flatMap(prev => prev.combine(item))
-      }
-      //todo loging add to validator
-      val edge = for {
-        assignment <- finalAss
-        bindedFeatures <- substitute(production.lhs.fStruct, assignment)
-        term = Term(production.lhs.name, bindedFeatures)
-        tree = Node(term, parsedTerms)
-      } yield Passive(start, end, term, tree)
-     */
-
   }
 
 
