@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.language
 
-import org.lolczak.dcg.{Production, Term}
+import org.lolczak.dcg.model.{Term, Production}
 
 sealed trait Edge {
   val isActive: Boolean

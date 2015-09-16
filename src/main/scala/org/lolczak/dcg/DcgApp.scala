@@ -3,6 +3,7 @@ package org.lolczak.dcg
 import java.io.File
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import org.lolczak.dcg.model.Term
 import org.lolczak.dcg.parser.grammar.GrammarParser
 import org.lolczak.dcg.parser.language.{Leaf, Node, ChartParser, ParseTree}
 

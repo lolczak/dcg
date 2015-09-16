@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.{FVariable, FeatureStruct}
+import org.lolczak.dcg.model.{FVariable, FeatureStruct}
 
 case class VariableBinding(varName: String, featureName: String)
 

@@ -1,4 +1,4 @@
-package org.lolczak.dcg
+package org.lolczak.dcg.model
 
 object Lexicon {
   

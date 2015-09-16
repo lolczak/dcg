@@ -1,4 +1,4 @@
-package org.lolczak.dcg
+package org.lolczak.dcg.model
 
 import org.lolczak.dcg.parser.language.variable.Substitution
 

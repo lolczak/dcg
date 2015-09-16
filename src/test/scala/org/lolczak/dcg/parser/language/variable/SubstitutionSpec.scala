@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.{FConst, FVariable, FeatureStruct}
+import org.lolczak.dcg.model.{FConst, FVariable, FeatureStruct}
 import org.scalatest.{Matchers, WordSpec}
 
 class SubstitutionSpec extends WordSpec with Matchers {

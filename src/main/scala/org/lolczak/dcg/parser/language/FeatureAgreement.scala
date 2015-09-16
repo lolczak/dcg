@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.language
 
-import org.lolczak.dcg.{FConst, FeatureRhsOperand, FeatureStruct, Term}
+import org.lolczak.dcg.model.{FConst, FeatureRhsOperand, FeatureStruct, Term}
 
 object FeatureAgreement {
 

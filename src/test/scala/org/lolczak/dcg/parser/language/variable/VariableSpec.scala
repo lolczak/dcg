@@ -1,9 +1,9 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.Grammar._
+import org.lolczak.dcg.model.{FConst, FVariable, Grammar}
+import Grammar._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 import org.lolczak.dcg.parser.language.Node
-import org.lolczak.dcg.{FConst, FVariable}
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.Predef.{augmentString => _, wrapString => _, _}

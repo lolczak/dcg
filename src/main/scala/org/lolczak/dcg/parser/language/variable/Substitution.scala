@@ -1,7 +1,6 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.parser.language.variable.VariableBinding
-import org.lolczak.dcg.{FeatureStruct, FeatureValue}
+import org.lolczak.dcg.model.{FeatureValue, FeatureStruct}
 
 case class Substitution(private val assignments: Map[String, FeatureValue]) {
 

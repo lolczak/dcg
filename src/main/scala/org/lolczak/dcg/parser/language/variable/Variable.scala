@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language.variable
 
+import org.lolczak.dcg.model.{Term, Production}
 import org.lolczak.dcg.parser.language.{Node, ParseTree}
-import org.lolczak.dcg.{Production, Term}
 
 import scalaz.Scalaz._
 

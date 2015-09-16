@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language
 
+import org.lolczak.dcg.model.{Lexicon, Term, Production, Grammar}
 import org.lolczak.dcg.parser.language.variable.Variable
-import org.lolczak.dcg.{Grammar, Lexicon, Production, Term}
 
 import scala.annotation.tailrec
 
