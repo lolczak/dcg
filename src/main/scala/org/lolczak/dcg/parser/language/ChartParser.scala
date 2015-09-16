@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.parser.language.agreement.FeatureAgreement
-import org.lolczak.dcg.parser.language.binding.VarAssignments
+import org.lolczak.dcg.parser.language.binding.{VarAssignments, Variable}
 import org.lolczak.dcg.{Grammar, Lexicon, Production, Term}
 
 import scala.annotation.tailrec
@@ -54,7 +54,7 @@ object ChartParser {
     } yield maybeNewEdge.get
 
   def tryCreatePredictedEdge(edge: Passive, p: Production, lhs: Term, rhs: List[Term]): Option[Edge] = {
-    if (rhs.tail.isEmpty) VarAssignments.createPassive(edge.start, edge.end, p, List(edge.tree))
+    if (rhs.tail.isEmpty) createPassive(edge.start, edge.end, p, List(edge.tree))
     else Some(Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree), p))
   }
 
@@ -67,7 +67,14 @@ object ChartParser {
     } yield maybeNewEdge.get
 
   def tryCreateCombinedEdge(edge: Passive, start: Int, leftTerm: Term, rest: List[Term], parsedPrefix: List[ParseTree[Term, String]], p: Production): Option[Edge] = {
-    if (rest.isEmpty) VarAssignments.createPassive(start, edge.end, p, parsedPrefix :+ edge.tree)
+    if (rest.isEmpty) createPassive(start, edge.end, p, parsedPrefix :+ edge.tree)
     else Some(Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p))
   }
+
+  def createPassive(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Passive] =
+    for {
+      term <- Variable.unify(production, parsedTerms)
+      tree = Node(term, parsedTerms)
+    } yield Passive(start, end, term, tree)
+
 }
