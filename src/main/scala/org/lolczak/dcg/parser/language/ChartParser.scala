@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.parser.language.agreement.FeatureAgreement
-import org.lolczak.dcg.parser.language.binding.{VarAssignments, Variable}
+import org.lolczak.dcg.parser.language.binding.Variable
 import org.lolczak.dcg.{Grammar, Lexicon, Production, Term}
 
 import scala.annotation.tailrec
