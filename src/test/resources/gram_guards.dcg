@@ -1,0 +1,20 @@
+// Simple grammar
+
+// nonterminal symbols
+S -> NP VP /* main symbol */
+VP -> Verb
+VP -> Verb NP
+VP -> VP PP
+NP[Num=?n] -> Noun[Num=?n]
+NP[Num=?n] -> Det[Num=?n1] Noun[Num=?n2] {n=n1; n1==n2}
+NP[Num=?n] -> NP[Num=?n] PP
+PP -> Prep NP
+
+// terminal symbols
+Verb -> 'fly'
+Verb -> 'like'
+Noun[Num=pl] -> 'planes'
+Noun[Num=sg] -> 'arrow' | 'fly'
+Det[Num=sg] -> 'an'
+Det[Num=pl] -> 'these'
+Prep -> 'like'

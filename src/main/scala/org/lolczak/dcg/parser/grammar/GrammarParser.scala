@@ -1,11 +1,12 @@
 package org.lolczak.dcg.parser.grammar
 
 import org.lolczak.dcg.model._
+import org.lolczak.parsing.util.HelperParsers
 
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
 import scalaz.{\/-, -\/, \/}
 
-object GrammarParser extends StandardTokenParsers {
+object GrammarParser extends StandardTokenParsers with HelperParsers {
   lexical.delimiters ++= List("{", "}", "[", "]", "=", ",", "?", "->", "|")
 
   def parseGrammar(content: String): ParseResult[(Lexicon, Grammar)] = grammar(new lexical.Scanner(content))
@@ -50,14 +51,5 @@ object GrammarParser extends StandardTokenParsers {
   lazy val featureEnd: Parser[Unit] = "]" ^^^()
 
   lazy val eoi: Parser[Any] = Parser { in => if (in.atEnd) Success((), in) else Failure("not end", in) }
-
-  def repTill[T](p: => Parser[T], end: => Parser[Any]): Parser[List[T]] =
-    end ^^^ List.empty | (p ~ repTill(p, end)) ^^ { case x ~ xs => x :: xs }
-
-  def separatedSequence[T](p: => Parser[T], s: => Parser[Any], end: => Parser[Any]): Parser[List[T]] =
-    for {
-      x <- p
-      xs <- repTill(s ~> p, end)
-    } yield x :: xs
 
 }
