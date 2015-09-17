@@ -1,13 +1,25 @@
 package org.lolczak.dcg.parser.grammar
 
 import org.lolczak.dcg.model._
+import org.lolczak.parsing.lexical._
+import org.lolczak.parsing.syntactical.GenericTokenParsers
 import org.lolczak.parsing.util.HelperParsers
 
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
 import scalaz.{\/-, -\/, \/}
 
-object GrammarParser extends StandardTokenParsers with HelperParsers {
-  lexical.delimiters ++= List("{", "}", "[", "]", "=", ",", "?", "->", "|")
+object GrammarParser extends GenericTokenParsers with HelperParsers {
+
+  lazy val languageDef: LanguageDef = LanguageDef(
+    commentStart = "/*",
+    commentEnd = "*/",
+    commentLine = "//",
+    identStart = _.isLetter,
+    identLetter = _.isLetter,
+    reservedNames = Set.empty,
+    delimiters = Set("{", "}", "[", "]", "=", ",", "?", "->", "|"),
+    snippet = None
+  )
 
   def parseGrammar(content: String): ParseResult[(Lexicon, Grammar)] = grammar(new lexical.Scanner(content))
 

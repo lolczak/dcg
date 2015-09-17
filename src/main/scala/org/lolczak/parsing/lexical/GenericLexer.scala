@@ -47,7 +47,7 @@ class GenericLexer(languageDef: LanguageDef) extends Lexical with GenericTokens 
   protected def processIdent(name: String) =
     if (languageDef.reservedNames contains name) Keyword(name) else Identifier(name)
 
-  protected  def delim: Parser[Token] = {
+  protected def delim: Parser[Token] = {
     val parsers = delimiters.map(charSeq(_) ^^ {case chars => Delimiter(chars.mkString)})
     parsers.foldRight(failure("no matching delimiter"): Parser[Token])((x,y) => x | y)
   }
