@@ -8,4 +8,8 @@ trait GenericTokens extends StdTokens {
     override def toString = "{"+chars+"}"
   }
 
+  case class Delimiter(chars: String) extends Token {
+    override def toString = chars
+  }
+
 }
