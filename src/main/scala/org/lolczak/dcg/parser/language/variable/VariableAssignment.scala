@@ -26,6 +26,10 @@ case class VariableAssignment(private val assignments: Map[String, FeatureValue]
     } yield (varName, value)
     Some(VariableAssignment(allAssignments.toMap))
   }
+
+
+  def forEach(f: ((String, FeatureValue)) => Unit): Unit = assignments.foreach(f)
+
 }
 
 object VariableAssignment {

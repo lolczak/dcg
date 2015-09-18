@@ -21,5 +21,6 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-effect" % "7.1.0" withSources() withJavadoc(),
   "ch.qos.logback" % "logback-classic" % "1.1.3",
   "org.slf4j" % "slf4j-api" % "1.7.12",
-  "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
+  "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
+  "org.codehaus.groovy" % "groovy" % "2.4.4"
 )
