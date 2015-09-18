@@ -17,8 +17,8 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
     identStart = _.isLetter,
     identLetter = _.isLetter,
     reservedNames = Set.empty,
-    delimiters = Set("{", "}", "[", "]", "=", ",", "?", "->", "|"),
-    snippet = None
+    delimiters = Set("[", "]", "=", ",", "?", "->", "|"),
+    snippet = Some("{", "}")
   )
 
   def parseGrammar(content: String): ParseResult[(Lexicon, Grammar)] = grammar(new lexical.Scanner(content))

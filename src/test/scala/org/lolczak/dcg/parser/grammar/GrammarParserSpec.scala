@@ -64,6 +64,16 @@ class GrammarParserSpec extends WordSpec with Matchers {
       result should matchPattern { case Success(ExpectedProduction, _) => }
     }
 
+    "parse nonterminal productions containing code snippets" in {
+      //given
+      val nonterminalString = "S -> NP VP { x => y }"
+      val ExpectedProduction = "S" ~>("NP", "VP") copy(maybeSnippet = Some(" x => y "))
+      //when
+      val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
+      //then
+      result should matchPattern { case Success(ExpectedProduction, _) => }
+    }
+
   }
 
   "Terminal production parser" should {

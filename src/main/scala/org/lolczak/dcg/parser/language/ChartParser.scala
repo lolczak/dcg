@@ -47,7 +47,7 @@ object ChartParser {
 
   def predict(grammar: Grammar, edge: Passive): Set[Edge] =
     for {
-      p@Production(lhs, rhs) <- grammar.findStartingWith(edge.found.name)
+      p@Production(lhs, rhs, snippet) <- grammar.findStartingWith(edge.found.name)
       maybeNewEdge = tryCreatePredictedEdge(edge, p, lhs, rhs)
       if FeatureAgreement.isConsistent(rhs.head, edge.found) && maybeNewEdge.isDefined
     } yield maybeNewEdge.get
