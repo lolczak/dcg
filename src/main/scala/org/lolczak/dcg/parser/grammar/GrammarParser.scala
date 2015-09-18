@@ -34,14 +34,16 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
   lazy val production: Parser[LexProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
 
   lazy val nonterminal: Parser[Production] =
-    lhs ~ repTill(term, productionEnd) ^^ { case l ~ r => Production(l, r) }
+    lhs ~ repTill(term, productionEnd) ~ opt(guardCode) ^^ { case l ~ r ~ mg => Production(l, r, mg) }
+
+  lazy val guardCode: Parser[String] = codeSnippet
 
   lazy val terminal: Parser[LexProduction] =
     lhs ~ separatedSequence(stringLit, "|", productionEnd) ^^ { case l ~ r => LexProduction(l, r)}
 
   lazy val lhs: Parser[Term] = term <~ "->"
 
-  lazy val productionEnd: Parser[Any] = eoi | guard(lhs)
+  lazy val productionEnd: Parser[Any] = eoi | guard(lhs) | guard(guardCode)
 
   lazy val term: Parser[Term] =
     for {
