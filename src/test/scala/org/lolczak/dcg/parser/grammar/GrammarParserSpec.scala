@@ -130,6 +130,36 @@ class GrammarParserSpec extends WordSpec with Matchers {
       result should matchPattern { case Success((ExpectedLexicon, ExpectedGrammar), _) => }
     }
 
+    "parse whole grammar with guards" in {
+      //given
+      val grammarString = Source.fromURL(Thread.currentThread().getContextClassLoader.getResource("gram_guards.dcg"), "UTF-8").mkString
+      val ExpectedLexicon = new Lexicon(
+        "fly" -> Set[Term]("Verb", "Noun"("Num" -> FConst("sg"))),
+        "like" -> Set[Term]("Verb", "Prep"),
+        "arrow" -> Set[Term]("Noun"("Num" -> FConst("sg"))),
+        "these" -> Set[Term]("Det"("Num" -> FConst("pl"))),
+        "planes" -> Set[Term]("Noun"("Num" -> FConst("pl"))),
+        "an" -> Set[Term]("Det"("Num" -> FConst("sg")))
+      )
+      val ExpectedGrammar = Grammar("S",
+        List(
+          "S" ~>("NP", "VP"),
+          "VP" ~> "Verb",
+          "VP" ~>("Verb", "NP"),
+          "VP" ~>("VP", "PP"),
+          "NP"("Num" -> FVariable("n")) ~> "Noun"("Num" -> FVariable("n")),
+          "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n1")), "Noun"("Num" -> FVariable("n2"))) copy(maybeSnippet = Some("n=n1; n1==n2")),
+          "NP"("Num" -> FVariable("n")) ~>("NP"("Num" -> FVariable("n")), "PP"),
+          "PP" ~>("Prep", "NP")
+        )
+      )
+      //when
+      val result = parseGrammar(grammarString)
+      //then
+      result should matchPattern { case Success((ExpectedLexicon, ExpectedGrammar), _) => }
+    }
+
+
   }
 
 }

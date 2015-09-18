@@ -15,7 +15,7 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
     commentEnd = "*/",
     commentLine = "//",
     identStart = _.isLetter,
-    identLetter = _.isLetter,
+    identLetter = x => x.isLetter | x.isDigit,
     reservedNames = Set.empty,
     delimiters = Set("[", "]", "=", ",", "?", "->", "|"),
     snippet = Some("{", "}")
