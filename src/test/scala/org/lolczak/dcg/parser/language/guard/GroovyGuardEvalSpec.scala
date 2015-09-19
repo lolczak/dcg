@@ -23,6 +23,21 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       }
     }
 
+
+    "assign variable" in {
+      //given
+      val TestAssignment = VariableAssignment("x" -> FConst("2"), "y" -> FConst("3"))
+      val ExpectedAssignment = TestAssignment.add("z", FConst("23")).get
+      val guardCode = "z = x + y"
+      //when
+      val objectUnderTest = new GroovyGuardEval
+      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      //then
+      result should matchPattern {
+        case \/-(EvalResult(ExpectedAssignment, true)) =>
+      }
+    }
+
   }
 
 }
