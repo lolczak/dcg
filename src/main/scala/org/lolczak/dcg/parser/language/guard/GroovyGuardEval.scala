@@ -13,8 +13,10 @@ class GroovyGuardEval extends GuardEval {
   override def eval(guardCode: String, unifiedAssignment: VariableAssignment): EvalFailure \/ EvalResult = {
     val sharedData = new Binding()
     unifiedAssignment.forEach { case (varName, value) => sharedData.setVariable(varName, value.toString) }
-    val shell = new GroovyShell(sharedData)
-    val result = shell.evaluate(guardCode)
+    val shell = new GroovyShell()
+    val script = shell.parse(guardCode)
+    script.setBinding(sharedData)
+    val result = script.run()
     val variables = extractVariables(sharedData, unifiedAssignment)
     val success = Try(result.toString.toBoolean).getOrElse(true)
     \/-(EvalResult(variables, success))
