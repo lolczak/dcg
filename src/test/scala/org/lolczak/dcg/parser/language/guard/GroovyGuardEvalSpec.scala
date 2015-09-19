@@ -23,7 +23,6 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       }
     }
 
-
     "assign variable" in {
       //given
       val TestAssignment = VariableAssignment("x" -> FConst("2"), "y" -> FConst("3"))

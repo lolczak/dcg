@@ -24,7 +24,7 @@ class GroovyGuardEval extends GuardEval {
     val allNames: Set[String] = sharedData.getVariables.keySet().toSet[Any].map(_.toString)
     val names: Set[String] = allNames -- unifiedAssignment.variables
     names.foldLeft(unifiedAssignment) {
-      case (acc, varName) => acc.add(varName, FConst(sharedData.getVariable(varName).toString)).get
+      case (acc, varName) => acc.put(varName, FConst(sharedData.getVariable(varName).toString))
     }
   }
 

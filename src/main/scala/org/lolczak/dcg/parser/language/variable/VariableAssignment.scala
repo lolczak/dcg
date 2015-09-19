@@ -10,6 +10,9 @@ case class VariableAssignment(private val assignments: Map[String, FeatureValue]
     if (assignments.contains(varName) && assignments(varName) != value) None
     else Some(VariableAssignment(assignments + (varName -> value)))
 
+  def put(varName: String, value: FeatureValue): VariableAssignment =
+    add(varName, value).getOrElse(throw new IllegalArgumentException(s"VariableAssignment contains $varName all ready"))
+
   def find(varName: String): Option[FeatureValue] = assignments.get(varName)
 
   def union(that: VariableAssignment): Option[VariableAssignment] = {
