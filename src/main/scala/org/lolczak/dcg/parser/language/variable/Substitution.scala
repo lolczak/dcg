@@ -1,13 +1,16 @@
 package org.lolczak.dcg.parser.language.variable
 
 import org.lolczak.dcg.model.{FeatureStruct, FeatureValue, Production, Term}
+import org.lolczak.dcg.parser.language.guard.{EvalResult, GuardEval, GroovyGuardEval}
 import org.lolczak.dcg.parser.language.{Node, ParseTree}
 
+import scalaz.{\/-, -\/}
 import scalaz.Scalaz._
 
 object Substitution {
 
   def substitute(production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Term] = {
+    val guardEval = new GroovyGuardEval
     val rhs = production.rhs
     val parsedRhs = parsedTerms.map { case Node(term, _) => term }
     require(rhs.length == parsedRhs.length)
@@ -21,10 +24,22 @@ object Substitution {
       }
     }
     for {
-      substitution <- maybeSubstitution
+      substitution <- maybeSubstitution.flatMap(eval(production, guardEval))
       features = production.lhs.fStruct.substitute(substitution)
       if !features.containsVariables
     } yield Term(production.lhs.name, features)
+  }
+
+  private def eval(production: Production, guardEval: GuardEval)(unifiedAssignment: VariableAssignment): Option[VariableAssignment] = {
+    if (production.containsGuard) {
+      val result = guardEval.eval(production.maybeSnippet.get, unifiedAssignment)
+      result match {
+        case -\/(err) => throw new RuntimeException(err.toString)
+        case \/-(EvalResult(_, false)) => None
+        case \/-(EvalResult(variableAssignment, true))=> Some(variableAssignment)
+      }
+    } else Some(unifiedAssignment)
+
   }
 
   /**

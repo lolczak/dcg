@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.model.{FeatureStruct, FConst, FVariable, Grammar}
+import org.lolczak.dcg.model._
 import Grammar._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 import org.lolczak.dcg.parser.language.Node
@@ -34,6 +34,29 @@ class SubstitutionSpec extends WordSpec with Matchers {
         //then
         result shouldBe None
       }
+
+      "guard constraint is not met" in {
+        //given
+        val production =  Production("NP"("Num" -> FVariable("n")), List("Det"("Num" -> FVariable("n1")), "Noun"("Num" -> FVariable("n2"))), Some("n=n1; n1==n2"))
+        val parsedTerms = List(Node("Det"("Num" -> FConst("sg")), List.empty), Node("Noun"("Num" -> FConst("pl")), List.empty))
+        //when
+        val result = Substitution.substitute(production, parsedTerms)
+        //then
+        result shouldBe None
+      }
+
+    }
+
+    "compute variables" in {
+      //given
+      val production =  Production("NP"("Num" -> FVariable("n")), List("Det"("Num" -> FVariable("n1")), "Noun"("Num" -> FVariable("n2"))), Some("n=n1; n1==n2"))
+      val parsedTerms = List(Node("Det"("Num" -> FConst("pl")), List.empty), Node("Noun"("Num" -> FConst("pl")), List.empty))
+      //when
+      val result = Substitution.substitute(production, parsedTerms)
+      //then
+      result shouldBe Some(
+        "NP"("Num" -> FConst("pl"))
+      )
     }
 
     "not create substitution" when {

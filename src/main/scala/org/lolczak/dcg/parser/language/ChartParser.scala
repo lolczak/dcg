@@ -1,6 +1,7 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model.{Lexicon, Term, Production, Grammar}
+import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
 import org.lolczak.dcg.parser.language.variable.Substitution
 
 import scala.annotation.tailrec
@@ -9,7 +10,7 @@ object ChartParser {
 
   type Chart = IndexedSeq[State]
 
-  def parseDcg(grammar: Grammar, lexicon: Lexicon, utterance: String, rootSymbol: Option[String] = None): List[ParseTree[Term, String]] = {
+  def parseDcg(grammar: Grammar, lexicon: Lexicon, utterance: String, rootSymbol: Option[String] = None, guardEval: GuardEval = new GroovyGuardEval): List[ParseTree[Term, String]] = {
     val splittedUtterance = utterance.split(' ').toList
     val finalChart = buildChart(grammar, lexicon, splittedUtterance)
     for {

@@ -1,12 +1,12 @@
 package org.lolczak.dcg.parser.language.guard
 
-import groovy.lang.{Script, Binding, GroovyShell}
+import groovy.lang.{Binding, GroovyShell, Script}
 import org.lolczak.dcg.model.FConst
 import org.lolczak.dcg.parser.language.variable.VariableAssignment
 
 import scala.collection.JavaConversions._
 import scala.util.Try
-import scalaz.{-\/, \/, \/-}
+import scalaz.\/
 
 class GroovyGuardEval extends GuardEval {
 
