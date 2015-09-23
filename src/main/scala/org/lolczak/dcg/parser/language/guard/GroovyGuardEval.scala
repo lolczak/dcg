@@ -28,7 +28,7 @@ class GroovyGuardEval extends GuardEval {
 
   private def run(script: Script, sharedData: Binding): EvalFailure \/ Any = {
     script.setBinding(sharedData)
-    \/-(script.run())
+    \/.fromTryCatchNonFatal(script.run()) leftMap { case th => ExecutionFailure(th.getMessage) }
   }
 
   private def extractVariables(sharedData: Binding, unifiedAssignment: VariableAssignment): VariableAssignment = {
