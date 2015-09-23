@@ -4,7 +4,7 @@ import org.lolczak.dcg.model.FConst
 import org.lolczak.dcg.parser.language.variable.VariableAssignment
 import org.scalatest.{Matchers, WordSpec}
 
-import scalaz.\/-
+import scalaz.{-\/, \/-}
 
 class GroovyGuardEvalSpec extends WordSpec with Matchers {
 
@@ -48,6 +48,32 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       //then
       result should matchPattern {
         case \/-(EvalResult(ExpectedAssignment, true)) =>
+      }
+    }
+
+    "return compilation failure when snippet doesn't compile" in {
+      //given
+      val TestAssignment = VariableAssignment("x" -> FConst("2"), "y" -> FConst("3"))
+      val guardCode = "234 423$#@$@# $#@ $23"
+      //when
+      val objectUnderTest = new GroovyGuardEval
+      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      //then
+      result should matchPattern {
+        case -\/(CompilationFailure(_)) =>
+      }
+    }
+
+    "return execution failure when runtime error occurs" in {
+      //given
+      val TestAssignment = VariableAssignment("x" -> FConst("2"), "y" -> FConst("3"))
+      val guardCode = "z = qwerty"
+      //when
+      val objectUnderTest = new GroovyGuardEval
+      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      //then
+      result should matchPattern {
+        case -\/(ExecutionFailure(_)) =>
       }
     }
 
