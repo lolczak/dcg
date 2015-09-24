@@ -15,13 +15,15 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
     commentEnd = "*/",
     commentLine = "//",
     identStart = _.isLetter,
-    identLetter = x => x.isLetter | x.isDigit,
-    reservedNames = Set.empty,
-    delimiters = Set("[", "]", "=", ",", "?", "->", "|"),
+    identLetter = x => x.isLetter | x.isDigit | x == '.',
+    reservedNames = Set("import"),
+    delimiters = Set("[", "]", "=", ",", "?", "->", "|", "<", ">"),
     snippet = Some("{", "}")
   )
 
   def parseGrammar(content: String): ParseResult[(Lexicon, Grammar)] = grammar(new lexical.Scanner(content))
+
+  lazy val importDirective: Parser[List[ImportDirective]] = rep("import" ~> stringLit ^^ {case path => ImportDirective(path)})
 
   lazy val grammar: Parser[(Lexicon, Grammar)] =
     for {

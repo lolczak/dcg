@@ -1,5 +1,5 @@
 // Simple grammar
-//import <functions.groovy>
+import "functions.groovy"
 // nonterminal symbols
 S -> NP VP /* main symbol */
 VP -> Verb

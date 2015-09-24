@@ -1,8 +1,7 @@
 package org.lolczak.dcg.parser.grammar
 
+import org.lolczak.dcg.model.Grammar._
 import org.lolczak.dcg.model._
-import Grammar._
-import org.lolczak.dcg._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _, _}
 import org.scalatest.{Matchers, WordSpec}
 
@@ -10,6 +9,26 @@ import scala.Predef.{augmentString => _, wrapString => _, _}
 import scala.io.Source
 
 class GrammarParserSpec extends WordSpec with Matchers {
+
+  "Import parser" should {
+
+    "parse list of import directives" in {
+      import scala.Predef.augmentString
+      //given
+      val directiveTxt =
+        """
+          |import "functions.groovy"
+          |import "/home/abs/fun.groovy"
+        """.stripMargin
+      //when
+      val result = importDirective(new GrammarParser.lexical.Scanner(directiveTxt))
+      //then
+      result should matchPattern {
+        case Success(List(ImportDirective("functions.groovy"), ImportDirective("/home/abs/fun.groovy")), _) =>
+      }
+    }
+
+  }
 
   "Term parser" should {
     "parse simple term containing only symbol" in {

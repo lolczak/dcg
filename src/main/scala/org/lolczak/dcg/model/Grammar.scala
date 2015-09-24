@@ -22,6 +22,8 @@ case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty) {
 
 }
 
+case class ImportDirective(file: String)
+
 object Grammar {
 
   implicit def string2Term(symbol: String): Term = Term(symbol, FeatureStruct.empty)
