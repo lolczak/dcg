@@ -21,7 +21,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
           |import "/home/abs/fun.groovy"
         """.stripMargin
       //when
-      val result = importDirective(new GrammarParser.lexical.Scanner(directiveTxt))
+      val result = importDirectives(new GrammarParser.lexical.Scanner(directiveTxt))
       //then
       result should matchPattern {
         case Success(List(ImportDirective("functions.groovy"), ImportDirective("/home/abs/fun.groovy")), _) =>
@@ -146,7 +146,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
       //when
       val result = parseGrammar(grammarString)
       //then
-      result should matchPattern { case Success((ExpectedLexicon, ExpectedGrammar), _) => }
+      result should matchPattern { case Success(Grammar(ExpectedGrammar, ExpectedLexicon, _), _) => }
     }
 
     "parse whole grammar with guards" in {
@@ -175,7 +175,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
       //when
       val result = parseGrammar(grammarString)
       //then
-      result should matchPattern { case Success((ExpectedLexicon, ExpectedGrammar), _) => }
+      result should matchPattern { case Success(Grammar(ExpectedGrammar, ExpectedLexicon, _), _) => }
     }
 
 

@@ -19,9 +19,9 @@ object DcgApp extends App with LazyLogging {
   }
   val utterance = args(1)
   logger.info(s"Parsing grammar $grammarPath")
-  val (lexicon, grammar) = GrammarParser.parseGrammar(Source.fromFile(new File(grammarPath), "UTF-8").mkString).get
+  val grammar = GrammarParser.parseGrammar(Source.fromFile(new File(grammarPath), "UTF-8").mkString).get
   logger.info(s"Parsing language... ")
-  val results = ChartParser.parseDcg(grammar, lexicon, utterance)
+  val results = ChartParser.parseDcg(grammar.nonterminals, grammar.lexicon, utterance)
 
   def printHelp() = {
     println("Usage: dcg <grammar_path> <utterance>")

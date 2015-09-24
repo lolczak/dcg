@@ -21,17 +21,18 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
     snippet = Some("{", "}")
   )
 
-  def parseGrammar(content: String): ParseResult[(Lexicon, Nonterminals)] = grammar(new lexical.Scanner(content))
+  def parseGrammar(content: String): ParseResult[Grammar] = grammar(new lexical.Scanner(content))
 
-  lazy val importDirective: Parser[List[ImportDirective]] = rep("import" ~> stringLit ^^ {case path => ImportDirective(path)})
+  lazy val importDirectives: Parser[List[ImportDirective]] = rep("import" ~> stringLit ^^ {case path => ImportDirective(path)})
 
-  lazy val grammar: Parser[(Lexicon, Nonterminals)] =
+  lazy val grammar: Parser[Grammar] =
     for {
+      directives <- importDirectives
       productions <- rep(production)
       nonterminals = productions filter (_.isRight) map {case \/-(r) => r}
       terminals = productions filter (_.isLeft) map {case -\/(l) => l}
       lexicon = Lexicon.fromProductions(terminals: _*)
-    } yield (lexicon, Nonterminals(nonterminals.head.lhs.name, nonterminals))
+    } yield Grammar(Nonterminals(nonterminals.head.lhs.name, nonterminals), lexicon, directives)
 
   lazy val production: Parser[TerminalProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
 
