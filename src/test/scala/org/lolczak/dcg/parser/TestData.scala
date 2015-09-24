@@ -19,7 +19,7 @@ object TestData {
     "an" -> Set[Term]("Det"("Num" -> FConst("sg")))
   )
   
-  val grammar = Nonterminals("S",
+  val nonterminals = Nonterminals("S",
     List(
       "S" ~>("NP", "VP"),
       "VP" ~> "Verb",
@@ -31,6 +31,8 @@ object TestData {
       "PP" ~>("Prep", "NP")
     )
   )
+
+  val grammar = Grammar(nonterminals, lexicon, List.empty)
 
   val utterance = "these planes fly like an arrow"
 

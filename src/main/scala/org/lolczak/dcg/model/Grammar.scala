@@ -4,7 +4,7 @@ import scala.language.implicitConversions
 
 case class Grammar(nonterminals:     Nonterminals,
                    lexicon:          Lexicon,
-                   importDirectives: List[ImportDirective])
+                   importDirectives: List[ImportDirective] = List.empty)
 
 case class Nonterminals(start: String, productions: List[Production]) {
 

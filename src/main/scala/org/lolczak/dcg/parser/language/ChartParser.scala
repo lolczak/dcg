@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.language
 
-import org.lolczak.dcg.model.{Lexicon, Term, Production, Nonterminals}
+import org.lolczak.dcg.model._
 import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
 import org.lolczak.dcg.parser.language.variable.Substitution
 
@@ -10,20 +10,20 @@ object ChartParser {
 
   type Chart = IndexedSeq[State]
 
-  def parseDcg(grammar: Nonterminals, lexicon: Lexicon, utterance: String, rootSymbol: Option[String] = None, guardEval: GuardEval = new GroovyGuardEval): List[ParseTree[Term, String]] = {
+  def parseDcg(grammar: Grammar, utterance: String, rootSymbol: Option[String] = None, guardEval: GuardEval = new GroovyGuardEval): List[ParseTree[Term, String]] = {
     val splitUtterance = utterance.split(' ').toList
-    val finalChart = buildChart(grammar, lexicon, splitUtterance, guardEval)
+    val finalChart = buildChart(grammar, splitUtterance, guardEval)
     for {
       Passive(0, end, found, tree) <- finalChart.last.edges.toList
-      if found.name == rootSymbol.getOrElse(grammar.start)
+      if found.name == rootSymbol.getOrElse(grammar.nonterminals.start)
     } yield tree
   }
 
-  def buildChart(grammar: Nonterminals, lexicon: Lexicon, utterance: List[String], guardEval: GuardEval): Chart = {
+  def buildChart(grammar: Grammar, utterance: List[String], guardEval: GuardEval): Chart = {
     val indexedUtterance = utterance zip Stream.from(0) toIndexedSeq
-    val initialChart: Chart = indexedUtterance map { case (word, idx) => scan(word, idx, lexicon) }
+    val initialChart: Chart = indexedUtterance map { case (word, idx) => scan(word, idx, grammar.lexicon) }
     val f: Chart => Edge => Set[Edge] = (chart: Chart) => {
-      case edge: Passive => predict(grammar, edge, guardEval) ++ combine(chart, edge, guardEval)
+      case edge: Passive => predict(grammar.nonterminals, edge, guardEval) ++ combine(chart, edge, guardEval)
       case _ => Set.empty
     }
     initialChart.foldLeft(IndexedSeq.empty[State]) {

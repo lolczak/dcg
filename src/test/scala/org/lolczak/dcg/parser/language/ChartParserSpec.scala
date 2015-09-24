@@ -33,9 +33,8 @@ class ChartParserSpec extends WordSpec with Matchers {
     "create edges for all productions having prefix equal to provided passive edge" in {
       //given
       val edge = Passive(0, 1, Term("Verb"), Node(Term("Verb"), List(Leaf("fly"))))
-      val grammar = TestData.grammar
       //when
-      val result = ChartParser.predict(grammar, edge, new GroovyGuardEval)
+      val result = ChartParser.predict(TestData.nonterminals, edge, new GroovyGuardEval)
       //then
       result should contain only(
         Active(0, 1, Term("VP"), List(Term("NP")), List(Node(Term("Verb"), List(Leaf("fly")))), "VP" ~>("Verb", "NP")),
@@ -70,7 +69,7 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "match rhs terms with matching features" in {
       //given
-      val grammar = Nonterminals("S",
+      val nonterminals = Nonterminals("S",
         List(
           "NP"("Num" -> FConst("pl")) ~>("Det"("Num" -> FConst("pl")), "Noun"("Num" -> FConst("pl"))),
           "NP"("Num" -> FConst("sg")) ~>("Det"("Num" -> FConst("sg")), "Noun"("Num" -> FConst("sg"))),
@@ -78,7 +77,7 @@ class ChartParserSpec extends WordSpec with Matchers {
         )
       )
       //when
-      val result = ChartParser.parseDcg(grammar, TestData.lexicon, "these planes", Some("NP"))
+      val result = ChartParser.parseDcg(Grammar(nonterminals, TestData.lexicon), "these planes", Some("NP"))
       //then
       val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
       result should have size 1
@@ -89,14 +88,14 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "bind variables when they are consistent" in {
       //given
-      val grammar = Nonterminals("NP",
+      val nonterminals = Nonterminals("NP",
         List(
           "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n"))),
           "PP" ~>("Prep", "NP")
         )
       )
       //when
-      val result = ChartParser.parseDcg(grammar, TestData.lexicon, "these planes", Some("NP"))
+      val result = ChartParser.parseDcg(Grammar(nonterminals, TestData.lexicon), "these planes", Some("NP"))
       //then
       val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
       result should have size 1
@@ -107,7 +106,7 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "find parse tree for correct utterance" in {
       //when
-      val result = ChartParser.parseDcg(TestData.grammar, TestData.lexicon, TestData.utterance)
+      val result = ChartParser.parseDcg(TestData.grammar, TestData.utterance)
       //then
       result should have size 1
       result.head should matchPattern {
@@ -117,7 +116,7 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "return empty list for incorrrect utterance" in {
       //when
-      val result = ChartParser.parseDcg(TestData.grammar, TestData.lexicon, TestData.incorrectUtterance)
+      val result = ChartParser.parseDcg(TestData.grammar, TestData.incorrectUtterance)
       //then
       result shouldBe empty
     }
