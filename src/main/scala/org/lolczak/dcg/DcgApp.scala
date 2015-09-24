@@ -40,14 +40,14 @@ object DcgApp extends App with LazyLogging {
   def render(root: ParseTree[Term, String]): Unit = {
     def renderNode(node: ParseTree[Term, String], depth:Int=0): Unit = {
       node match {
-        case Leaf(symbol) => printIdention(depth); println(s"Leaf '$symbol'")
-        case Node(term, children) => printIdention(depth); println(s"Node $term"); children.foreach(renderNode(_, depth+1))
+        case Leaf(symbol) => printIndentation(depth); println(s"Leaf '$symbol'")
+        case Node(term, children) => printIndentation(depth); println(s"Node $term"); children.foreach(renderNode(_, depth+1))
       }
     }
     renderNode(root, 0)
   }
 
-  def printIdention(depth: Int): Unit = {
+  def printIndentation(depth: Int): Unit = {
     if (depth <= 0) ()
     else (1 to depth) foreach (_ => print("  "))
   }

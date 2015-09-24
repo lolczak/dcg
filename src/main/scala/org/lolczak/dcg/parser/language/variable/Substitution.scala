@@ -9,8 +9,7 @@ import scalaz.Scalaz._
 
 object Substitution {
 
-  def substitute(production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Term] = {
-    val guardEval = new GroovyGuardEval
+  def substitute(production: Production, parsedTerms: List[ParseTree[Term, String]], guardEval: GuardEval): Option[Term] = {
     val rhs = production.rhs
     val parsedRhs = parsedTerms.map { case Node(term, _) => term }
     require(rhs.length == parsedRhs.length)

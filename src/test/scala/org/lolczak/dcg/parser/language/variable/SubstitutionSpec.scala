@@ -4,6 +4,7 @@ import org.lolczak.dcg.model._
 import Grammar._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 import org.lolczak.dcg.parser.language.Node
+import org.lolczak.dcg.parser.language.guard.GroovyGuardEval
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.Predef.{augmentString => _, wrapString => _, _}
@@ -17,7 +18,7 @@ class SubstitutionSpec extends WordSpec with Matchers {
       val production = "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n")))
       val parsedTerms = List(Node("Det"("Num" -> FConst("pl")), List.empty), Node("Noun"("Num" -> FConst("pl")), List.empty))
       //when
-      val result = Substitution.substitute(production, parsedTerms)
+      val result = Substitution.substitute(production, parsedTerms, new GroovyGuardEval)
       //then
       result shouldBe Some(
         "NP"("Num" -> FConst("pl"))
@@ -30,7 +31,7 @@ class SubstitutionSpec extends WordSpec with Matchers {
         val production = "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FConst("pl")), "Noun"("Num" -> FConst("pl")))
         val parsedTerms = List(Node("Det"("Num" -> FConst("pl")), List.empty), Node("Noun"("Num" -> FConst("pl")), List.empty))
         //when
-        val result = Substitution.substitute(production, parsedTerms)
+        val result = Substitution.substitute(production, parsedTerms, new GroovyGuardEval)
         //then
         result shouldBe None
       }
@@ -40,7 +41,7 @@ class SubstitutionSpec extends WordSpec with Matchers {
         val production =  Production("NP"("Num" -> FVariable("n")), List("Det"("Num" -> FVariable("n1")), "Noun"("Num" -> FVariable("n2"))), Some("n=n1; n1==n2"))
         val parsedTerms = List(Node("Det"("Num" -> FConst("sg")), List.empty), Node("Noun"("Num" -> FConst("pl")), List.empty))
         //when
-        val result = Substitution.substitute(production, parsedTerms)
+        val result = Substitution.substitute(production, parsedTerms, new GroovyGuardEval)
         //then
         result shouldBe None
       }
@@ -52,7 +53,7 @@ class SubstitutionSpec extends WordSpec with Matchers {
       val production =  Production("NP"("Num" -> FVariable("n")), List("Det"("Num" -> FVariable("n1")), "Noun"("Num" -> FVariable("n2"))), Some("n=n1; n1==n2"))
       val parsedTerms = List(Node("Det"("Num" -> FConst("pl")), List.empty), Node("Noun"("Num" -> FConst("pl")), List.empty))
       //when
-      val result = Substitution.substitute(production, parsedTerms)
+      val result = Substitution.substitute(production, parsedTerms, new GroovyGuardEval)
       //then
       result shouldBe Some(
         "NP"("Num" -> FConst("pl"))

@@ -5,6 +5,7 @@ import Grammar._
 import org.lolczak.dcg.parser.TestData
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 import org.lolczak.dcg.parser.language.ChartParser.Chart
+import org.lolczak.dcg.parser.language.guard.GroovyGuardEval
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.Predef.{augmentString => _, wrapString => _, _}
@@ -34,7 +35,7 @@ class ChartParserSpec extends WordSpec with Matchers {
       val edge = Passive(0, 1, Term("Verb"), Node(Term("Verb"), List(Leaf("fly"))))
       val grammar = TestData.grammar
       //when
-      val result = ChartParser.predict(grammar, edge)
+      val result = ChartParser.predict(grammar, edge, new GroovyGuardEval)
       //then
       result should contain only(
         Active(0, 1, Term("VP"), List(Term("NP")), List(Node(Term("Verb"), List(Leaf("fly")))), "VP" ~>("Verb", "NP")),
@@ -55,7 +56,7 @@ class ChartParserSpec extends WordSpec with Matchers {
         Active(0, 1, Term("VP"), List(Term("Verb"), Term("PP")), List(Node(Term("AA"), List.empty)), testProduction2)
       )), State(Set()))
       //when
-      val result = ChartParser.combine(chart, edge)
+      val result = ChartParser.combine(chart, edge, new GroovyGuardEval)
       //then
       result should contain only(
         Active(0, 2, Term("VP"), List(Term("PP")), List(Node(Term("AA"), List.empty), Node(Term("Verb"), List.empty)), testProduction2),
