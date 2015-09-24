@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.grammar
 
-import org.lolczak.dcg.model.Nonterminals._
+import org.lolczak.dcg.model.Grammar._
 import org.lolczak.dcg.model._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _, _}
 import org.scalatest.{Matchers, WordSpec}

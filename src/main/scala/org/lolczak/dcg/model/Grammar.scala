@@ -2,10 +2,9 @@ package org.lolczak.dcg.model
 
 import scala.language.implicitConversions
 
-case class Grammar(nonterminals: Nonterminals,
-                   lexicon: Lexicon,
-                   importDirectives: List[ImportDirective]
-                    )
+case class Grammar(nonterminals:     Nonterminals,
+                   lexicon:          Lexicon,
+                   importDirectives: List[ImportDirective])
 
 case class Nonterminals(start: String, productions: List[Production]) {
 
@@ -29,7 +28,7 @@ case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty) {
 
 case class ImportDirective(file: String)
 
-object Nonterminals {
+object Grammar {
 
   implicit def string2Term(symbol: String): Term = Term(symbol, FeatureStruct.empty)
 

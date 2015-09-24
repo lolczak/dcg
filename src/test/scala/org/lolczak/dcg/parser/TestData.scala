@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser
 
 import org.lolczak.dcg.model._
-import Nonterminals._
+import Grammar._
 import org.lolczak.dcg._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 
