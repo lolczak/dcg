@@ -1,6 +1,6 @@
 package org.lolczak.dcg.parser.grammar
 
-import org.lolczak.dcg.model.Grammar._
+import org.lolczak.dcg.model.Nonterminals._
 import org.lolczak.dcg.model._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _, _}
 import org.scalatest.{Matchers, WordSpec}
@@ -99,7 +99,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
     "parse simple terminal production" in {
       //given
       val terminalString = "Noun -> 'test'"
-      val ExpectedProduction = LexProduction("Noun", List("test"))
+      val ExpectedProduction = TerminalProduction("Noun", List("test"))
       //when
       val result = terminal(new GrammarParser.lexical.Scanner(terminalString))
       //then
@@ -109,7 +109,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
     "parse feature based terminal production" in {
       //given
       val terminalString = "Noun[Num=sg, Gen=male] -> 'test' | 'test2' "
-      val ExpectedProduction = LexProduction("Noun"("Num" -> FConst("sg"), "Gen" -> FConst("male")), List("test", "test2"))
+      val ExpectedProduction = TerminalProduction("Noun"("Num" -> FConst("sg"), "Gen" -> FConst("male")), List("test", "test2"))
       //when
       val result = terminal(new GrammarParser.lexical.Scanner(terminalString))
       //then
@@ -131,7 +131,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
         "planes" -> Set[Term]("Noun"("Num" -> FConst("pl"))),
         "an" -> Set[Term]("Det"("Num" -> FConst("sg")))
       )
-      val ExpectedGrammar = Grammar("S",
+      val ExpectedGrammar = Nonterminals("S",
         List(
           "S" ~>("NP", "VP"),
           "VP" ~> "Verb",
@@ -160,7 +160,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
         "planes" -> Set[Term]("Noun"("Num" -> FConst("pl"))),
         "an" -> Set[Term]("Det"("Num" -> FConst("sg")))
       )
-      val ExpectedGrammar = Grammar("S",
+      val ExpectedGrammar = Nonterminals("S",
         List(
           "S" ~>("NP", "VP"),
           "VP" ~> "Verb",

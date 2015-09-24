@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language.variable
 
 import org.lolczak.dcg.model._
-import Grammar._
+import Nonterminals._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 import org.lolczak.dcg.parser.language.Node
 import org.lolczak.dcg.parser.language.guard.GroovyGuardEval

@@ -21,27 +21,27 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
     snippet = Some("{", "}")
   )
 
-  def parseGrammar(content: String): ParseResult[(Lexicon, Grammar)] = grammar(new lexical.Scanner(content))
+  def parseGrammar(content: String): ParseResult[(Lexicon, Nonterminals)] = grammar(new lexical.Scanner(content))
 
   lazy val importDirective: Parser[List[ImportDirective]] = rep("import" ~> stringLit ^^ {case path => ImportDirective(path)})
 
-  lazy val grammar: Parser[(Lexicon, Grammar)] =
+  lazy val grammar: Parser[(Lexicon, Nonterminals)] =
     for {
       productions <- rep(production)
       nonterminals = productions filter (_.isRight) map {case \/-(r) => r}
       terminals = productions filter (_.isLeft) map {case -\/(l) => l}
       lexicon = Lexicon.fromProductions(terminals: _*)
-    } yield (lexicon, Grammar(nonterminals.head.lhs.name, nonterminals))
+    } yield (lexicon, Nonterminals(nonterminals.head.lhs.name, nonterminals))
 
-  lazy val production: Parser[LexProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
+  lazy val production: Parser[TerminalProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
 
   lazy val nonterminal: Parser[Production] =
     lhs ~ repTill(term, productionEnd) ~ opt(guardCode) ^^ { case l ~ r ~ mg => Production(l, r, mg) }
 
   lazy val guardCode: Parser[String] = codeSnippet
 
-  lazy val terminal: Parser[LexProduction] =
-    lhs ~ separatedSequence(stringLit, "|", productionEnd) ^^ { case l ~ r => LexProduction(l, r)}
+  lazy val terminal: Parser[TerminalProduction] =
+    lhs ~ separatedSequence(stringLit, "|", productionEnd) ^^ { case l ~ r => TerminalProduction(l, r)}
 
   lazy val lhs: Parser[Term] = term <~ "->"
 

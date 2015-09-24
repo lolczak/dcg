@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser
 
 import org.lolczak.dcg.model._
-import Grammar._
+import Nonterminals._
 import org.lolczak.dcg._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 
@@ -19,7 +19,7 @@ object TestData {
     "an" -> Set[Term]("Det"("Num" -> FConst("sg")))
   )
   
-  val grammar = Grammar("S",
+  val grammar = Nonterminals("S",
     List(
       "S" ~>("NP", "VP"),
       "VP" ~> "Verb",

@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model._
-import Grammar._
+import Nonterminals._
 import org.lolczak.dcg.parser.TestData
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 import org.lolczak.dcg.parser.language.ChartParser.Chart
@@ -70,7 +70,7 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "match rhs terms with matching features" in {
       //given
-      val grammar = Grammar("S",
+      val grammar = Nonterminals("S",
         List(
           "NP"("Num" -> FConst("pl")) ~>("Det"("Num" -> FConst("pl")), "Noun"("Num" -> FConst("pl"))),
           "NP"("Num" -> FConst("sg")) ~>("Det"("Num" -> FConst("sg")), "Noun"("Num" -> FConst("sg"))),
@@ -89,7 +89,7 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "bind variables when they are consistent" in {
       //given
-      val grammar = Grammar("NP",
+      val grammar = Nonterminals("NP",
         List(
           "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n"))),
           "PP" ~>("Prep", "NP")
