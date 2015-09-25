@@ -4,7 +4,6 @@ import org.lolczak.dcg.model._
 import Grammar._
 import org.lolczak.dcg.parser.TestData
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
-import org.lolczak.dcg.parser.language.ChartParser.Chart
 import org.lolczak.dcg.parser.language.guard.GroovyGuardEval
 import org.scalatest.{Matchers, WordSpec}
 
@@ -18,7 +17,8 @@ class ChartParserSpec extends WordSpec with Matchers {
       //given
       val lexicon = new Lexicon("fly" -> Set(Term("Noun"), Term("Verb")))
       //when
-      val result = ChartParser.scan("fly", 1, lexicon)
+      val objectUnderTest = new ChartParser(Grammar(TestData.nonterminals,lexicon))
+      val result = objectUnderTest.scan("fly", 1, lexicon)
       //then
       result shouldBe State(Set(
         Passive(1, 2, Term("Noun"), Node(Term("Noun"), List(Leaf("fly")))),
@@ -34,7 +34,8 @@ class ChartParserSpec extends WordSpec with Matchers {
       //given
       val edge = Passive(0, 1, Term("Verb"), Node(Term("Verb"), List(Leaf("fly"))))
       //when
-      val result = ChartParser.predict(TestData.nonterminals, edge, new GroovyGuardEval)
+      val objectUnderTest = new ChartParser(Grammar(TestData.nonterminals, TestData.lexicon))
+      val result = objectUnderTest.predict(TestData.nonterminals, edge)
       //then
       result should contain only(
         Active(0, 1, Term("VP"), List(Term("NP")), List(Node(Term("Verb"), List(Leaf("fly")))), "VP" ~>("Verb", "NP")),
@@ -50,12 +51,13 @@ class ChartParserSpec extends WordSpec with Matchers {
       val edge = Passive(1, 2, Term("Verb"), Node(Term("Verb"), List.empty))
       val testProduction1 = "VP" ~>("AA", "Verb")
       val testProduction2 = "VP" ~>("AA", "Verb", "PP")
-      val chart: Chart = IndexedSeq(State(Set(
+      val chart = IndexedSeq(State(Set(
         Active(0, 1, Term("VP"), List(Term("Verb")), List(Node(Term("AA"), List.empty)), testProduction1),
         Active(0, 1, Term("VP"), List(Term("Verb"), Term("PP")), List(Node(Term("AA"), List.empty)), testProduction2)
       )), State(Set()))
       //when
-      val result = ChartParser.combine(chart, edge, new GroovyGuardEval)
+      val objectUnderTest = new ChartParser(TestData.grammar)
+      val result = objectUnderTest.combine(chart, edge)
       //then
       result should contain only(
         Active(0, 2, Term("VP"), List(Term("PP")), List(Node(Term("AA"), List.empty), Node(Term("Verb"), List.empty)), testProduction2),
@@ -77,7 +79,8 @@ class ChartParserSpec extends WordSpec with Matchers {
         )
       )
       //when
-      val result = ChartParser.parseDcg(Grammar(nonterminals, TestData.lexicon), "these planes", Some("NP"))
+      val objectUnderTest = new ChartParser(Grammar(nonterminals, TestData.lexicon),new GroovyGuardEval, Some("NP"))
+      val result = objectUnderTest.parse("these planes")
       //then
       val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
       result should have size 1
@@ -95,7 +98,8 @@ class ChartParserSpec extends WordSpec with Matchers {
         )
       )
       //when
-      val result = ChartParser.parseDcg(Grammar(nonterminals, TestData.lexicon), "these planes", Some("NP"))
+      val objectUnderTest = new ChartParser(Grammar(nonterminals, TestData.lexicon),new GroovyGuardEval, Some("NP"))
+      val result = objectUnderTest.parse("these planes")
       //then
       val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
       result should have size 1
@@ -106,7 +110,8 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "find parse tree for correct utterance" in {
       //when
-      val result = ChartParser.parseDcg(TestData.grammar, TestData.utterance)
+      val objectUnderTest = new ChartParser(TestData.grammar)
+      val result = objectUnderTest.parse(TestData.utterance)
       //then
       result should have size 1
       result.head should matchPattern {
@@ -116,7 +121,8 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "return empty list for incorrrect utterance" in {
       //when
-      val result = ChartParser.parseDcg(TestData.grammar, TestData.incorrectUtterance)
+      val objectUnderTest = new ChartParser(TestData.grammar)
+      val result = objectUnderTest.parse(TestData.incorrectUtterance)
       //then
       result shouldBe empty
     }

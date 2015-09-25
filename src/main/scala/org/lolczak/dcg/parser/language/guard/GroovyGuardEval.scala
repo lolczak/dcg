@@ -28,7 +28,7 @@ class GroovyGuardEval(imports: List[String] = List.empty) extends GuardEval {
   }
 
   private def compile(guardCode: String): EvalFailure \/ Script = {
-    val code = importedSnippets.map(Source.fromURL(_).mkString) :+ guardCode mkString("\n")
+    val code = importedSnippets.map(Source.fromURL(_).mkString) :+ guardCode mkString "\n"
     val shell = new GroovyShell()
     \/.fromTryCatchNonFatal(shell.parse(code)) leftMap { case th => CompilationFailure(th.getMessage) }
   }

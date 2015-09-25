@@ -6,24 +6,26 @@ import org.lolczak.dcg.parser.language.variable.Substitution
 
 import scala.annotation.tailrec
 
-object ChartParser {
+class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[String] = None) extends NaturalLangParser {
+
+  def this(grammar: Grammar) = this(grammar, new GroovyGuardEval(grammar.importDirectives.map(_.file)), None)
 
   type Chart = IndexedSeq[State]
 
-  def parseDcg(grammar: Grammar, utterance: String, rootSymbol: Option[String] = None, guardEval: GuardEval = new GroovyGuardEval): List[ParseTree[Term, String]] = {
+  def parse(utterance: String): List[ParseTree[Term, String]] = {
     val splitUtterance = utterance.split(' ').toList
-    val finalChart = buildChart(grammar, splitUtterance, guardEval)
+    val finalChart = buildChart(splitUtterance)
     for {
       Passive(0, end, found, tree) <- finalChart.last.edges.toList
       if found.name == rootSymbol.getOrElse(grammar.nonterminals.start)
     } yield tree
   }
 
-  def buildChart(grammar: Grammar, utterance: List[String], guardEval: GuardEval): Chart = {
+  def buildChart(utterance: List[String]): Chart = {
     val indexedUtterance = utterance zip Stream.from(0) toIndexedSeq
     val initialChart: Chart = indexedUtterance map { case (word, idx) => scan(word, idx, grammar.lexicon) }
     val f: Chart => Edge => Set[Edge] = (chart: Chart) => {
-      case edge: Passive => predict(grammar.nonterminals, edge, guardEval) ++ combine(chart, edge, guardEval)
+      case edge: Passive => predict(grammar.nonterminals, edge) ++ combine(chart, edge)
       case _ => Set.empty
     }
     initialChart.foldLeft(IndexedSeq.empty[State]) {
@@ -47,32 +49,32 @@ object ChartParser {
     State(lexicon.findAllForms(word).map(t => Passive(index, index + 1, t, Node(t, List(Leaf(word))))))
   }
 
-  def predict(grammar: Nonterminals, edge: Passive, guardEval: GuardEval): Set[Edge] =
+  def predict(nonterminals: Nonterminals, edge: Passive): Set[Edge] =
     for {
-      p@Production(lhs, rhs, snippet) <- grammar.findStartingWith(edge.found.name)
-      maybeNewEdge = tryCreatePredictedEdge(edge, p, lhs, rhs, guardEval)
+      p@Production(lhs, rhs, snippet) <- nonterminals.findStartingWith(edge.found.name)
+      maybeNewEdge = tryCreatePredictedEdge(edge, p, lhs, rhs)
       if FeatureAgreement.isConsistent(rhs.head, edge.found) && maybeNewEdge.isDefined
     } yield maybeNewEdge.get
 
-  def tryCreatePredictedEdge(edge: Passive, p: Production, lhs: Term, rhs: List[Term], guardEval: GuardEval): Option[Edge] = {
-    if (rhs.tail.isEmpty) createPassive(edge.start, edge.end, p, List(edge.tree), guardEval)
+  def tryCreatePredictedEdge(edge: Passive, p: Production, lhs: Term, rhs: List[Term]): Option[Edge] = {
+    if (rhs.tail.isEmpty) createPassive(edge.start, edge.end, p, List(edge.tree))
     else Some(Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree), p))
   }
 
-  def combine(chart: Chart, edge: Passive, guardEval: GuardEval): Set[Edge] =
+  def combine(chart: Chart, edge: Passive): Set[Edge] =
     if (edge.start <= 0) Set.empty
     else for {
       Active(start, end, leftTerm, prefix :: rest, parsedPrefix, p) <- chart(edge.start - 1).findActiveStartingWith(edge.found.name)
-      maybeNewEdge = tryCreateCombinedEdge(edge, start, leftTerm, rest, parsedPrefix, p, guardEval)
+      maybeNewEdge = tryCreateCombinedEdge(edge, start, leftTerm, rest, parsedPrefix, p)
       if end == edge.start && FeatureAgreement.isConsistent(prefix, edge.found) && maybeNewEdge.isDefined
     } yield maybeNewEdge.get
 
-  def tryCreateCombinedEdge(edge: Passive, start: Int, leftTerm: Term, rest: List[Term], parsedPrefix: List[ParseTree[Term, String]], p: Production, guardEval: GuardEval): Option[Edge] = {
-    if (rest.isEmpty) createPassive(start, edge.end, p, parsedPrefix :+ edge.tree, guardEval)
+  def tryCreateCombinedEdge(edge: Passive, start: Int, leftTerm: Term, rest: List[Term], parsedPrefix: List[ParseTree[Term, String]], p: Production): Option[Edge] = {
+    if (rest.isEmpty) createPassive(start, edge.end, p, parsedPrefix :+ edge.tree)
     else Some(Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p))
   }
 
-  def createPassive(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]], guardEval: GuardEval): Option[Passive] =
+  def createPassive(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Passive] =
     for {
       term <- Substitution.substitute(production, parsedTerms, guardEval) //todo maybe Reader is better option
       tree = Node(term, parsedTerms)
