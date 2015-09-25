@@ -77,6 +77,20 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       }
     }
 
+    "include in script imported files" in {
+      //given
+      val TestAssignment = VariableAssignment("x" -> FConst("2"), "y" -> FConst("3"))
+      val ExpectedAssignment = TestAssignment.add("z", FConst("5")).get
+      val guardCode = "z = asInt(x) + asInt(y)"
+      //when
+      val objectUnderTest = new GroovyGuardEval(List("functions.groovy"))
+      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      //then
+      result should matchPattern {
+        case \/-(EvalResult(ExpectedAssignment, true)) =>
+      }
+    }
+
   }
 
 }
