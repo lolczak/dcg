@@ -5,8 +5,7 @@ import org.lolczak.parsing.lexical._
 import org.lolczak.parsing.syntactical.GenericTokenParsers
 import org.lolczak.parsing.util.HelperParsers
 
-import scala.util.parsing.combinator.syntactical.StandardTokenParsers
-import scalaz.{\/-, -\/, \/}
+import scalaz.{-\/, \/, \/-}
 
 object GrammarParser extends GenericTokenParsers with HelperParsers {
 
@@ -27,11 +26,11 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
 
   lazy val grammar: Parser[Grammar] =
     for {
-      directives <- importDirectives
-      productions <- rep(production)
-      nonterminals = productions filter (_.isRight) map {case \/-(r) => r}
-      terminals = productions filter (_.isLeft) map {case -\/(l) => l}
-      lexicon = Lexicon.fromProductions(terminals: _*)
+      directives   <- importDirectives
+      productions  <- rep(production)
+      nonterminals = productions filter (_.isRight) map { case \/-(r) => r }
+      terminals    = productions filter (_.isLeft)  map { case -\/(l) => l }
+      lexicon      = Lexicon.fromProductions(terminals: _*)
     } yield Grammar(Nonterminals(nonterminals.head.lhs.name, nonterminals), lexicon, directives)
 
   lazy val production: Parser[TerminalProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
@@ -57,11 +56,13 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
   lazy val featureStruct: Parser[FeatureStruct] =
     "[" ~> separatedSequence(feature, featureSeparator, featureEnd) ^^ { f => FeatureStruct(Map(f: _*)) }
 
-  lazy val feature: Parser[(String, FeatureRhsOperand)] = (ident <~ "=") ~ (fvariable | fvalue) ^^ { case name ~ fval => (name, fval) }
+  lazy val feature: Parser[(String, FeatureRhsOperand)] = (ident <~ "=") ~ (fvariable | fvalue | flist) ^^ { case name ~ fval => (name, fval) }
 
   lazy val fvariable: Parser[FVariable] = "?" ~> ident ^^ { varName => FVariable(varName) }
 
   lazy val fvalue: Parser[FConst] = ident ^^ { varName => FConst(varName) }
+
+  lazy val flist: Parser[FList] = "<" ~> separatedSequence(fvariable | fvalue, ",",  ">" ) ^^ { case list => FList(list)}
 
   lazy val featureSeparator: Parser[Unit] = "," ^^^()
 

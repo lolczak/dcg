@@ -52,8 +52,8 @@ class GrammarParserSpec extends WordSpec with Matchers {
 
     "parse term containing features" in {
       //given
-      val termString = "Verb[Per=frst, Num=?n, Cas=Acc]"
-      val ExpectedFStruct = FeatureStruct(Map("Per" -> FConst("frst"), "Num" -> FVariable("n"), "Cas" -> FConst("Acc")))
+      val termString = "Verb[Per=frst, Num=?n, Cas=<Acc, ?v>]"
+      val ExpectedFStruct = FeatureStruct(Map("Per" -> FConst("frst"), "Num" -> FVariable("n"), "Cas" -> FList(List(FConst("Acc"), FVariable("v")))))
       //when
       val result = term(new GrammarParser.lexical.Scanner(termString))
       //then
