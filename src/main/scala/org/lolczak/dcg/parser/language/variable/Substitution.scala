@@ -1,11 +1,11 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.model.{FeatureStruct, FeatureValue, Production, Term}
-import org.lolczak.dcg.parser.language.guard.{EvalResult, GuardEval, GroovyGuardEval}
+import org.lolczak.dcg.model._
+import org.lolczak.dcg.parser.language.guard.{EvalResult, GuardEval}
 import org.lolczak.dcg.parser.language.{Node, ParseTree}
 
-import scalaz.{\/-, -\/}
 import scalaz.Scalaz._
+import scalaz.{-\/, \/-}
 
 object Substitution {
 
@@ -35,7 +35,7 @@ object Substitution {
       result match {
         case -\/(err) => throw new RuntimeException(err.toString)
         case \/-(EvalResult(_, false)) => None
-        case \/-(EvalResult(variableAssignment, true))=> Some(variableAssignment)
+        case \/-(EvalResult(variableAssignment, true)) => Some(variableAssignment)
       }
     } else Some(unifiedAssignment)
 
@@ -54,10 +54,17 @@ object Substitution {
       case (maybeSubstitution, binding) =>
         for {
           substitution <- maybeSubstitution
-          value <- parsedFeatures(binding.featureName)
+          value <- extractVar(parsedFeatures, binding) //parsedFeatures(binding.featureName)
           if !value.isVariable
           result <- substitution.add(binding.varName, value.asInstanceOf[FeatureValue])
         } yield result
+    }
+  }
+
+  private def extractVar(parsedFeatures: FeatureStruct, binding: VariableBinding): Option[FeatureRhsOperand] = {
+    parsedFeatures(binding.featureName) map {
+      case FList(elems) => elems(binding.maybeIndex.get)
+      case x => x
     }
   }
 

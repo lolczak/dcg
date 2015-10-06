@@ -3,6 +3,7 @@ package org.lolczak.dcg.parser.language
 import org.lolczak.dcg.model._
 import Grammar._
 import org.lolczak.dcg.parser.TestData
+import org.lolczak.dcg.parser.grammar.GrammarParser
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 import org.lolczak.dcg.parser.language.guard.GroovyGuardEval
 import org.scalatest.{Matchers, WordSpec}
@@ -107,6 +108,39 @@ class ChartParserSpec extends WordSpec with Matchers {
         case Node(Term("NP", ExpectedFeatures), _) =>
       }
     }
+
+    "support list values" in {
+      import scala.Predef.augmentString
+      //given
+      val grammarString =
+        """
+          |NP[PerNum=<?per, ?num>] -> Det[PerNum=<frst, ?num>] Noun[PerNum=<frst, ?num>] {per = 'frst'}
+          |
+          |Det[PerNum=<frst, sg>] -> 'this' | 'that' | 'the'
+          |Det[PerNum=<frst, pl>] -> 'these' | 'those'
+          |
+          |Noun[PerNum=<frst, sg>] -> 'plane'
+          |Noun[PerNum=<frst, pl>] -> 'planes'
+        """.stripMargin
+
+      val grammar = GrammarParser.parseGrammar(grammarString).get
+      //when
+      val objectUnderTest = new ChartParser(grammar)
+      val result = objectUnderTest.parse("these planes")
+      val result2 = objectUnderTest.parse("this planes")
+      //then
+      result should have size 1
+      result2 shouldBe empty
+    }
+
+    "support wildcards" in {
+      //given
+
+      //when
+
+      //then
+    }
+
 
     "find parse tree for correct utterance" in {
       //when

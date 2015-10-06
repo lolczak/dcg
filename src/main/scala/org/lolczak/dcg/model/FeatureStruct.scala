@@ -4,13 +4,17 @@ import org.lolczak.dcg.parser.language.variable.VariableAssignment
 
 case class FeatureStruct(features: Map[String, FeatureRhsOperand]) {
 
-  def apply(featName: String):Option[FeatureRhsOperand] = features.get(featName)
+  def apply(featName: String): Option[FeatureRhsOperand] = features.get(featName)
 
   val containsVariables = features.exists(_._2.isVariable)
 
   def substitute(substitution: VariableAssignment): FeatureStruct = {
     val substituted = features.mapValues {
       case v@FVariable(name) => substitution.find(name).getOrElse(v)
+      case FList(elems) => FList(elems.map {
+        case v@FVariable(name) => substitution.find(name).getOrElse(v).asInstanceOf[FeatureSimpleValue]
+        case x => x
+      })
       case x => x
     }
     FeatureStruct(substituted)
@@ -25,19 +29,22 @@ case class FeatureStruct(features: Map[String, FeatureRhsOperand]) {
 sealed trait FeatureRhsOperand {
   val isVariable: Boolean
 }
-case class FVariable(name: String) extends FeatureRhsOperand {
+
+sealed trait FeatureSimpleValue extends FeatureRhsOperand
+
+case class FVariable(name: String) extends FeatureSimpleValue {
   override val isVariable: Boolean = true
 
   override def toString: String = s"?$name"
 }
 sealed trait FeatureValue extends FeatureRhsOperand
-case class FConst(value: String) extends FeatureValue {
+case class FConst(value: String) extends FeatureValue with FeatureSimpleValue {
   override val isVariable: Boolean = false
 
   override def toString: String = value
 }
-case class FList(elements: List[FeatureRhsOperand]) extends FeatureValue {
-  override val isVariable: Boolean = false
+case class FList(elements: List[FeatureSimpleValue]) extends FeatureValue {
+  override val isVariable: Boolean = elements.exists(_.isVariable)
 
   override def toString: String = elements.mkString("<", ",", ">")
 }
