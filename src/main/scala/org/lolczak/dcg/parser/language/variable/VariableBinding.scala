@@ -13,10 +13,10 @@ object VariableBinding {
    * @return
    */
   def findVariableBindings(ruleFeatures: FeatureStruct): Set[VariableBinding] =
-    ruleFeatures.features.filter(_._2.constainsVariable) flatMap {
+    ruleFeatures.features.filter(_._2.containsVariable) flatMap {
       case (featName, FVariable(varName)) => Iterable(VariableBinding(varName, featName))
       case (featName, FList(elements)) =>
-        elements.zipWithIndex.filter(_._1.constainsVariable).map{case (FVariable(varName), index) => VariableBinding(varName, featName, Some(index))}
+        elements.zipWithIndex.filter(_._1.containsVariable).map{case (FVariable(varName), index) => VariableBinding(varName, featName, Some(index))}
     } toSet
 
 }

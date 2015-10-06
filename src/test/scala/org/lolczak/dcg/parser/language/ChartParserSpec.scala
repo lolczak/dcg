@@ -133,12 +133,28 @@ class ChartParserSpec extends WordSpec with Matchers {
       result2 shouldBe empty
     }
 
-    "support wildcards" in {
+    "support placeholders" in {
+      import scala.Predef.augmentString
       //given
+      val grammarString =
+        """
+          |NP[PerNum=<?per, ?num>] -> Det[PerNum=<_, ?num>, f1=_] Noun[PerNum=<_, ?num>] {per = 'frst'}
+          |
+          |Det[PerNum=<frst, sg>, f1=A] -> 'this' | 'that' | 'the'
+          |Det[PerNum=<frst, pl>, f2=B] -> 'these' | 'those'
+          |
+          |Noun[PerNum=<frst, sg>] -> 'plane'
+          |Noun[PerNum=<frst, pl>] -> 'planes'
+        """.stripMargin
 
+      val grammar = GrammarParser.parseGrammar(grammarString).get
       //when
-
+      val objectUnderTest = new ChartParser(grammar)
+      val result = objectUnderTest.parse("these planes")
+      val result2 = objectUnderTest.parse("this planes")
       //then
+      result should have size 1
+      result2 shouldBe empty
     }
 
 
