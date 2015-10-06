@@ -6,7 +6,7 @@ case class FeatureStruct(features: Map[String, FeatureRhsOperand]) {
 
   def apply(featName: String): Option[FeatureRhsOperand] = features.get(featName)
 
-  val containsVariables = features.exists(_._2.isVariable)
+  val containsVariables = features.exists(_._2.constainsVariable)
 
   def substitute(substitution: VariableAssignment): FeatureStruct = {
     val substituted = features.mapValues {
@@ -27,24 +27,24 @@ case class FeatureStruct(features: Map[String, FeatureRhsOperand]) {
 }
 
 sealed trait FeatureRhsOperand {
-  val isVariable: Boolean
+  val constainsVariable: Boolean
 }
 
 sealed trait FeatureSimpleValue extends FeatureRhsOperand
 
 case class FVariable(name: String) extends FeatureSimpleValue {
-  override val isVariable: Boolean = true
+  override val constainsVariable: Boolean = true
 
   override def toString: String = s"?$name"
 }
 sealed trait FeatureValue extends FeatureRhsOperand
 case class FConst(value: String) extends FeatureValue with FeatureSimpleValue {
-  override val isVariable: Boolean = false
+  override val constainsVariable: Boolean = false
 
   override def toString: String = value
 }
 case class FList(elements: List[FeatureSimpleValue]) extends FeatureValue {
-  override val isVariable: Boolean = elements.exists(_.isVariable)
+  override val constainsVariable: Boolean = elements.exists(_.constainsVariable)
 
   override def toString: String = elements.mkString("<", ",", ">")
 }
