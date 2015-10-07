@@ -54,7 +54,7 @@ object Substitution {
       case (maybeSubstitution, binding) =>
         for {
           substitution <- maybeSubstitution
-          value <- extractVar(parsedFeatures, binding) //parsedFeatures(binding.featureName)
+          value <- extractVar(parsedFeatures, binding)
           if !value.containsVariable
           result <- substitution.add(binding.varName, value.asInstanceOf[FeatureValue])
         } yield result
