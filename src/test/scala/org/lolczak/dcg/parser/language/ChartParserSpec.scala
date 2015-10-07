@@ -114,13 +114,13 @@ class ChartParserSpec extends WordSpec with Matchers {
       //given
       val grammarString =
         """
-          |NP[PerNum=<?per, ?num>] -> Det[PerNum=<frst, ?num>] Noun[PerNum=<frst, ?num>] {per = 'frst'}
+          |NP[PerNum=<?per, ?num>] -> Det[PerNum=<'frst', ?num>] Noun[PerNum=<'frst', ?num>] {per = 'frst'}
           |
-          |Det[PerNum=<frst, sg>] -> 'this' | 'that' | 'the'
-          |Det[PerNum=<frst, pl>] -> 'these' | 'those'
+          |Det[PerNum=<'frst', 'sg'>] -> 'this' | 'that' | 'the'
+          |Det[PerNum=<'frst', 'pl'>] -> 'these' | 'those'
           |
-          |Noun[PerNum=<frst, sg>] -> 'plane'
-          |Noun[PerNum=<frst, pl>] -> 'planes'
+          |Noun[PerNum=<'frst', 'sg'>] -> 'plane'
+          |Noun[PerNum=<'frst', 'pl'>] -> 'planes'
         """.stripMargin
 
       val grammar = GrammarParser.parseGrammar(grammarString).get
@@ -140,11 +140,11 @@ class ChartParserSpec extends WordSpec with Matchers {
         """
           |NP[PerNum=<?per, ?num>] -> Det[PerNum=<_, ?num>, f1=_] Noun[PerNum=<_, ?num>] {per = 'frst'}
           |
-          |Det[PerNum=<frst, sg>, f1=A] -> 'this' | 'that' | 'the'
-          |Det[PerNum=<frst, pl>, f2=B] -> 'these' | 'those'
+          |Det[PerNum=<'frst', 'sg'>, f1='A'] -> 'this' | 'that' | 'the'
+          |Det[PerNum=<'frst', 'pl'>, f2='B'] -> 'these' | 'those'
           |
-          |Noun[PerNum=<frst, sg>] -> 'plane'
-          |Noun[PerNum=<frst, pl>] -> 'planes'
+          |Noun[PerNum=<'frst', 'sg'>] -> 'plane'
+          |Noun[PerNum=<'frst', 'pl'>] -> 'planes'
         """.stripMargin
 
       val grammar = GrammarParser.parseGrammar(grammarString).get

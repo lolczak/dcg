@@ -60,7 +60,7 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
 
   lazy val fvariable: Parser[FVariable] = "?" ~> ident ^^ { varName => FVariable(varName) }
 
-  lazy val fvalue: Parser[FConst] = ident ^^ { varName => FConst(varName) }
+  lazy val fvalue: Parser[FConst] = stringLit ^^ { varName => FConst(varName) }
 
   lazy val flist: Parser[FList] = "<" ~> separatedSequence(fvariable | fvalue | fplaceholder, ",",  ">" ) ^^ { case list => FList(list)}
 

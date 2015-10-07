@@ -42,7 +42,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
 
     "parse term containing feature" in {
       //given
-      val termString = "Verb[Per=frst]"
+      val termString = "Verb[Per='frst']"
       val ExpectedFStruct = FeatureStruct(Map("Per" -> FConst("frst")))
       //when
       val result = term(new GrammarParser.lexical.Scanner(termString))
@@ -52,7 +52,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
 
     "parse term containing features" in {
       //given
-      val termString = "Verb[Per=frst, Num=?n, Cas=<Acc, ?v>]"
+      val termString = "Verb[Per='frst', Num=?n, Cas=<'Acc', ?v>]"
       val ExpectedFStruct = FeatureStruct(Map("Per" -> FConst("frst"), "Num" -> FVariable("n"), "Cas" -> FList(List(FConst("Acc"), FVariable("v")))))
       //when
       val result = term(new GrammarParser.lexical.Scanner(termString))
@@ -75,7 +75,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
 
     "parse nonterminal production containing features" in {
       //given
-      val nonterminalString = "NP[Num=?n, Gen=male] -> Det[Num=?n] Noun[Num=?n] "
+      val nonterminalString = "NP[Num=?n, Gen='male'] -> Det[Num=?n] Noun[Num=?n] "
       val ExpectedProduction = "NP"("Num" -> FVariable("n"), "Gen" -> FConst("male")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n")))
       //when
       val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
@@ -108,7 +108,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
 
     "parse feature based terminal production" in {
       //given
-      val terminalString = "Noun[Num=sg, Gen=male] -> 'test' | 'test2' "
+      val terminalString = "Noun[Num='sg', Gen='male'] -> 'test' | 'test2' "
       val ExpectedProduction = TerminalProduction("Noun"("Num" -> FConst("sg"), "Gen" -> FConst("male")), List("test", "test2"))
       //when
       val result = terminal(new GrammarParser.lexical.Scanner(terminalString))
