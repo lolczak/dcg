@@ -1,8 +1,8 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.model.{FList, FVariable, FeatureStruct}
+import org.lolczak.dcg.model.{FeatureZipper, FList, FVariable, FeatureStruct}
 
-case class VariableBinding(varName: String, featureName: String, maybeIndex: Option[Int] = None)
+case class VariableBinding(varName: String, navigation: FeatureZipper)
 
 object VariableBinding {
 
@@ -13,10 +13,11 @@ object VariableBinding {
    * @return
    */
   def findVariableBindings(ruleFeatures: FeatureStruct): Set[VariableBinding] =
-    ruleFeatures.features.filter(_._2.containsVariable) flatMap {
-      case (featName, FVariable(varName)) => Iterable(VariableBinding(varName, featName))
-      case (featName, FList(elements)) =>
-        elements.zipWithIndex.filter(_._1.containsVariable).map{case (FVariable(varName), index) => VariableBinding(varName, featName, Some(index))}
+    FeatureZipper.filter {
+      case _: FVariable => true
+      case _ => false
+    } (ruleFeatures) map {
+      case z@FeatureZipper(FVariable(name), path) => VariableBinding(name, z)
     } toSet
 
 }

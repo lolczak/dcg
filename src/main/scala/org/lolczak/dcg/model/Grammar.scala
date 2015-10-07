@@ -41,7 +41,7 @@ object Grammar {
   }
 
   implicit class TermString(name: String) {
-    def apply(features: (String, FeatureRhsOperand)*) = Term(name, FeatureStruct(Map(features: _*)))
+    def apply(features: (String, FeatureItem)*) = Term(name, FeatureStruct(Map(features: _*)))
   }
 
 }

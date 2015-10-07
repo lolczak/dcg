@@ -24,8 +24,8 @@ object Substitution {
     }
     for {
       substitution <- maybeSubstitution.flatMap(eval(production, guardEval))
-      features = production.lhs.fStruct.substitute(substitution)
-      if !features.containsVariables
+      features = production.lhs.fStruct.substitute(substitution)//todo
+      if !features.containsVariable
     } yield Term(production.lhs.name, features)
   }
 
@@ -61,12 +61,7 @@ object Substitution {
     }
   }
 
-  private def extractVar(parsedFeatures: FeatureStruct, binding: VariableBinding): Option[FeatureRhsOperand] = {
-    parsedFeatures(binding.featureName) map {
-      case FList(elems) => elems(binding.maybeIndex.get)
-      case x => x
-    }
-  }
-
+  private def extractVar(parsedFeatures: FeatureStruct, binding: VariableBinding): Option[FeatureItem] =
+    FeatureZipper.goto(binding.navigation.breadcrumbs)(parsedFeatures)
 
 }

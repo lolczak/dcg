@@ -157,6 +157,53 @@ class ChartParserSpec extends WordSpec with Matchers {
       result2 shouldBe empty
     }
 
+    "support nested feature structs" in {
+      import scala.Predef.augmentString
+      //given
+      val grammarString =
+        """
+          |NP[PerNum=?pn] -> Det[PerNum=?pn] Noun[PerNum=?pn]
+          |
+          |Det[PerNum=[Per='frst', Num='sg']] -> 'this' | 'that' | 'the'
+          |Det[PerNum=[Per='frst', Num='pl']] -> 'these' | 'those'
+          |
+          |Noun[PerNum=[Per='frst', Num='sg']] -> 'plane'
+          |Noun[PerNum=[Per='frst', Num='pl']] -> 'planes'
+        """.stripMargin
+
+      val grammar = GrammarParser.parseGrammar(grammarString).get
+      //when
+      val objectUnderTest = new ChartParser(grammar)
+      val result = objectUnderTest.parse("these planes")
+      val result2 = objectUnderTest.parse("this planes")
+      //then
+      result should have size 1
+      result2 shouldBe empty
+    }
+
+    "support binding inside nested feature structs" in {
+      import scala.Predef.augmentString
+      //given
+      val grammarString =
+        """
+          |NP[PerNum=[Per='frst', Num=?n]] -> Det[PerNum=[Per='frst', Num=?n]] Noun[PerNum=[Per='frst', Num=?n]]
+          |
+          |Det[PerNum=[Per='frst', Num='sg']] -> 'this' | 'that' | 'the'
+          |Det[PerNum=[Per='frst', Num='pl']] -> 'these' | 'those'
+          |
+          |Noun[PerNum=[Per='frst', Num='sg']] -> 'plane'
+          |Noun[PerNum=[Per='frst', Num='pl']] -> 'planes'
+        """.stripMargin
+
+      val grammar = GrammarParser.parseGrammar(grammarString).get
+      //when
+      val objectUnderTest = new ChartParser(grammar)
+      val result = objectUnderTest.parse("these planes")
+      val result2 = objectUnderTest.parse("this planes")
+      //then
+      result should have size 1
+      result2 shouldBe empty
+    }
 
     "find parse tree for correct utterance" in {
       //when

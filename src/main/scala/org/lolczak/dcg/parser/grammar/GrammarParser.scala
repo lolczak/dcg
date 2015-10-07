@@ -56,7 +56,7 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
   lazy val featureStruct: Parser[FeatureStruct] =
     "[" ~> separatedSequence(feature, featureSeparator, featureEnd) ^^ { f => FeatureStruct(Map(f: _*)) }
 
-  lazy val feature: Parser[(String, FeatureRhsOperand)] = (ident <~ "=") ~ (fvariable | fvalue | flist | fplaceholder) ^^ { case name ~ fval => (name, fval) }
+  lazy val feature: Parser[(String, FeatureItem)] = (ident <~ "=") ~ (fvariable | fvalue | flist | fplaceholder | featureStruct) ^^ { case name ~ fval => (name, fval) }
 
   lazy val fvariable: Parser[FVariable] = "?" ~> ident ^^ { varName => FVariable(varName) }
 
