@@ -52,4 +52,30 @@ object FeatureZipper {
     }
   }
 
+  def zip(breadcrumbs: List[FeatureCrumb])(root: FeatureItem): Option[FeatureZipper] = {
+    breadcrumbs.reverse.foldLeft[Option[FeatureZipper]](Some(FeatureZipper(root, List.empty))) {
+      case (Some(FeatureZipper(f:FeatureStruct, crumbs)), NameCrumb(name, _))  => f(name) map (FeatureZipper(_, NameCrumb(name, f) :: crumbs))
+      case (Some(FeatureZipper(l@FList(elems), crumbs)), IndexCrumb(index, _)) => Try(elems(index)).toOption map  (FeatureZipper(_, IndexCrumb(index, l) :: crumbs))
+      case _                                           => None
+    }
+  }
+
+  def topMost(root: FeatureZipper): FeatureZipper = root match {
+    case root@FeatureZipper(item, List()) => root
+    case node => topMost(goUp(node))
+  }
+
+  def goUp(root: FeatureZipper): FeatureZipper = root match {
+    case FeatureZipper(_, List())                               => root //or throw exception
+    case FeatureZipper(value, NameCrumb(name, parent) :: tail)  => FeatureZipper(FeatureStruct(parent.features.updated(name, value)), tail)
+    case FeatureZipper(item, IndexCrumb(index, parent) :: tail) => FeatureZipper(FList(parent.elements.patch(index, Seq(item), 1)), tail)
+  }
+
+  def modify(f: FeatureItem => FeatureItem)(root: FeatureZipper): FeatureZipper = root.copy(item = f(root.item))
+
+  def alter(f: FeatureItem => FeatureItem)(breadcrumbs: List[FeatureCrumb])(root: FeatureItem): FeatureItem = {
+    val zipper = zip(breadcrumbs)(root).getOrElse(throw new IllegalArgumentException(s"Cannot follow path $breadcrumbs"))
+    topMost(modify(f)(zipper)).item
+  }
+
 }
