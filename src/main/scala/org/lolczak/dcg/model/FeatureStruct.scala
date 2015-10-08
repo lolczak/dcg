@@ -14,18 +14,6 @@ case class FeatureStruct(features: Map[String, FeatureItem]) extends FeatureValu
 
   def apply(featName: String): Option[FeatureItem] = features.get(featName)
 
-  def substitute(substitution: VariableAssignment): FeatureStruct = {
-    val substituted = features.mapValues {
-      case v@FVariable(name) => substitution.find(name).getOrElse(v)
-      case FList(elems) => FList(elems.map {
-        case v@FVariable(name) => substitution.find(name).getOrElse(v).asInstanceOf[FeatureSimpleValue]
-        case x => x
-      })
-      case x => x
-    }
-    FeatureStruct(substituted)
-  }
-
   override def toString: String =
     if (features.isEmpty) ""
     else features.mkString("[", ",", "]")
