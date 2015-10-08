@@ -10,21 +10,6 @@ case class FeatureZipper(item: FeatureItem, breadcrumbs: List[FeatureCrumb])
 
 object FeatureZipper {
 
-  def zipStructs = ???
-
-//  def fold[A](f: (A, FeatureItem) => A)(first: A)(item: FeatureItem): A = {
-//    val firstBis = f(first, item)
-//    item match {
-//      case FeatureStruct(elems) => elems.values.foldLeft[A](firstBis)(f)
-//      case FList(elems)         => elems.foldLeft[A](firstBis)(f)
-//      case _: FConst            => firstBis
-//      case FPlaceholder         => firstBis
-//      case _: FVariable         => firstBis
-//    }
-//  }
-
-//  def traverseWithNavigation()
-
   def fold[A](f: (A, FeatureZipper) => A)(first: A)(root: FeatureZipper): A = {
     val firstBis = f(first, root)
     root.item match {
