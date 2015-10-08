@@ -20,9 +20,9 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
         |Noun[PerNum=<'frst', 'pl'>] -> 'planes'
       """.stripMargin
 
+    val grammar = GrammarParser.parseGrammar(grammarString).get
+
     scenario("Correct utterance") {
-      //given
-      val grammar = GrammarParser.parseGrammar(grammarString).get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("these planes")
@@ -31,8 +31,6 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
     }
 
     scenario("Incorrect utterance") {
-      //given
-      val grammar = GrammarParser.parseGrammar(grammarString).get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("this planes")
@@ -55,9 +53,9 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
         |Noun[PerNum=<'frst', 'pl'>] -> 'planes'
       """.stripMargin
 
+    val grammar = GrammarParser.parseGrammar(grammarString).get
+
     scenario("Correct utterance") {
-      //given
-      val grammar = GrammarParser.parseGrammar(grammarString).get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("these planes")
@@ -66,8 +64,6 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
     }
 
     scenario("Incorrect utterance") {
-      //given
-      val grammar = GrammarParser.parseGrammar(grammarString).get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("this planes")
@@ -88,8 +84,10 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
         |Noun[PerNum=[Per='frst', Num='sg']] -> 'plane'
         |Noun[PerNum=[Per='frst', Num='pl']] -> 'planes'
       """.stripMargin
+
+    val grammar = GrammarParser.parseGrammar(grammarString).get
+
     scenario("Correct utterance") {
-      val grammar = GrammarParser.parseGrammar(grammarString).get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("these planes")
@@ -98,7 +96,6 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
     }
 
     scenario("Incorrect utterance") {
-      val grammar = GrammarParser.parseGrammar(grammarString).get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("this planes")
@@ -121,8 +118,9 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
         |Noun[PerNum=[Per='frst', Num='pl']] -> 'planes'
       """.stripMargin
 
+    val grammar = GrammarParser.parseGrammar(grammarString).get
+
     scenario("Correct utterance") {
-      val grammar = GrammarParser.parseGrammar(grammarString).get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("these planes")
@@ -133,7 +131,6 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
     }
 
     scenario("Incorrect utterance") {
-      val grammar = GrammarParser.parseGrammar(grammarString).get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("this planes")
