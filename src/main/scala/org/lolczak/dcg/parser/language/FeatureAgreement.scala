@@ -9,14 +9,11 @@ object FeatureAgreement {
   }
 
   def featuresAreConsistent(feat1: FeatureStruct, feat2: FeatureStruct): Boolean = {
-    FeatureZipper.filter {
-      case _: FConst => true
-      case _         => false
-    } (feat1) forall {
+    FeatureZipper.filter(_.isInstanceOf[FConst])(feat1) forall {
       case FeatureZipper(FConst(left), path) =>
         FeatureZipper.goto(path)(feat2).map {
           case FConst(right) => right == left
-          case _ => true
+          case _             => true
         } getOrElse true
     }
   }
