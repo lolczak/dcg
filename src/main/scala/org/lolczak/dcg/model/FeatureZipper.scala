@@ -21,6 +21,8 @@ object FeatureZipper {
     }
   }
 
+  def getAllPaths(root: FeatureItem): List[FeatureZipper] = filter(_ => true)(root)
+
   def find(f: FeatureItem => Boolean)(root: FeatureZipper): List[FeatureZipper] = {
     fold[List[FeatureZipper]] {
       case (acc, z@FeatureZipper(item, path)) => if (f(item)) z :: acc else acc
