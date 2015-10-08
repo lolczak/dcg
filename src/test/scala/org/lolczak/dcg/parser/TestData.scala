@@ -9,7 +9,7 @@ import scala.Predef.{augmentString => _, wrapString => _, _}
 
 object TestData {
 
-  val lexicon = new Lexicon(
+  val lexicon = new SimpleLexicon(
     "fly" -> Set[Term]("Verb", "Noun"("Num" -> FConst("sg"))),
     "like" -> Set[Term]("Verb", "Prep"),
     "arrow" -> Set[Term]("Noun"("Num" -> FConst("sg"))),

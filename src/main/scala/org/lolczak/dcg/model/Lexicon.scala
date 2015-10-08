@@ -9,14 +9,20 @@ object Lexicon {
     untupled mapValues (Set(_: _*))
   }
 
-  def fromProductions(prods: TerminalProduction*) = new Lexicon(convert(prods: _*))
+  def fromProductions(prods: TerminalProduction*): Lexicon = new SimpleLexicon(convert(prods: _*))
 
 }
 
-case class Lexicon(private val content: Map[String, Set[Term]]) {
+trait Lexicon {
+
+  def findAllForms(word: String): Set[Term]
+
+}
+
+case class SimpleLexicon(private val content: Map[String, Set[Term]]) extends Lexicon {
 
   def this(tuples: (String, Set[Term])*) = this(Map(tuples: _*))
 
-  def findAllForms(word: String): Set[Term] = content.get(word).getOrElse(Set.empty)
+  def findAllForms(word: String): Set[Term] = content.getOrElse(word, Set.empty)
 
 }

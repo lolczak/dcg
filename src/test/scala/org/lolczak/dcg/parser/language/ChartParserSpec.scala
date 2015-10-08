@@ -16,7 +16,7 @@ class ChartParserSpec extends WordSpec with Matchers {
 
     "build a state containing passive edges representing possible lexemes" in {
       //given
-      val lexicon = new Lexicon("fly" -> Set(Term("Noun"), Term("Verb")))
+      val lexicon = new SimpleLexicon("fly" -> Set(Term("Noun"), Term("Verb")))
       //when
       val objectUnderTest = new ChartParser(Grammar(TestData.nonterminals,lexicon))
       val result = objectUnderTest.scan("fly", 1, lexicon)

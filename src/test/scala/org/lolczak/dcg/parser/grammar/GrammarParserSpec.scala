@@ -123,7 +123,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
     "parse whole grammar" in {
       //given
       val grammarString = Source.fromURL(Thread.currentThread().getContextClassLoader.getResource("feature_based_gram.dcg"), "UTF-8").mkString
-      val ExpectedLexicon = new Lexicon(
+      val ExpectedLexicon = new SimpleLexicon(
         "fly" -> Set[Term]("Verb", "Noun"("Num" -> FConst("sg"))),
         "like" -> Set[Term]("Verb", "Prep"),
         "arrow" -> Set[Term]("Noun"("Num" -> FConst("sg"))),
@@ -152,7 +152,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
     "parse whole grammar with guards" in {
       //given
       val grammarString = Source.fromURL(Thread.currentThread().getContextClassLoader.getResource("gram_guards.dcg"), "UTF-8").mkString
-      val ExpectedLexicon = new Lexicon(
+      val ExpectedLexicon = new SimpleLexicon(
         "fly" -> Set[Term]("Verb", "Noun"("Num" -> FConst("sg"))),
         "like" -> Set[Term]("Verb", "Prep"),
         "arrow" -> Set[Term]("Noun"("Num" -> FConst("sg"))),

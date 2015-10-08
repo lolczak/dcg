@@ -24,8 +24,8 @@ object Substitution {
     }
     for {
       substitution <- maybeSubstitution.flatMap(eval(production, guardEval))
-      features = FeatureItem.substitute(production.lhs.fStruct, substitution)  //production.lhs.fStruct.substitute(substitution)//todo
-      if !FeatureItem.containsVariables(features)//!features.containsVariable
+      features = FeatureItem.substitute(production.lhs.fStruct, substitution)
+      if !FeatureItem.containsVariables(features)
     } yield Term(production.lhs.name, features.asInstanceOf[FeatureStruct])
   }
 
@@ -55,7 +55,7 @@ object Substitution {
         for {
           substitution <- maybeSubstitution
           value <- extractVar(parsedFeatures, binding)
-          if !FeatureItem.containsVariables(value)//!value.containsVariable
+          if !FeatureItem.containsVariables(value)
           result <- substitution.add(binding.varName, value.asInstanceOf[FeatureValue])
         } yield result
     }
