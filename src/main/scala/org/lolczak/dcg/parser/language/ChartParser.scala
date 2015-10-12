@@ -52,14 +52,18 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
   //todo refactor, extract, use reader, remove nonterminals
   def predict(nonterminals: Nonterminals, edge: Passive): Set[Edge] =
     for {
-      p@Production(lhs, rhs, snippet) <- nonterminals.findStartingWith(edge.found.name)
-      maybeNewEdge = tryCreatePredictedEdge(edge, p, lhs, rhs)
-      if FeatureAgreement.isConsistent(rhs.head, edge.found) && maybeNewEdge.isDefined
+      (p@Production(lhs, rhs, snippet), prefix) <- nonterminals.findPrefix(edge.found.name)
+      maybeNewEdge = tryCreatePredictedEdge(edge, p, prefix)
+      focus = p.rhs(prefix.size)
+      if (focus matches edge.found) && maybeNewEdge.isDefined
     } yield maybeNewEdge.get
 
-  def tryCreatePredictedEdge(edge: Passive, p: Production, lhs: Term, rhs: List[Term]): Option[Edge] = {
-    if (rhs.tail.isEmpty) createPassive(edge.start, edge.end, p, List(edge.tree))
-    else Some(Active(edge.start, edge.end, lhs, rhs.tail, List(edge.tree), p))
+  def tryCreatePredictedEdge(edge: Passive, p: Production, prefix: List[(Term,Term)]): Option[Edge] = {
+    val focus = p.rhs(prefix.size)
+    val tail = p.rhs.drop(prefix.size+1)
+    val parsedTerms = prefix.map(x => Node(x._2, List(Leaf("∅"))))
+    if (tail.isEmpty) createPassive(edge.start, edge.end, p, parsedTerms ++ List(edge.tree))
+    else Some(Active(edge.start, edge.end, p.lhs, tail, parsedTerms ++ List(edge.tree), p))
   }
 
   def combine(chart: Chart, edge: Passive): Set[Edge] =
