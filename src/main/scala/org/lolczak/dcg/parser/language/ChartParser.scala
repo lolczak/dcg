@@ -49,6 +49,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
     State(lexicon.findAllForms(word).map(t => Passive(index, index + 1, t, Node(t, List(Leaf(word))))))
   }
 
+  //todo refactor, extract, use reader, remove nonterminals
   def predict(nonterminals: Nonterminals, edge: Passive): Set[Edge] =
     for {
       p@Production(lhs, rhs, snippet) <- nonterminals.findStartingWith(edge.found.name)

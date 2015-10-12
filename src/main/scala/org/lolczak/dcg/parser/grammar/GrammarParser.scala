@@ -15,7 +15,7 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
     commentLine = "//",
     identStart = _.isLetter,
     identLetter = x => x.isLetter | x.isDigit | x == '.',
-    reservedNames = Set("import"),
+    reservedNames = Set("import", "(/)", "∅"),
     delimiters = Set("[", "]", "=", ",", "?", "->", "|", "<", ">", "_"),
     snippet = Some("{", "}")
   )
@@ -36,7 +36,10 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
   lazy val production: Parser[TerminalProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
 
   lazy val nonterminal: Parser[Production] =
-    lhs ~ repTill(term, productionEnd) ~ opt(guardCode) ^^ { case l ~ r ~ mg => Production(l, r, mg) }
+    ( lhs ~ repTill(term, productionEnd) ~ opt(guardCode) ^^ { case l ~ r ~ mg => Production(l, r, mg) }
+    | lhs ~ emptyRhs ^^ { case l ~ t => Production(l, List.empty, None) })
+
+  lazy val emptyRhs: Parser[Any] = "(/)" | "∅"
 
   lazy val guardCode: Parser[String] = codeSnippet
 

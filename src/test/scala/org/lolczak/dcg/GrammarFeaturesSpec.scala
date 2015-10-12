@@ -124,10 +124,8 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("these planes")
-      val result2 = objectUnderTest.parse("this planes")
       //then
       result should have size 1
-      result2 shouldBe empty
     }
 
     scenario("Incorrect utterance") {
@@ -137,6 +135,76 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
       //then
       result shouldBe empty
     }
+
+  }
+
+  feature("support for empty productions") {
+    scenario("Empty production at the beginning of a rule") {
+      //given
+      val grammar = GrammarParser.parseGrammar(
+        """
+          |S -> NP VP
+          |NP -> empty Noun
+          |VP -> Verb
+          |
+          |empty -> ∅
+          |
+          |Noun -> 'boy'
+          |Verb -> 'runs'
+          |
+        """.stripMargin).get
+      //when
+      val objectUnderTest = new ChartParser(grammar)
+      val result = objectUnderTest.parse("boy runs")
+      //then
+      result should have size 1
+    }
+
+    scenario("Empty production in the middle of a rule") {
+      //given
+      val grammar = GrammarParser.parseGrammar(
+        """
+          |S -> NP empty VP
+          |NP -> Noun
+          |VP -> Verb
+          |
+          |empty -> (/)
+          |
+          |Noun -> 'boy'
+          |Verb -> 'runs'
+          |
+        """.stripMargin).get
+      //when
+      val objectUnderTest = new ChartParser(grammar)
+      val result = objectUnderTest.parse("boy runs")
+      //then
+      result should have size 1
+    }
+
+    scenario("Empty production at the end of a rule") {
+      //given
+      val grammar = GrammarParser.parseGrammar(
+        """
+          |S -> NP VP empty
+          |NP -> Noun
+          |VP -> Verb
+          |
+          |empty -> ∅
+          |
+          |Noun -> 'boy'
+          |Verb -> 'runs'
+          |
+        """.stripMargin).get
+      //when
+      val objectUnderTest = new ChartParser(grammar)
+      val result = objectUnderTest.parse("boy runs")
+      //then
+      result should have size 1
+    }
+
+    //scenario("Whole production contains empty rules")
+
+    //scenario("Consecutive empty rules everywhere")
 
   }
 
