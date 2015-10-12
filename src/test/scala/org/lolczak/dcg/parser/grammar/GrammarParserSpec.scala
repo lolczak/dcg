@@ -163,13 +163,13 @@ class GrammarParserSpec extends WordSpec with Matchers {
       val ExpectedGrammar = Nonterminals("S",
         List(
           "S" ~>("NP", "VP"),
-          "VP" ~> "Verb",
-          "VP" ~>("Verb", "NP"),
-          "VP" ~>("VP", "PP"),
-          "NP"("Num" -> FVariable("n")) ~> "Noun"("Num" -> FVariable("n")),
-          "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n1")), "Noun"("Num" -> FVariable("n2"))) copy(maybeSnippet = Some("n=n1; n1==n2")),
-          "NP"("Num" -> FVariable("n")) ~>("NP"("Num" -> FVariable("n")), "PP"),
-          "PP" ~>("Prep", "NP")
+          "VP" ~> "Verb" copy(id=Some("VP1")),
+          "VP" ~>("Verb", "NP") copy(id=Some("VP2")),
+          "VP" ~>("VP", "PP") copy(id=Some("VP3")),
+          "NP"("Num" -> FVariable("n")) ~> "Noun"("Num" -> FVariable("n")) copy(id=Some("NP1")),
+          "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n1")), "Noun"("Num" -> FVariable("n2"))) copy(maybeSnippet = Some("n=n1; n1==n2")) copy(id=Some("NP2")),
+          "NP"("Num" -> FVariable("n")) ~>("NP"("Num" -> FVariable("n")), "PP") copy(id=Some("NP3")),
+          "PP" ~>("Prep", "NP") copy(id=Some("PP1"))
         )
       )
       //when
