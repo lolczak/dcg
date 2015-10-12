@@ -202,9 +202,28 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
       result should have size 1
     }
 
-    //scenario("Whole production contains empty rules")
-
-    //scenario("Consecutive empty rules everywhere")
+    scenario("Empty productions everywhere") {
+      //given
+      val grammar = GrammarParser.parseGrammar(
+        """
+          |S -> empty1 NP empty2 VP empty3
+          |NP -> Noun
+          |VP -> Verb
+          |
+          |empty1 -> ∅
+          |empty2 -> (/)
+          |empty3 -> ∅
+          |
+          |Noun -> 'boy'
+          |Verb -> 'runs'
+          |
+        """.stripMargin).get
+      //when
+      val objectUnderTest = new ChartParser(grammar)
+      val result = objectUnderTest.parse("boy runs")
+      //then
+      result should have size 1
+    }
 
   }
 
