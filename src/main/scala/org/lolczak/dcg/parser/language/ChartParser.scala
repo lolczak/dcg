@@ -26,7 +26,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
     val initialChart: Chart = indexedUtterance map { case (word, idx) => scan(word, idx, grammar.lexicon) }
     val f: Chart => Edge => Set[Edge] = (chart: Chart) => {
       case edge: Passive => predict(grammar.nonterminals, edge) ++ combine(chart, edge)
-      case _ => Set.empty
+      case edge: Active  => combineEmpty(edge)
     }
     initialChart.foldLeft(IndexedSeq.empty[State]) {
       case (prefix, currentState) => prefix :+ State(generate(f(prefix), currentState.edges))
@@ -77,6 +77,16 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
   def tryCreateCombinedEdge(edge: Passive, start: Int, leftTerm: Term, rest: List[Term], parsedPrefix: List[ParseTree[Term, String]], p: Production): Option[Edge] = {
     if (rest.isEmpty) createPassive(start, edge.end, p, parsedPrefix :+ edge.tree)
     else Some(Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p))
+  }
+
+  def combineEmpty(edge: Active): Set[Edge] = {
+    val found = grammar.nonterminals.emptyTerms.filter(edge.remaining.head matches _)
+    found.map { term =>
+      if (edge.remaining.tail.nonEmpty)
+        Some(edge.copy(remaining = edge.remaining.tail, parsedPrefix = Node(term, List(Leaf("∅"))) :: edge.parsedPrefix))
+      else
+        createPassive(edge.start, edge.end, edge.production, Node(term, List(Leaf("∅"))) :: edge.parsedPrefix)
+    } filter (_.isDefined) map (_.get) toSet
   }
 
   def createPassive(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Passive] =
