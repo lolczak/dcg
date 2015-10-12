@@ -3,12 +3,20 @@ import "functions.groovy"
 
 // nonterminal symbols
 S -> NP VP /* main symbol */
+#id="VP1"
 VP -> Verb
+#id="VP2"
 VP -> Verb NP
+#id="VP3"
 VP -> VP PP
+
+#id="NP1"
 NP[Num=?n] -> Noun[Num=?n]
+#id="NP2"
 NP[Num=?n] -> Det[Num=?n1] Noun[Num=?n2] {n=n1; n1==n2}
+#id="NP3"
 NP[Num=?n] -> NP[Num=?n] PP
+#id="PP1"
 PP -> Prep NP
 
 // terminal symbols

@@ -42,7 +42,7 @@ object DcgApp extends App with LazyLogging {
     def renderNode(node: ParseTree[Term, String], depth:Int=0): Unit = {
       node match {
         case Leaf(symbol) => printIndentation(depth); println(s"Leaf '$symbol'")
-        case Node(term, children) => printIndentation(depth); println(s"Node $term"); children.foreach(renderNode(_, depth+1))
+        case Node(term, children, prodId) => printIndentation(depth); println(s"Node $term ($prodId)"); children.foreach(renderNode(_, depth+1))
       }
     }
     renderNode(root, 0)

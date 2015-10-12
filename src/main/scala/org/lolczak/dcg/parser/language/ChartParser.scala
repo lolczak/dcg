@@ -92,7 +92,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
   def createPassive(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Passive] =
     for {
       term <- Substitution.substitute(production, parsedTerms, guardEval) //todo maybe Reader is better option
-      tree = Node(term, parsedTerms)
+      tree = Node(term, parsedTerms, production.id)
     } yield Passive(start, end, term, tree)
 
 }
