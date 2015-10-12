@@ -86,7 +86,7 @@ class ChartParserSpec extends WordSpec with Matchers {
       val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
       result should have size 1
       result.head should matchPattern {
-        case Node(Term("NP", ExpectedFeatures), _) =>
+        case Node(Term("NP", ExpectedFeatures), _, _) =>
       }
     }
 
@@ -105,7 +105,7 @@ class ChartParserSpec extends WordSpec with Matchers {
       val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
       result should have size 1
       result.head should matchPattern {
-        case Node(Term("NP", ExpectedFeatures), _) =>
+        case Node(Term("NP", ExpectedFeatures), _, _) =>
       }
     }
 
@@ -116,7 +116,7 @@ class ChartParserSpec extends WordSpec with Matchers {
       //then
       result should have size 1
       result.head should matchPattern {
-        case Node(Term("S", _), List(Node(Term("NP", _), List(Node(Term("Det", _), List(Leaf(these))), Node(Term("Noun", _), List(Leaf("planes"))))), Node(Term("VP", _), List(Node(Term("VP", _), List(Node(Term("Verb", _), List(Leaf(fly))))), Node(Term("PP", _), List(Node(Term("Prep", _), List(Leaf("like"))), Node(Term("NP", _), List(Node(Term("Det", _), List(Leaf("an"))), Node(Term("Noun", _), List(Leaf("arrow"))))))))))) =>
+        case Node(Term("S", _), List(Node(Term("NP", _), List(Node(Term("Det", _), List(Leaf(these)), _), Node(Term("Noun", _), List(Leaf("planes")), _)), _), Node(Term("VP", _), List(Node(Term("VP", _), List(Node(Term("Verb", _), List(Leaf(fly)), _)), _), Node(Term("PP", _), List(Node(Term("Prep", _), List(Leaf("like")), _), Node(Term("NP", _), List(Node(Term("Det", _), List(Leaf("an")), _), Node(Term("Noun", _), List(Leaf("arrow")), _)), _)), _)), _)), _) =>
       }
     }
 

@@ -52,7 +52,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
   //todo refactor, extract, use reader, remove nonterminals
   def predict(nonterminals: Nonterminals, edge: Passive): Set[Edge] =
     for {
-      (p@Production(lhs, rhs, snippet), prefix) <- nonterminals.findPrefix(edge.found.name)
+      (p@Production(lhs, rhs, snippet, id), prefix) <- nonterminals.findPrefix(edge.found.name)
       maybeNewEdge = tryCreatePredictedEdge(edge, p, prefix)
       focus = p.rhs(prefix.size)
       if (focus matches edge.found) && maybeNewEdge.isDefined

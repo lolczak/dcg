@@ -30,7 +30,7 @@ case class Nonterminals(start: String, productions: List[Production]) {
 
 }
 
-case class Production(lhs: Term, rhs: List[Term], maybeSnippet: Option[String] = None) {
+case class Production(lhs: Term, rhs: List[Term], maybeSnippet: Option[String] = None, id: Option[String] = None) {
 
   val containsGuard: Boolean = maybeSnippet.isDefined
 
