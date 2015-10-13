@@ -12,28 +12,6 @@ import scala.Predef.{augmentString => _, wrapString => _, _}
 
 class ChartParserSpec extends WordSpec with Matchers {
 
-  "A completer" should {
-    "combine active nodes with passive ones" in {
-      //given
-      val edge = Passive(1, 2, Term("Verb"), Node(Term("Verb"), List.empty))
-      val testProduction1 = "VP" ~>("AA", "Verb")
-      val testProduction2 = "VP" ~>("AA", "Verb", "PP")
-      val chart = IndexedSeq(State(Set(
-        Active(0, 1, Term("VP"), List(Term("Verb")), List(Node(Term("AA"), List.empty)), testProduction1),
-        Active(0, 1, Term("VP"), List(Term("Verb"), Term("PP")), List(Node(Term("AA"), List.empty)), testProduction2)
-      )), State(Set()))
-      //when
-      val objectUnderTest = new ChartParser(TestData.grammar)
-      val result = objectUnderTest.combine(chart, edge)
-      //then
-      result should contain only(
-        Active(0, 2, Term("VP"), List(Term("PP")), List(Node(Term("AA"), List.empty), Node(Term("Verb"), List.empty)), testProduction2),
-        Passive(0, 2, Term("VP"), Node(Term("VP"), List(Node(Term("AA"), List.empty), Node(Term("Verb"), List.empty))))
-        )
-    }
-
-  }
-
   "A parser" should {
 
     "match rhs terms with matching features" in {
