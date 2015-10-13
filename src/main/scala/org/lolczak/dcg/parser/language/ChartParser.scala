@@ -9,7 +9,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
 
   def this(grammar: Grammar) = this(grammar, new GroovyGuardEval(grammar.importDirectives.map(_.file)), None)
 
-  val scanner = SimpleScanner
+  private val scan = SimpleScanner.scan(grammar)(_)
 
   def parse(utterance: String): List[ParseTree[Term, String]] = {
     val splitUtterance = utterance.split(' ').toList
@@ -21,7 +21,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
   }
 
   def buildChart(utterance: List[String]): Chart = {
-    val initialChart: Chart = scanner.scan(utterance)(grammar)
+    val initialChart: Chart = scan(utterance)
     val f: Chart => Edge => Set[Edge] = (chart: Chart) => {
       case edge: Passive => predict(grammar.nonterminals, edge) ++ combine(chart, edge)
       case edge: Active  => combineEmpty(edge)

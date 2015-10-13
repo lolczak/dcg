@@ -13,7 +13,7 @@ class SimpleScannerSpec extends WordSpec with Matchers {
       val lexicon = new SimpleLexicon("fly" -> Set(Term("Noun"), Term("Verb")))
       //when
       val objectUnderTest = SimpleScanner
-      val result = objectUnderTest.scan(List("fly"))(Grammar(TestData.nonterminals,lexicon))
+      val result = objectUnderTest.scan(Grammar(TestData.nonterminals,lexicon))(List("fly"))
       //then
       result shouldBe IndexedSeq(State(Set(
         Passive(0, 1, Term("Noun"), Node(Term("Noun"), List(Leaf("fly")))),
