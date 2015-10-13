@@ -9,6 +9,8 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
 
   def this(grammar: Grammar) = this(grammar, new GroovyGuardEval(grammar.importDirectives.map(_.file)), None)
 
+  val scanner = SimpleScanner
+
   def parse(utterance: String): List[ParseTree[Term, String]] = {
     val splitUtterance = utterance.split(' ').toList
     val finalChart = buildChart(splitUtterance)
@@ -19,8 +21,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
   }
 
   def buildChart(utterance: List[String]): Chart = {
-    val indexedUtterance = utterance zip Stream.from(0) toIndexedSeq
-    val initialChart: Chart = indexedUtterance map { case (word, idx) => scan(word, idx, grammar.lexicon) }
+    val initialChart: Chart = scanner.scan(utterance)(grammar)
     val f: Chart => Edge => Set[Edge] = (chart: Chart) => {
       case edge: Passive => predict(grammar.nonterminals, edge) ++ combine(chart, edge)
       case edge: Active  => combineEmpty(edge)
@@ -28,11 +29,6 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
     initialChart.foldLeft(IndexedSeq.empty[State]) {
       case (prefix, currentState) => prefix :+ State(generate(f(prefix), currentState.edges))
     }
-  }
-
-  def scan(word: String, index: Int, lexicon: Lexicon): State = {
-    require(index >= 0)
-    State(lexicon.findAllForms(word).map(t => Passive(index, index + 1, t, Node(t, List(Leaf(word))))))
   }
 
   //todo refactor, extract, use reader, remove nonterminals

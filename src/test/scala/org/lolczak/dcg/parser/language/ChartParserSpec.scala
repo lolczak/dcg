@@ -12,23 +12,6 @@ import scala.Predef.{augmentString => _, wrapString => _, _}
 
 class ChartParserSpec extends WordSpec with Matchers {
 
-  "A scanner" should {
-
-    "build a state containing passive edges representing possible lexemes" in {
-      //given
-      val lexicon = new SimpleLexicon("fly" -> Set(Term("Noun"), Term("Verb")))
-      //when
-      val objectUnderTest = new ChartParser(Grammar(TestData.nonterminals,lexicon))
-      val result = objectUnderTest.scan("fly", 1, lexicon)
-      //then
-      result shouldBe State(Set(
-        Passive(1, 2, Term("Noun"), Node(Term("Noun"), List(Leaf("fly")))),
-        Passive(1, 2, Term("Verb"), Node(Term("Verb"), List(Leaf("fly"))))
-      ))
-    }
-
-  }
-
   "A predictor" should {
 
     "create edges for all productions having prefix equal to provided passive edge" in {
