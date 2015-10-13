@@ -3,14 +3,11 @@ package org.lolczak.dcg.parser.language
 import org.lolczak.dcg.model._
 import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
 import org.lolczak.dcg.parser.language.variable.Substitution
-
-import scala.annotation.tailrec
+import org.lolczak.util.Generators._
 
 class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[String] = None) extends NaturalLangParser {
 
   def this(grammar: Grammar) = this(grammar, new GroovyGuardEval(grammar.importDirectives.map(_.file)), None)
-
-  type Chart = IndexedSeq[State]
 
   def parse(utterance: String): List[ParseTree[Term, String]] = {
     val splitUtterance = utterance.split(' ').toList
@@ -31,17 +28,6 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
     initialChart.foldLeft(IndexedSeq.empty[State]) {
       case (prefix, currentState) => prefix :+ State(generate(f(prefix), currentState.edges))
     }
-  }
-
-  //todo refactor, generic version in utils
-  def generate[A](f: A => Set[A], source: Set[A]): Set[A] = {
-    @tailrec
-    def recGen(oldSet: Set[A], newSet: Set[A]): Set[A] = {
-      val generated = newSet.flatMap(f)
-      if (generated.isEmpty) oldSet
-      else recGen(generated ++ oldSet, generated -- oldSet)
-    }
-    recGen(source, source)
   }
 
   def scan(word: String, index: Int, lexicon: Lexicon): State = {

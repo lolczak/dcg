@@ -16,3 +16,5 @@ case class Active(start: Int, end: Int, lhs: Term, remaining: List[Term], parsed
   override val isActive: Boolean = true
   override val isPassive: Boolean = false
 }
+
+case class PassiveCandidate(edge: Passive, p: Production, prefix: List[(Term,Term)])
