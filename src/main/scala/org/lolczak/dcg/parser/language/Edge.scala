@@ -17,4 +17,4 @@ case class Active(start: Int, end: Int, lhs: Term, remaining: List[Term], parsed
   override val isPassive: Boolean = false
 }
 
-case class PassiveCandidate(edge: Passive, p: Production, prefix: List[(Term,Term)])
+case class PassiveCandidate(edge: Passive, production: Production, parsedTerms: List[ParseTree[Term, String]])

@@ -25,6 +25,8 @@ object TestData {
       "VP" ~> "Verb",
       "VP" ~>("Verb", "NP"),
       "VP" ~>("VP", "PP"),
+      "ERule" ~> ("Empty", "Sth"),
+      "Empty" ~> (),
       "NP"("Num" -> FVariable("n")) ~> "Noun"("Num" -> FVariable("n")),
       "NP"("Num" -> FVariable("n")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n"))),
       "NP"("Num" -> FVariable("n")) ~>("NP"("Num" -> FVariable("n")), "PP"),

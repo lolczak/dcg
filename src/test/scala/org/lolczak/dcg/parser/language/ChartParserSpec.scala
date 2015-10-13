@@ -12,23 +12,6 @@ import scala.Predef.{augmentString => _, wrapString => _, _}
 
 class ChartParserSpec extends WordSpec with Matchers {
 
-  "A predictor" should {
-
-    "create edges for all productions having prefix equal to provided passive edge" in {
-      //given
-      val edge = Passive(0, 1, Term("Verb"), Node(Term("Verb"), List(Leaf("fly"))))
-      //when
-      val objectUnderTest = new ChartParser(Grammar(TestData.nonterminals, TestData.lexicon))
-      val result = objectUnderTest.predict(TestData.nonterminals, edge)
-      //then
-      result should contain only(
-        Active(0, 1, Term("VP"), List(Term("NP")), List(Node(Term("Verb"), List(Leaf("fly")))), "VP" ~>("Verb", "NP")),
-        Passive(0, 1, Term("VP"), Node(Term("VP"), List(Node(Term("Verb"), List(Leaf("fly"))))))
-        )
-    }
-
-  }
-
   "A completer" should {
     "combine active nodes with passive ones" in {
       //given

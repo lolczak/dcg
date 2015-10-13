@@ -2,10 +2,10 @@ package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model.Grammar
 
-import scalaz.{\/, Reader}
+import scalaz.\/
 
 trait Predictor {
 
-  def predict(edge: Passive): Reader[Grammar, Set[Active \/ PassiveCandidate]]
+  def predict(grammar: Grammar)(edge: Passive): Set[Active \/ PassiveCandidate]
 
 }
