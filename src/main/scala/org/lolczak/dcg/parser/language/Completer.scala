@@ -6,8 +6,8 @@ import scalaz.\/
 
 trait Completer {
 
-  def combine(chart: Chart)(edge: Passive): Set[Active \/ PassiveCandidate]
+  def complete(chart: Chart)(edge: Passive): Set[Active \/ PassiveCandidate]
 
-  def combineEmpty(grammar: Grammar)(edge: Active): Set[Active \/ PassiveCandidate]
+  def completeEmpty(grammar: Grammar)(edge: Active): Set[Active \/ PassiveCandidate]
 
 }

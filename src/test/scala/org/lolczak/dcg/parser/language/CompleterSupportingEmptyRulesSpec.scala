@@ -21,13 +21,16 @@ class CompleterSupportingEmptyRulesSpec extends WordSpec with Matchers {
       )), State(Set()))
       //when
       val objectUnderTest = CompleterSupportingEmptyRules
-      val result = objectUnderTest.combine(chart)(edge)
+      val result = objectUnderTest.complete(chart)(edge)
       //then
       result should contain only(
         -\/(Active(0, 2, Term("VP"), List(Term("PP")), List(Node(Term("AA"), List.empty), Node(Term("Verb"), List.empty)), testProduction2)),
         \/-(PassiveCandidate(0, 2, testProduction1, List(Node(Term("AA"), List.empty), Node(Term("Verb"), List.empty))))
         )
     }
+
+    //todo "complete empty rules"
+
   }
 
 }

@@ -6,7 +6,7 @@ import scalaz.{\/-, -\/, \/}
 
 object CompleterSupportingEmptyRules extends Completer{
 
-  def combine(chart: Chart)(edge: Passive): Set[Active \/ PassiveCandidate] =
+  def complete(chart: Chart)(edge: Passive): Set[Active \/ PassiveCandidate] =
     if (edge.start <= 0) Set.empty
     else for {
       Active(start, end, leftTerm, prefix :: rest, parsedPrefix, p) <- chart(edge.start - 1).findActiveStartingWith(edge.found.name)
@@ -18,7 +18,7 @@ object CompleterSupportingEmptyRules extends Completer{
     else -\/(Active(start, edge.end, leftTerm, rest, parsedPrefix :+ edge.tree, p))
   }
 
-  def combineEmpty(grammar: Grammar)(edge: Active): Set[Active \/ PassiveCandidate] = {
+  def completeEmpty(grammar: Grammar)(edge: Active): Set[Active \/ PassiveCandidate] = {
     val found = grammar.nonterminals.emptyTerms.filter(edge.remaining.head matches _)
     found.map { term =>
       if (edge.remaining.tail.nonEmpty)

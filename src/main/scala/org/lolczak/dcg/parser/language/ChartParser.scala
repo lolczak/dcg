@@ -15,9 +15,9 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
 
   private val predict = PredictorSupportingEmptyRules.predict(grammar)(_)
 
-  private val complete = CompleterSupportingEmptyRules.combine(_)
+  private val complete = CompleterSupportingEmptyRules.complete(_)
 
-  private val completeEmpty = CompleterSupportingEmptyRules.combineEmpty(grammar)(_)
+  private val completeEmpty = CompleterSupportingEmptyRules.completeEmpty(grammar)(_)
 
   def parse(utterance: String): List[ParseTree[Term, String]] = {
     val splitUtterance = utterance.split(' ').toList
