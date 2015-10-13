@@ -12,8 +12,6 @@ case class Nonterminals(start: String, productions: List[Production]) {
 
   val emptyTerms: List[Term] = productions.filter(_.isEmpty).map(_.lhs)
 
-//  private val prefixes: Map[String, Set[Production]] =  productions.map(p => (p.rhs.head.name, p)).groupBy(_._1).mapValues(t => Set(t.map(_._2): _*)).withDefaultValue(Set.empty)
-
   private val index: Map[String, Set[(Production, List[(Term, Term)])]] = buildIndex
 
   private def buildIndex: Map[String, Set[(Production, List[(Term, Term)])]] = {
@@ -23,8 +21,6 @@ case class Nonterminals(start: String, productions: List[Production]) {
 
     entries.groupBy(_._1).mapValues(_.map(x=>(x._2, x._3)).toSet).withDefaultValue(Set.empty)
   }
-
-//  def findStartingWith(symbol: String): Set[Production] = prefixes(symbol)
 
   def findPrefix(symbol: String): Set[(Production, List[(Term, Term)])] = index(symbol)
 
