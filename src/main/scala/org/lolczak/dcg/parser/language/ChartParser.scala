@@ -5,11 +5,15 @@ import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
 import org.lolczak.dcg.parser.language.variable.Substitution
 import org.lolczak.util.Generators._
 
+import scalaz.{\/, \/-, -\/}
+
 class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[String] = None) extends NaturalLangParser {
 
   def this(grammar: Grammar) = this(grammar, new GroovyGuardEval(grammar.importDirectives.map(_.file)), None)
 
   private val scan = SimpleScanner.scan(grammar)(_)
+
+  private val predict = PredictorSupportingEmptyRules.predict(grammar)(_)
 
   def parse(utterance: String): List[ParseTree[Term, String]] = {
     val splitUtterance = utterance.split(' ').toList
@@ -23,7 +27,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
   def buildChart(utterance: List[String]): Chart = {
     val initialChart: Chart = scan(utterance)
     val f: Chart => Edge => Set[Edge] = (chart: Chart) => {
-      case edge: Passive => predict(grammar.nonterminals, edge) ++ combine(chart, edge)
+      case edge: Passive => predict(edge).flatMap(filter) ++ combine(chart, edge)
       case edge: Active  => combineEmpty(edge)
     }
     initialChart.foldLeft(IndexedSeq.empty[State]) {
@@ -31,21 +35,9 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
     }
   }
 
-  //todo refactor, extract, use reader, remove nonterminals
-  def predict(nonterminals: Nonterminals, edge: Passive): Set[Edge] =
-    for {
-      (p@Production(lhs, rhs, snippet, id), prefix) <- nonterminals.findPrefix(edge.found.name)
-      maybeNewEdge = tryCreatePredictedEdge(edge, p, prefix)
-      focus = p.rhs(prefix.size)
-      if (focus matches edge.found) && maybeNewEdge.isDefined
-    } yield maybeNewEdge.get
-
-  def tryCreatePredictedEdge(edge: Passive, p: Production, prefix: List[(Term,Term)]): Option[Edge] = {
-    val focus = p.rhs(prefix.size)
-    val tail = p.rhs.drop(prefix.size+1)
-    val parsedTerms = prefix.map(x => Node(x._2, List(Leaf("∅"))))
-    if (tail.isEmpty) createPassive(edge.start, edge.end, p, parsedTerms ++ List(edge.tree))
-    else Some(Active(edge.start, edge.end, p.lhs, tail, parsedTerms ++ List(edge.tree), p))
+  private val filter: Active \/ PassiveCandidate => Set[Edge] = {
+    case -\/(a: Active)           => Set(a)
+    case \/-(p: PassiveCandidate) => createPassive(p.edge.start, p.edge.end, p.production, p.parsedTerms).map(Set[Edge](_)).getOrElse(Set.empty)
   }
 
   def combine(chart: Chart, edge: Passive): Set[Edge] =
