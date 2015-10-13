@@ -20,7 +20,7 @@ class PredictorSupportingEmptyRulesSpec extends WordSpec with Matchers {
       val result = objectUnderTest.predict(grammar)(edge)
       //then
       result should contain only(
-        \/-(PassiveCandidate(edge, "VP" ~> "Verb", List(Node(Term("Verb"), List(Leaf("fly")))))),
+        \/-(PassiveCandidate(edge.start, edge.end, "VP" ~> "Verb", List(Node(Term("Verb"), List(Leaf("fly")))))),
         -\/(Active(0, 1, Term("VP"), List(Term("NP")), List(Node(Term("Verb"), List(Leaf("fly")))), "VP" ~>("Verb", "NP")))
         )
     }
@@ -34,7 +34,7 @@ class PredictorSupportingEmptyRulesSpec extends WordSpec with Matchers {
       val result = objectUnderTest.predict(grammar)(edge)
       //then
       result should contain only
-        \/-(PassiveCandidate(edge,  "ERule" ~> ("Empty", "Sth"), List(Node("Empty", List(Leaf("∅"))), Node(Term("Sth"), List(Leaf("something"))))))
+        \/-(PassiveCandidate(edge.start, edge.end,  "ERule" ~> ("Empty", "Sth"), List(Node("Empty", List(Leaf("∅"))), Node(Term("Sth"), List(Leaf("something"))))))
 
     }
 

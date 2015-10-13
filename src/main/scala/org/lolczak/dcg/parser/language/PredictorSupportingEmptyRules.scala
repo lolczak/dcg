@@ -17,7 +17,7 @@ object PredictorSupportingEmptyRules extends Predictor {
   def tryCreatePredictedEdge(edge: Passive, p: Production, prefix: List[(Term, Term)]): Active \/ PassiveCandidate = {
     val tail = p.rhs.drop(prefix.size + 1)
     val parsedTerms = prefix.map(x => Node(x._2, List(Leaf("∅"))))
-    if (tail.isEmpty) \/-(PassiveCandidate(edge, p, parsedTerms ++ List(edge.tree)))
+    if (tail.isEmpty) \/-(PassiveCandidate(edge.start, edge.end, p, parsedTerms ++ List(edge.tree)))
     else -\/(Active(edge.start, edge.end, p.lhs, tail, parsedTerms ++ List(edge.tree), p))
   }
 

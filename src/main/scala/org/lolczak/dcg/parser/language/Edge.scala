@@ -3,6 +3,8 @@ package org.lolczak.dcg.parser.language
 import org.lolczak.dcg.model.{Term, Production}
 
 sealed trait Edge {
+//  val start: Int
+//  val end: Int
   val isActive: Boolean
   val isPassive: Boolean
 }
@@ -17,4 +19,4 @@ case class Active(start: Int, end: Int, lhs: Term, remaining: List[Term], parsed
   override val isPassive: Boolean = false
 }
 
-case class PassiveCandidate(edge: Passive, production: Production, parsedTerms: List[ParseTree[Term, String]])
+case class PassiveCandidate(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]])

@@ -15,6 +15,10 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
 
   private val predict = PredictorSupportingEmptyRules.predict(grammar)(_)
 
+  private val complete = CompleterSupportingEmptyRules.combine(_)
+
+  private val completeEmpty = CompleterSupportingEmptyRules.combineEmpty(grammar)(_)
+
   def parse(utterance: String): List[ParseTree[Term, String]] = {
     val splitUtterance = utterance.split(' ').toList
     val finalChart = buildChart(splitUtterance)
@@ -27,17 +31,17 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
   def buildChart(utterance: List[String]): Chart = {
     val initialChart: Chart = scan(utterance)
     val f: Chart => Edge => Set[Edge] = (chart: Chart) => {
-      case edge: Passive => predict(edge).flatMap(filter) ++ combine(chart, edge)
-      case edge: Active  => combineEmpty(edge)
+      case edge: Passive => predict(edge).flatMap(processCandidates) ++ complete(chart)(edge).flatMap(processCandidates)
+      case edge: Active  => completeEmpty(edge).flatMap(processCandidates)
     }
     initialChart.foldLeft(IndexedSeq.empty[State]) {
       case (prefix, currentState) => prefix :+ State(generate(f(prefix), currentState.edges))
     }
   }
 
-  private val filter: Active \/ PassiveCandidate => Set[Edge] = {
+  private val processCandidates: Active \/ PassiveCandidate => Set[Edge] = {
     case -\/(a: Active)           => Set(a)
-    case \/-(p: PassiveCandidate) => createPassive(p.edge.start, p.edge.end, p.production, p.parsedTerms).map(Set[Edge](_)).getOrElse(Set.empty)
+    case \/-(p: PassiveCandidate) => createPassive(p.start, p.end, p.production, p.parsedTerms).map(Set[Edge](_)).getOrElse(Set.empty)
   }
 
   def combine(chart: Chart, edge: Passive): Set[Edge] =
