@@ -1,6 +1,7 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model.{Grammar, Production, Term}
+import org.lolczak.dcg.parser.language.ToTermOps._
 
 import scalaz.{-\/, \/, \/-}
 
