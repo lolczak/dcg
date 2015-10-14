@@ -2,7 +2,7 @@ package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model.Grammar._
 import org.lolczak.dcg.model.{Grammar, Nonterminals, Term}
-import org.lolczak.dcg.parser.TestData
+import org.lolczak.dcg.parser.TestData2
 import org.scalatest.{Matchers, WordSpec}
 
 import scalaz.{-\/, \/-}
@@ -38,7 +38,7 @@ class CompleterSupportingEmptyRulesSpec extends WordSpec with Matchers {
             "VP" ~>("Verb", "Empty", "NP"),
             "Empty" ~>()
           )
-        ), TestData.lexicon, List.empty)
+        ), TestData2.lexicon, List.empty)
       val edge = Active(0, 1, Term("VP"), List("Empty", "NP"), List(Node("Verb", List.empty)), "VP" ~>("Verb", "Empty", "NP"))
       //when
       val objectUnderTest = CompleterSupportingEmptyRules

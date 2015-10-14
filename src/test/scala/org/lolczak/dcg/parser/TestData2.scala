@@ -6,7 +6,7 @@ import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 
 import scala.Predef.{augmentString => _, wrapString => _, _}
 
-object TestData {
+object TestData2 {
 
   val lexicon = new SimpleLexicon(
     "fly" -> Set[Term]("Verb", "Noun"("Num" -> FConst("sg"))),

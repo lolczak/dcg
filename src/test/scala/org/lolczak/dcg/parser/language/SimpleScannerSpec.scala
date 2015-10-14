@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model.{Grammar, Term, SimpleLexicon}
-import org.lolczak.dcg.parser.TestData
+import org.lolczak.dcg.parser.TestData2
 import org.scalatest.{Matchers, WordSpec}
 
 class SimpleScannerSpec extends WordSpec with Matchers {
@@ -13,7 +13,7 @@ class SimpleScannerSpec extends WordSpec with Matchers {
       val lexicon = new SimpleLexicon("fly" -> Set(Term("Noun"), Term("Verb")))
       //when
       val objectUnderTest = SimpleScanner
-      val result = objectUnderTest.scan(Grammar(TestData.nonterminals,lexicon))(List("fly"))
+      val result = objectUnderTest.scan(Grammar(TestData2.nonterminals,lexicon))(List("fly"))
       //then
       result shouldBe IndexedSeq(State(Set(
         Passive(0, 1, Term("Noun"), Node(Term("Noun"), List(Leaf("fly")))),

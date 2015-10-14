@@ -2,7 +2,7 @@ package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model.Grammar._
 import org.lolczak.dcg.model.{Grammar, Term}
-import org.lolczak.dcg.parser.TestData
+import org.lolczak.dcg.parser.TestData2
 import org.scalatest.{Matchers, WordSpec}
 
 import scalaz.{-\/, \/-}
@@ -14,7 +14,7 @@ class PredictorSupportingEmptyRulesSpec extends WordSpec with Matchers {
     "create passive edge candidate for all productions having prefix equal to provided passive edge" in {
       //given
       val edge = Passive(0, 1, Term("Verb"), Node(Term("Verb"), List(Leaf("fly"))))
-      val grammar = Grammar(TestData.nonterminals, TestData.lexicon)
+      val grammar = Grammar(TestData2.nonterminals, TestData2.lexicon)
       //when
       val objectUnderTest = PredictorSupportingEmptyRules
       val result = objectUnderTest.predict(grammar)(edge)
@@ -28,7 +28,7 @@ class PredictorSupportingEmptyRulesSpec extends WordSpec with Matchers {
     "create passive edge candidate for productions having as a prefix empty rules and first non-empty term is equal to provided passive edge" in {
       //given
       val edge = Passive(0, 1, Term("Sth"), Node(Term("Sth"), List(Leaf("something"))))
-      val grammar = Grammar(TestData.nonterminals, TestData.lexicon)
+      val grammar = Grammar(TestData2.nonterminals, TestData2.lexicon)
       //when
       val objectUnderTest = PredictorSupportingEmptyRules
       val result = objectUnderTest.predict(grammar)(edge)
