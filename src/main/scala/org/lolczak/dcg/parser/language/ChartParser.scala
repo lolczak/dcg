@@ -1,8 +1,10 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model._
+import org.lolczak.dcg.parser.language.PassiveCandidate
 import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
-import org.lolczak.dcg.parser.language.variable.Substitution
+import org.lolczak.dcg.parser.language.variable.FeatureFunctions._
+import org.lolczak.dcg.parser.language.variable.{FeatureFunctions, Substitution}
 import org.lolczak.util.Generators._
 
 import scalaz.{\/, \/-, -\/}
@@ -41,13 +43,17 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
 
   private val processCandidates: Active \/ PassiveCandidate => Set[Edge] = {
     case -\/(a: Active)           => Set(a)
-    case \/-(p: PassiveCandidate) => createPassive(p.start, p.end, p.production, p.parsedTerms).map(Set[Edge](_)).getOrElse(Set.empty)
+    case \/-(p: PassiveCandidate) => tryCreatePassive(p).map(Set[Edge](_)).getOrElse(Set.empty)
   }
 
-  private def createPassive(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Passive] =
+  private def tryCreatePassive(candidate: PassiveCandidate): Option[Passive] =
     for {
-      term <- Substitution.substitute(production, parsedTerms, guardEval) //todo maybe Reader is better option
-      tree = Node(term, parsedTerms, production.id)
-    } yield Passive(start, end, term, tree)
+      unifiedAssignment <- variable.evalVariableAssignment(candidate.production, candidate.parsedTerms)
+      finalAssignment   <- guard.evalGuard(candidate.production, guardEval)(unifiedAssignment)
+      features = FeatureFunctions.substitute(candidate.production.lhs.fStruct, finalAssignment)
+      if !containsVariables(features)
+      term = Term(candidate.production.lhs.name, features.asInstanceOf[FeatureStruct])
+      tree = Node(term, candidate.parsedTerms, candidate.production.id)
+    } yield Passive(candidate.start, candidate.end, term, tree)
 
 }
