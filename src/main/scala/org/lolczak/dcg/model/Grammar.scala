@@ -14,10 +14,11 @@ case class Nonterminals(start: String, productions: List[Production]) {
 
   private def buildIndex: Map[String, Set[(Production, List[(Term, Term)])]] = {
     //none of the rules can have only empty terms
+    val prodsWithPrefix = productions.filter(!_.isEmpty).map(x=>(x.rhs.head.name, x, List.empty))
     val productionsWithEmptyPrefix: List[(Production, List[(Term, Term)])] = productions.filter(!_.isEmpty).map(x=> (x, x.findEmptyPrefix(emptyTerms)))
     val entries: List[(String, Production, List[(Term, Term)])] = productionsWithEmptyPrefix.map(x=> (x._1.rhs(x._2.size).name, x._1, x._2))
 
-    entries.groupBy(_._1).mapValues(_.map(x=>(x._2, x._3)).toSet).withDefaultValue(Set.empty)
+    (entries ++ prodsWithPrefix).groupBy(_._1).mapValues(_.map(x=>(x._2, x._3)).toSet).withDefaultValue(Set.empty)
   }
 
   def findPrefix(symbol: String): Set[(Production, List[(Term, Term)])] = index(symbol)
@@ -38,8 +39,8 @@ case class Production(lhs: Term, rhs: List[Term], maybeSnippet: Option[String] =
    * @return first is prod term, second is empty term
    */
   def findEmptyPrefix(emptyTerms: List[Term]): List[(Term, Term)] = {
-    val prefix = rhs.takeWhile(x => emptyTerms.exists(x matches _))
-    prefix.map(x=> (x, emptyTerms.find(x matches _).get))
+    val prefix = rhs.takeWhile(x => emptyTerms.exists(x.name == _.name))
+    prefix.map(x=> (x, emptyTerms.find(x.name == _.name).get))
   }
 
 }
