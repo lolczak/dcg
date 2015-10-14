@@ -10,15 +10,18 @@ case class Nonterminals(start: String, productions: List[Production]) {
 
   val emptyTerms: List[Term] = productions.filter(_.isEmpty).map(_.lhs)
 
+  val nonEmptyProductions: List[Production] = productions.filter(!_.isEmpty)
+
   private val index: Map[String, Set[(Production, List[(Term, Term)])]] = buildIndex
 
   private def buildIndex: Map[String, Set[(Production, List[(Term, Term)])]] = {
     //none of the rules can have only empty terms
-    val prodsWithPrefix = productions.filter(!_.isEmpty).map(x=>(x.rhs.head.name, x, List.empty))
-    val productionsWithEmptyPrefix: List[(Production, List[(Term, Term)])] = productions.filter(!_.isEmpty).map(x=> (x, x.findEmptyPrefix(emptyTerms)))
-    val entries: List[(String, Production, List[(Term, Term)])] = productionsWithEmptyPrefix.map(x=> (x._1.rhs(x._2.size).name, x._1, x._2))
+    val productionsWithRhsHead     = nonEmptyProductions map (x=>(x.rhs.head.name, x, List.empty))
+    val productionsWithEmptyPrefix = nonEmptyProductions map (x=> (x, x.findEmptyPrefix(emptyTerms)))
+    val productionsWithPrefix      = productionsWithEmptyPrefix.map(x=> (x._1.rhs(x._2.size).name, x._1, x._2))
+    val entries                    = productionsWithPrefix ++ productionsWithRhsHead
 
-    (entries ++ prodsWithPrefix).groupBy(_._1).mapValues(_.map(x=>(x._2, x._3)).toSet).withDefaultValue(Set.empty)
+    entries.groupBy(_._1).mapValues(_.map(x=>(x._2, x._3)).toSet).withDefaultValue(Set.empty)
   }
 
   def findPrefix(symbol: String): Set[(Production, List[(Term, Term)])] = index(symbol)
