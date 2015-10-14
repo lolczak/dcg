@@ -17,7 +17,7 @@ class ParserSpec  extends WordSpec with Matchers {
   "A parser " should {
 
     "parse grammar and utterance" in {
-      val result = objectUnderTest.parse(TestData2.utterance)
+      val result = objectUnderTest.parse(testData.utterance)
       result should have size 1
       result.head should matchPattern {
         case Node(Term("S", _), List(
