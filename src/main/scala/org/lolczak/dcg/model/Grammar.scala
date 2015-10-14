@@ -1,7 +1,5 @@
 package org.lolczak.dcg.model
 
-import org.lolczak.dcg.parser.language.FeatureAgreement
-
 import scala.language.implicitConversions
 
 case class Grammar(nonterminals:     Nonterminals,
@@ -49,7 +47,7 @@ case class TerminalProduction(lhs: Term, rhs: List[String])
 
 case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty) {
 
-  def matches(that: Term): Boolean = FeatureAgreement.isConsistent(this, that) //todo refactor it
+  def matches(that: Term): Boolean = TermComparator.isConsistent(this, that) //todo refactor it
 
   override def toString: String = name + fStruct.toString
 

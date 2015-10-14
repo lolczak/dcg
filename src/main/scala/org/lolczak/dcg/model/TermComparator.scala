@@ -1,12 +1,9 @@
-package org.lolczak.dcg.parser.language
+package org.lolczak.dcg.model
 
-import org.lolczak.dcg.model._
+object TermComparator {
 
-object FeatureAgreement {
-
-  def isConsistent(term1: Term, term2: Term): Boolean = {
+  def isConsistent(term1: Term, term2: Term): Boolean =
     term1.name == term2.name && featuresAreConsistent(term1.fStruct, term2.fStruct)
-  }
 
   def featuresAreConsistent(feat1: FeatureStruct, feat2: FeatureStruct): Boolean = {
     FeatureZipper.filter(_.isInstanceOf[FConst])(feat1) forall {
