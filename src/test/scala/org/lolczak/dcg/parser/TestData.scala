@@ -1,8 +1,7 @@
 package org.lolczak.dcg.parser
 
+import org.lolczak.dcg.model.Grammar._
 import org.lolczak.dcg.model._
-import Grammar._
-import org.lolczak.dcg._
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _}
 
 import scala.Predef.{augmentString => _, wrapString => _, _}
