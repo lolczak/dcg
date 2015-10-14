@@ -1,13 +1,12 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model._
-import org.lolczak.dcg.parser.language.PassiveCandidate
 import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
+import org.lolczak.dcg.parser.language.variable.FeatureFunctions
 import org.lolczak.dcg.parser.language.variable.FeatureFunctions._
-import org.lolczak.dcg.parser.language.variable.{FeatureFunctions, Substitution}
 import org.lolczak.util.Generators._
 
-import scalaz.{\/, \/-, -\/}
+import scalaz.{-\/, \/, \/-}
 
 class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[String] = None) extends NaturalLangParser {
 
