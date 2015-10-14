@@ -1,6 +1,7 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.model.{FeatureZipper, FeatureItem, FVariable, FeatureStruct}
+import org.lolczak.dcg.model.{FeatureZipper, FVariable, FeatureStruct}
+import FeatureFunctions._
 
 case class VariableBinding(varName: String, navigation: FeatureZipper)
 
@@ -13,7 +14,7 @@ object VariableBinding {
    * @return
    */
   def findVariableBindings(ruleFeatures: FeatureStruct): Set[VariableBinding] =
-    FeatureItem.findVariables(ruleFeatures) map {
+    findVariables(ruleFeatures) map {
       case z@FeatureZipper(FVariable(name), path) => VariableBinding(name, z)
     } toSet
 

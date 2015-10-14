@@ -3,6 +3,7 @@ package org.lolczak.dcg.parser.language.variable
 import org.lolczak.dcg.model._
 import org.lolczak.dcg.parser.language.guard.{EvalResult, GuardEval}
 import org.lolczak.dcg.parser.language.{Node, ParseTree}
+import FeatureFunctions._
 
 import scalaz.Scalaz._
 import scalaz.{-\/, \/-}
@@ -11,7 +12,7 @@ object Substitution {
 
   def substitute(production: Production, parsedTerms: List[ParseTree[Term, String]], guardEval: GuardEval): Option[Term] = {
     val rhs = production.rhs
-    val parsedRhs = parsedTerms.map { case Node(term, _) => term }
+    val parsedRhs = parsedTerms.map { case Node(term, _, _) => term }
     require(rhs.length == parsedRhs.length)
     val zipped = rhs zip parsedRhs
     val substitutions: List[Option[VariableAssignment]] = zipped map { case (rule, parsed) => findAssignment(rule.fStruct, parsed.fStruct) }
@@ -24,8 +25,8 @@ object Substitution {
     }
     for {
       substitution <- maybeSubstitution.flatMap(eval(production, guardEval))
-      features = FeatureItem.substitute(production.lhs.fStruct, substitution)
-      if !FeatureItem.containsVariables(features)
+      features = FeatureFunctions.substitute(production.lhs.fStruct, substitution)
+      if !containsVariables(features)
     } yield Term(production.lhs.name, features.asInstanceOf[FeatureStruct])
   }
 
@@ -55,7 +56,7 @@ object Substitution {
         for {
           substitution <- maybeSubstitution
           value <- extractVar(parsedFeatures, binding)
-          if !FeatureItem.containsVariables(value)
+          if !containsVariables(value)
           result <- substitution.add(binding.varName, value.asInstanceOf[FeatureValue])
         } yield result
     }

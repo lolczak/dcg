@@ -1,7 +1,5 @@
 package org.lolczak.dcg.model
 
-import org.lolczak.dcg.parser.language.TermComparator
-
 import scala.language.implicitConversions
 
 case class Grammar(nonterminals:     Nonterminals,
