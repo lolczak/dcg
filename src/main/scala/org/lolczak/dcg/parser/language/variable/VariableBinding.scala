@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language.variable
 
-import org.lolczak.dcg.model.{FeatureZipper, FVariable, FeatureStruct}
-import FeatureFunctions._
+import org.lolczak.dcg.model.{FVariable, FeatureStruct, FeatureZipper}
+import org.lolczak.dcg.parser.language.variable.FeatureFunctions._
 
 case class VariableBinding(varName: String, navigation: FeatureZipper)
 
