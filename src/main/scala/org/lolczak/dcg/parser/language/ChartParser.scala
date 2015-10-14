@@ -28,7 +28,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
     } yield tree
   }
 
-  def buildChart(utterance: List[String]): Chart = {
+  private def buildChart(utterance: List[String]): Chart = {
     val initialChart: Chart = scan(utterance)
     val f: Chart => Edge => Set[Edge] = (chart: Chart) => {
       case edge: Passive => predict(edge).flatMap(processCandidates) ++ complete(chart)(edge).flatMap(processCandidates)
@@ -44,7 +44,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
     case \/-(p: PassiveCandidate) => createPassive(p.start, p.end, p.production, p.parsedTerms).map(Set[Edge](_)).getOrElse(Set.empty)
   }
 
-  def createPassive(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Passive] =
+  private def createPassive(start: Int, end: Int, production: Production, parsedTerms: List[ParseTree[Term, String]]): Option[Passive] =
     for {
       term <- Substitution.substitute(production, parsedTerms, guardEval) //todo maybe Reader is better option
       tree = Node(term, parsedTerms, production.id)

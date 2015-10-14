@@ -32,6 +32,7 @@ case class Production(lhs: Term, rhs: List[Term], maybeSnippet: Option[String] =
 
 
   /**
+   * Returns production prefix containing only empty rules.
    *
    * @param emptyTerms
    * @return first is prod term, second is empty term
