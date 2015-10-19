@@ -11,7 +11,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
   feature("support for list values as features") {
     val grammarString =
       """
-        |NP[PerNum=<?per, ?num>] -> Det[PerNum=<'frst', ?num>] Noun[PerNum=<'frst', ?num>] {per = 'frst'}
+        |NP[PerNum=<per, num>] -> Det[PerNum=<'frst', num>] Noun[PerNum=<'frst', num>] {per = 'frst'}
         |
         |Det[PerNum=<'frst', 'sg'>] -> 'this' | 'that' | 'the'
         |Det[PerNum=<'frst', 'pl'>] -> 'these' | 'those'
@@ -44,7 +44,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
 
     val grammarString =
       """
-        |NP[PerNum=<?per, ?num>] -> Det[PerNum=<_, ?num>, f1=_] Noun[PerNum=<_, ?num>] {per = 'frst'}
+        |NP[PerNum=<per, num>] -> Det[PerNum=<_, num>, f1=_] Noun[PerNum=<_, num>] {per = 'frst'}
         |
         |Det[PerNum=<'frst', 'sg'>, f1='A'] -> 'this' | 'that' | 'the'
         |Det[PerNum=<'frst', 'pl'>, f2='B'] -> 'these' | 'those'
@@ -76,7 +76,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
 
     val grammarString =
       """
-        |NP[PerNum=?pn] -> Det[PerNum=?pn] Noun[PerNum=?pn]
+        |NP[PerNum=pn] -> Det[PerNum=pn] Noun[PerNum=pn]
         |
         |Det[PerNum=[Per='frst', Num='sg']] -> 'this' | 'that' | 'the'
         |Det[PerNum=[Per='frst', Num='pl']] -> 'these' | 'those'
@@ -109,7 +109,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
 
     val grammarString =
       """
-        |NP[PerNum=[Per='frst', Num=?n]] -> Det[PerNum=[Per='frst', Num=?n]] Noun[PerNum=[Per='frst', Num=?n]]
+        |NP[PerNum=[Per='frst', Num=n]] -> Det[PerNum=[Per='frst', Num=n]] Noun[PerNum=[Per='frst', Num=n]]
         |
         |Det[PerNum=[Per='frst', Num='sg']] -> 'this' | 'that' | 'the'
         |Det[PerNum=[Per='frst', Num='pl']] -> 'these' | 'those'
