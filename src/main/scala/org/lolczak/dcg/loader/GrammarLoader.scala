@@ -7,7 +7,7 @@ import scalaz.\/
 object GrammarLoader {
 
   def load(grammarTxt: String): GrammarFailure \/ Grammar = ???
-
+  //      lexicon      = Lexicon.fromProductions(terminals: _*)
 }
 
 sealed trait GrammarFailure

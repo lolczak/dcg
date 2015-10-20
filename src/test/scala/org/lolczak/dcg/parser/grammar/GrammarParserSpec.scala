@@ -1,6 +1,7 @@
 package org.lolczak.dcg.parser.grammar
 
-import org.lolczak.dcg.model.{TerminalProduction => _, Term => _, _}
+import org.lolczak.dcg.parser.grammar.ast.ops._
+import org.lolczak.dcg.model.{TerminalProduction => _, Term => _, Production => _, _}
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _, _}
 import org.lolczak.dcg.parser.grammar.ast._
 import org.scalatest.{Matchers, WordSpec}
@@ -87,6 +88,16 @@ class GrammarParserSpec extends WordSpec with Matchers {
       //given
       val nonterminalString = "S -> NP VP { x => y }"
       val ExpectedProduction = "S" ~>("NP", "VP") copy(maybeSnippet = Some(" x => y "))
+      //when
+      val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
+      //then
+      result should matchPattern { case Success(ExpectedProduction, _) => }
+    }
+
+    "parse permutation of terms" in {
+      //given
+      val nonterminalString = "S -> <<NP VP>>"
+      val ExpectedProduction = Production("S", List(Permutation(List("NP", "VP"))))
       //when
       val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
       //then

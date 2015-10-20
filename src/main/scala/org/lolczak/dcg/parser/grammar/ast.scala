@@ -30,19 +30,21 @@ object ast {
   case class Binding[A](name:String, expr: A) extends FeatureDef
    */
 
-  implicit def string2Term(symbol: String): Term = Term(symbol, FeatureStruct.empty)
+  object ops {
 
-  implicit class LhsString(term: String) {
-    def ~>(rhs: String*): Production = Production(term, List(rhs: _*) map string2Term, None)
+    implicit def string2Term(symbol: String): Term = Term(symbol, FeatureStruct.empty)
+
+    implicit class LhsString(term: String) {
+      def ~>(rhs: String*): Production = Production(term, List(rhs: _*) map string2Term, None)
+    }
+
+    implicit class LhsTerm(term: Term) {
+      def ~>(rhs: Term*): Production = Production(term, List(rhs: _*), None)
+    }
+
+    implicit class TermString(name: String) {
+      def apply(features: (String, FeatureItem)*) = Term(name, FeatureStruct(Map(features: _*)))
+    }
   }
-
-  implicit class LhsTerm(term: Term) {
-    def ~>(rhs: Term*): Production = Production(term, List(rhs: _*), None)
-  }
-
-  implicit class TermString(name: String) {
-    def apply(features: (String, FeatureItem)*) = Term(name, FeatureStruct(Map(features: _*)))
-  }
-
 
 }

@@ -6,5 +6,5 @@ case class LanguageDef(commentStart: String,
                        identStart: Matcher,
                        identLetter: Matcher,
                        reservedNames: Set[String],
-                       delimiters: Set[String],
+                       delimiters: List[String],
                        snippet: Option[(String, String)] = None)

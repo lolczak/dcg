@@ -20,7 +20,7 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
     identStart = _.isLetter,
     identLetter = x => x.isLetter | x.isDigit | x == '.',
     reservedNames = Set("import", "id"),
-    delimiters = Set("[", "]", "=", ",", "?", "->", "|", "<", ">", "_", "(/)", "∅", "#"),
+    delimiters = List("<<",">>","[", "]", "=", ",", "?", "->", "|", "<", ">", "_", "(/)", "∅", "#"),
     snippet = Some("{", "}")
   )
 
@@ -34,14 +34,15 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
       productions  <- rep(production)
       nonterminals = productions filter (_.isRight) map { case \/-(r) => r }
       terminals    = productions filter (_.isLeft)  map { case -\/(l) => l }
-//      lexicon      = Lexicon.fromProductions(terminals: _*)
     } yield GrammarAst(directives, nonterminals, terminals)
 
   lazy val production: Parser[TerminalProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
 
   lazy val nonterminal: Parser[Production] =
-    ( opt(prodId) ~ lhs ~ repTill(term, productionEnd) ~ opt(guardCode) ^^ { case id ~ l ~ r ~ mg => Production(l, r, mg, id) }
+    ( opt(prodId) ~ lhs ~ repTill(rhsSymbol, productionEnd) ~ opt(guardCode) ^^ { case id ~ l ~ r ~ mg => Production(l, r, mg, id) }
     | (opt(prodId) ~ lhs <~ emptyRhs ^^ { case id ~ l => Production(l, List.empty, None, id) }))
+
+  lazy val rhsSymbol: Parser[RhsSymbol] = term | ("<<" ~> repTill(term, ">>") ^^ {case l => Permutation(l)})
 
   lazy val prodId: Parser[String] = "#" ~ "id" ~ "=" ~> stringLit
 
