@@ -8,9 +8,9 @@ import org.lolczak.util.Generators._
 
 import scalaz.{-\/, \/, \/-}
 
-class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[String] = None) extends NaturalLangParser {
+class ChartParser(grammar: Grammar, rootSymbol: Option[String] = None) extends NaturalLangParser {
 
-  def this(grammar: Grammar) = this(grammar, new GroovyGuardEval())//todo grammar.importDirectives.map(_.file)), None)
+//  def this(grammar: Grammar) = this(grammar)
 
   private val scan = SimpleScanner.scan(grammar)(_)
 
@@ -48,7 +48,7 @@ class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[Str
   private def tryCreatePassive(candidate: PassiveCandidate): Option[Passive] =
     for {
       unifiedAssignment <- variable.evalVariableAssignment(candidate.production, candidate.parsedTerms)
-      finalAssignment   <- guard.evalGuard(candidate.production, guardEval)(unifiedAssignment)
+      finalAssignment   <- guard.evalGuard(candidate.production)(unifiedAssignment)
       features = FeatureFunctions.substitute(candidate.production.lhs.fStruct, finalAssignment)
       if !containsVariables(features)
       term = Term(candidate.production.lhs.name, features.asInstanceOf[FeatureStruct])

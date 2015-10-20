@@ -232,8 +232,6 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDriven
 
   feature("Support for permutation of rhs terms") {
 
-
-
     scenario("Whole rhs of production is a permutation ") {
       val grammar = GrammarLoader.load(
         """
@@ -273,6 +271,10 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDriven
         //then
         result should have size 0
       }
+    }
+
+    scenario("a few permutations in production") {
+
     }
 
   }

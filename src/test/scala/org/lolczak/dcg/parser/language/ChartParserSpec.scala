@@ -24,7 +24,7 @@ class ChartParserSpec extends WordSpec with Matchers {
         )
       )
       //when
-      val objectUnderTest = new ChartParser(Grammar(nonterminals, testData.lexicon),new GroovyGuardEval, Some("NP"))
+      val objectUnderTest = new ChartParser(Grammar(nonterminals, testData.lexicon), Some("NP"))
       val result = objectUnderTest.parse("these planes")
       //then
       val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))
@@ -43,7 +43,7 @@ class ChartParserSpec extends WordSpec with Matchers {
         )
       )
       //when
-      val objectUnderTest = new ChartParser(Grammar(nonterminals, testData.lexicon),new GroovyGuardEval, Some("NP"))
+      val objectUnderTest = new ChartParser(Grammar(nonterminals, testData.lexicon), Some("NP"))
       val result = objectUnderTest.parse("these planes")
       //then
       val ExpectedFeatures = FeatureStruct(Map("Num" -> FConst("pl")))

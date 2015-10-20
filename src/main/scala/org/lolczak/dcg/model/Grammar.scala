@@ -1,5 +1,7 @@
 package org.lolczak.dcg.model
 
+import org.lolczak.dcg.parser.language.guard.GuardEval
+
 import scala.language.implicitConversions
 
 case class Grammar(nonterminals:     Nonterminals,
@@ -27,7 +29,7 @@ case class Nonterminals(start: String, productions: List[Production]) {
 
 }
 
-case class Production(lhs: Term, rhs: List[Term], maybeSnippet: Option[String] = None, id: Option[String] = None) {
+case class Production(lhs: Term, rhs: List[Term], maybeSnippet: Option[(String, GuardEval)] = None, id: Option[String] = None) {
 
   val containsGuard: Boolean = maybeSnippet.isDefined
 
@@ -46,8 +48,6 @@ case class Production(lhs: Term, rhs: List[Term], maybeSnippet: Option[String] =
   }
 
 }
-
-case class TerminalProduction(lhs: Term, rhs: List[String])
 
 case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty) {
 

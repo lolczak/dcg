@@ -14,6 +14,7 @@ import scalaz.\/
 
 class GroovyGuardEval(imports: List[String] = List.empty) extends GuardEval {
 
+  //todo move to loader
   private val importedSnippets: List[URL] = imports.map(x => Resources.findUrl(x).getOrElse(throw new RuntimeException(s"Cannot load $x")))
 
   override def eval(guardCode: String, unifiedAssignment: VariableAssignment): EvalFailure \/ EvalResult = {

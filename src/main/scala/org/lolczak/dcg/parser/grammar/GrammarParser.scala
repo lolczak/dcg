@@ -1,8 +1,8 @@
 package org.lolczak.dcg.parser.grammar
 
 import org.lolczak.dcg.model._
-import org.lolczak.dcg.parser.grammar.ast.Production
-import org.lolczak.dcg.parser.grammar.ast.Term
+import org.lolczak.dcg.parser.grammar.ast.AstProduction
+import org.lolczak.dcg.parser.grammar.ast.AstTerm
 import org.lolczak.dcg.parser.grammar.ast.TerminalProduction
 import org.lolczak.dcg.parser.grammar.ast._
 import org.lolczak.parsing.lexical._
@@ -36,11 +36,11 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
       terminals    = productions filter (_.isLeft)  map { case -\/(l) => l }
     } yield GrammarAst(directives, nonterminals, terminals)
 
-  lazy val production: Parser[TerminalProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
+  lazy val production: Parser[TerminalProduction \/ AstProduction] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
 
-  lazy val nonterminal: Parser[Production] =
-    ( opt(prodId) ~ lhs ~ repTill(rhsSymbol, productionEnd) ~ opt(guardCode) ^^ { case id ~ l ~ r ~ mg => Production(l, r, mg, id) }
-    | (opt(prodId) ~ lhs <~ emptyRhs ^^ { case id ~ l => Production(l, List.empty, None, id) }))
+  lazy val nonterminal: Parser[AstProduction] =
+    ( opt(prodId) ~ lhs ~ repTill(rhsSymbol, productionEnd) ~ opt(guardCode) ^^ { case id ~ l ~ r ~ mg => AstProduction(l, r, mg, id) }
+    | (opt(prodId) ~ lhs <~ emptyRhs ^^ { case id ~ l => AstProduction(l, List.empty, None, id) }))
 
   lazy val rhsSymbol: Parser[RhsSymbol] = term | ("<<" ~> repTill(term, ">>") ^^ {case l => Permutation(l)})
 
@@ -53,15 +53,15 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
   lazy val terminal: Parser[TerminalProduction] =
     lhs ~ separatedSequence(stringLit, "|", productionEnd) ^^ { case l ~ r => TerminalProduction(l, r)}
 
-  lazy val lhs: Parser[Term] = term <~ "->"
+  lazy val lhs: Parser[AstTerm] = term <~ "->"
 
   lazy val productionEnd: Parser[Any] = eoi | guard(lhs) | guard(guardCode) | guard(prodId)
 
-  lazy val term: Parser[Term] =
+  lazy val term: Parser[AstTerm] =
     for {
       symbolName <- ident
       maybeFStruct <- opt(featureStruct)
-    } yield Term(symbolName, maybeFStruct.getOrElse(FeatureStruct.empty))
+    } yield AstTerm(symbolName, maybeFStruct.getOrElse(FeatureStruct.empty))
 
   lazy val featureStruct: Parser[FeatureStruct] =
     "[" ~> separatedSequence(feature, featureSeparator, featureEnd) ^^ { f => FeatureStruct(Map(f: _*)) }
