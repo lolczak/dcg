@@ -1,6 +1,10 @@
 package org.lolczak.dcg.parser.grammar
 
 import org.lolczak.dcg.model._
+import org.lolczak.dcg.parser.grammar.ast.Production
+import org.lolczak.dcg.parser.grammar.ast.Term
+import org.lolczak.dcg.parser.grammar.ast.TerminalProduction
+import org.lolczak.dcg.parser.grammar.ast._
 import org.lolczak.parsing.lexical._
 import org.lolczak.parsing.syntactical.GenericTokenParsers
 import org.lolczak.parsing.util.HelperParsers
@@ -20,18 +24,18 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
     snippet = Some("{", "}")
   )
 
-  def parseGrammar(content: String): ParseResult[Grammar] = grammar(new lexical.Scanner(content))
+  def parseGrammar(content: String): ParseResult[GrammarAst] = grammar(new lexical.Scanner(content))
 
   lazy val importDirectives: Parser[List[ImportDirective]] = rep("import" ~> stringLit ^^ {case path => ImportDirective(path)})
 
-  lazy val grammar: Parser[Grammar] =
+  lazy val grammar: Parser[GrammarAst] =
     for {
       directives   <- importDirectives
       productions  <- rep(production)
       nonterminals = productions filter (_.isRight) map { case \/-(r) => r }
       terminals    = productions filter (_.isLeft)  map { case -\/(l) => l }
-      lexicon      = Lexicon.fromProductions(terminals: _*)
-    } yield Grammar(Nonterminals(nonterminals.head.lhs.name, nonterminals), lexicon, directives)
+//      lexicon      = Lexicon.fromProductions(terminals: _*)
+    } yield GrammarAst(directives, nonterminals, terminals)
 
   lazy val production: Parser[TerminalProduction \/ Production] = terminal ^^ (-\/(_)) | nonterminal ^^ (\/-(_))
 

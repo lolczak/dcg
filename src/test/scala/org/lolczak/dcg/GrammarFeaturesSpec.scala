@@ -1,10 +1,13 @@
 package org.lolczak.dcg
 
+import org.lolczak.dcg.loader.GrammarLoader
 import org.lolczak.dcg.parser.grammar.GrammarParser
 import org.lolczak.dcg.parser.language.ChartParser
-import org.scalatest.{Matchers, FeatureSpec}
+import org.scalacheck.Gen
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatest.{FeatureSpec, Matchers}
 
-class GrammarFeaturesSpec extends FeatureSpec with Matchers {
+class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDrivenPropertyChecks  {
 
   info("Grammar should")
 
@@ -20,7 +23,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
         |Noun[PerNum=<'frst', 'pl'>] -> 'planes'
       """.stripMargin
 
-    val grammar = GrammarParser.parseGrammar(grammarString).get
+    val grammar = GrammarLoader.load(grammarString).toOption.get
 
     scenario("Correct utterance") {
       //when
@@ -53,7 +56,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
         |Noun[PerNum=<'frst', 'pl'>] -> 'planes'
       """.stripMargin
 
-    val grammar = GrammarParser.parseGrammar(grammarString).get
+    val grammar = GrammarLoader.load(grammarString).toOption.get
 
     scenario("Correct utterance") {
       //when
@@ -85,7 +88,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
         |Noun[PerNum=[Per='frst', Num='pl']] -> 'planes'
       """.stripMargin
 
-    val grammar = GrammarParser.parseGrammar(grammarString).get
+    val grammar = GrammarLoader.load(grammarString).toOption.get
 
     scenario("Correct utterance") {
       //when
@@ -118,7 +121,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
         |Noun[PerNum=[Per='frst', Num='pl']] -> 'planes'
       """.stripMargin
 
-    val grammar = GrammarParser.parseGrammar(grammarString).get
+    val grammar = GrammarLoader.load(grammarString).toOption.get
 
     scenario("Correct utterance") {
       //when
@@ -141,7 +144,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
   feature("support for empty productions") {
     scenario("Empty production at the beginning of a rule") {
       //given
-      val grammar = GrammarParser.parseGrammar(
+      val grammar = GrammarLoader.load(
         """
           |S -> NP VP
           |NP -> empty Noun
@@ -152,7 +155,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
           |Noun -> 'boy'
           |Verb -> 'runs'
           |
-        """.stripMargin).get
+        """.stripMargin).toOption.get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("boy runs")
@@ -162,7 +165,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
 
     scenario("Empty production in the middle of a rule") {
       //given
-      val grammar = GrammarParser.parseGrammar(
+      val grammar = GrammarLoader.load(
         """
           |S -> NP empty VP
           |NP -> Noun
@@ -173,7 +176,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
           |Noun -> 'boy'
           |Verb -> 'runs'
           |
-        """.stripMargin).get
+        """.stripMargin).toOption.get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("boy runs")
@@ -183,7 +186,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
 
     scenario("Empty production at the end of a rule") {
       //given
-      val grammar = GrammarParser.parseGrammar(
+      val grammar = GrammarLoader.load(
         """
           |S -> NP VP empty
           |NP -> Noun
@@ -194,7 +197,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
           |Noun -> 'boy'
           |Verb -> 'runs'
           |
-        """.stripMargin).get
+        """.stripMargin).toOption.get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("boy runs")
@@ -204,7 +207,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
 
     scenario("Empty productions everywhere") {
       //given
-      val grammar = GrammarParser.parseGrammar(
+      val grammar = GrammarLoader.load(
         """
           |S -> empty1 NP empty2 VP empty3
           |NP -> Noun
@@ -217,12 +220,59 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers {
           |Noun -> 'boy'
           |Verb -> 'runs'
           |
-        """.stripMargin).get
+        """.stripMargin).toOption.get
       //when
       val objectUnderTest = new ChartParser(grammar)
       val result = objectUnderTest.parse("boy runs")
       //then
       result should have size 1
+    }
+
+  }
+
+  feature("Support for permutation of rhs terms") {
+
+
+
+    scenario("Whole rhs of production is a permutation ") {
+      val grammar = GrammarLoader.load(
+        """
+          |S -> << Noun[num=n, case="nom"] Verb[num=n] Noun[num=_, case="acc"] Noun[num=_, case="dat"] >>
+          |
+          |Noun[num="sg", case="nom"] -> 'Adam'
+          |Noun[num="pl", case="nom"] -> 'Adamowie'
+          |Noun[num="sg", case="acc"] -> 'książkę'
+          |Noun[num="sg", case="dat"] -> 'właścicielowi'
+          |Verb[num="sg"] -> 'daje'
+          |
+        """.
+          stripMargin).toOption.get
+
+      val correctSentences = Gen.oneOf("Adam daje książkę właścicielowi",
+        "właścicielowi daje książkę Adam",
+        "książkę właścicielowi Adam daje")
+
+      val incorrectSentences = Gen.oneOf("Adamowie daje książkę właścicielowi",
+        "właścicielowi daje książkę Adamowie",
+        "książkę właścicielowi Adamowie daje")
+
+      forAll(correctSentences) { sentence =>
+        //when
+        val
+        objectUnderTest = new ChartParser(grammar)
+        val result = objectUnderTest.parse(sentence)
+        //then
+        result should have size 1
+      }
+
+      forAll(incorrectSentences) { sentence =>
+        //when
+        val
+        objectUnderTest = new ChartParser(grammar)
+        val result = objectUnderTest.parse(sentence)
+        //then
+        result should have size 0
+      }
     }
 
   }

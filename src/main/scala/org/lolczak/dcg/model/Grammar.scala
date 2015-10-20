@@ -3,8 +3,7 @@ package org.lolczak.dcg.model
 import scala.language.implicitConversions
 
 case class Grammar(nonterminals:     Nonterminals,
-                   lexicon:          Lexicon,
-                   importDirectives: List[ImportDirective] = List.empty)
+                   lexicon:          Lexicon)
 
 case class Nonterminals(start: String, productions: List[Production]) {
 
@@ -55,8 +54,6 @@ case class Term(name: String, fStruct: FeatureStruct = FeatureStruct.empty) {
   override def toString: String = name + fStruct.toString
 
 }
-
-case class ImportDirective(file: String)
 
 object Grammar {
 

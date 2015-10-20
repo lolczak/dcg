@@ -10,7 +10,7 @@ import scalaz.{-\/, \/, \/-}
 
 class ChartParser(grammar: Grammar, guardEval: GuardEval, rootSymbol: Option[String] = None) extends NaturalLangParser {
 
-  def this(grammar: Grammar) = this(grammar, new GroovyGuardEval(grammar.importDirectives.map(_.file)), None)
+  def this(grammar: Grammar) = this(grammar, new GroovyGuardEval())//todo grammar.importDirectives.map(_.file)), None)
 
   private val scan = SimpleScanner.scan(grammar)(_)
 

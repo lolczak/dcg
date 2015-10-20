@@ -33,7 +33,7 @@ object testData {
     )
   )
 
-  val grammar = Grammar(nonterminals, lexicon, List.empty)
+  val grammar = Grammar(nonterminals, lexicon)
 
   val utterance = "these planes fly like an arrow"
 

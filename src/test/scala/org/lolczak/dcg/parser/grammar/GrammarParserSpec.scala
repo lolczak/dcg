@@ -1,8 +1,8 @@
 package org.lolczak.dcg.parser.grammar
 
-import org.lolczak.dcg.model.Grammar._
-import org.lolczak.dcg.model._
+import org.lolczak.dcg.model.{TerminalProduction => _, Term => _, _}
 import org.lolczak.dcg.parser.grammar.GrammarParser.{keyword => _, _}
+import org.lolczak.dcg.parser.grammar.ast._
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.Predef.{augmentString => _, wrapString => _, _}
@@ -123,15 +123,16 @@ class GrammarParserSpec extends WordSpec with Matchers {
     "parse whole grammar" in {
       //given
       val grammarString = Source.fromURL(Thread.currentThread().getContextClassLoader.getResource("feature_based_gram.dcg"), "UTF-8").mkString
-      val ExpectedLexicon = new SimpleLexicon(
-        "fly" -> Set[Term]("Verb", "Noun"("Num" -> FConst("sg"))),
-        "like" -> Set[Term]("Verb", "Prep"),
-        "arrow" -> Set[Term]("Noun"("Num" -> FConst("sg"))),
-        "these" -> Set[Term]("Det"("Num" -> FConst("pl"))),
-        "planes" -> Set[Term]("Noun"("Num" -> FConst("pl"))),
-        "an" -> Set[Term]("Det"("Num" -> FConst("sg")))
+      val Terminals = List(
+        TerminalProduction("Verb", List("fly")),
+        TerminalProduction("Verb", List("like")),
+        TerminalProduction("Noun"("Num" -> FConst("pl")), List("planes")),
+        TerminalProduction("Noun"("Num" -> FConst("sg")), List("arrow", "fly")),
+        TerminalProduction("Det"("Num" -> FConst("sg")), List("an")),
+        TerminalProduction("Det"("Num" -> FConst("pl")), List("these")),
+        TerminalProduction("Prep", List("like"))
       )
-      val ExpectedGrammar = Nonterminals("S",
+      val ExpectedGrammar =
         List(
           "S" ~>("NP", "VP"),
           "VP" ~> "Verb",
@@ -142,25 +143,25 @@ class GrammarParserSpec extends WordSpec with Matchers {
           "NP"("Num" -> FVariable("n")) ~>("NP"("Num" -> FVariable("n")), "PP"),
           "PP" ~>("Prep", "NP")
         )
-      )
       //when
       val result = parseGrammar(grammarString)
       //then
-      result should matchPattern { case Success(Grammar(ExpectedGrammar, ExpectedLexicon, _), _) => }
+      result should matchPattern { case Success(GrammarAst(List(), ExpectedGrammar, Terminals), _) => }
     }
 
     "parse whole grammar with guards" in {
       //given
       val grammarString = Source.fromURL(Thread.currentThread().getContextClassLoader.getResource("gram_guards.dcg"), "UTF-8").mkString
-      val ExpectedLexicon = new SimpleLexicon(
-        "fly" -> Set[Term]("Verb", "Noun"("Num" -> FConst("sg"))),
-        "like" -> Set[Term]("Verb", "Prep"),
-        "arrow" -> Set[Term]("Noun"("Num" -> FConst("sg"))),
-        "these" -> Set[Term]("Det"("Num" -> FConst("pl"))),
-        "planes" -> Set[Term]("Noun"("Num" -> FConst("pl"))),
-        "an" -> Set[Term]("Det"("Num" -> FConst("sg")))
+      val Terminals = List(
+        TerminalProduction("Verb", List("fly")),
+        TerminalProduction("Verb", List("like")),
+        TerminalProduction("Noun"("Num" -> FConst("pl")), List("planes")),
+        TerminalProduction("Noun"("Num" -> FConst("sg")), List("arrow", "fly")),
+        TerminalProduction("Det"("Num" -> FConst("sg")), List("an")),
+        TerminalProduction("Det"("Num" -> FConst("pl")), List("these")),
+        TerminalProduction("Prep", List("like"))
       )
-      val ExpectedGrammar = Nonterminals("S",
+      val ExpectedGrammar =
         List(
           "S" ~>("NP", "VP"),
           "VP" ~> "Verb" copy(id=Some("VP1")),
@@ -171,11 +172,10 @@ class GrammarParserSpec extends WordSpec with Matchers {
           "NP"("Num" -> FVariable("n")) ~>("NP"("Num" -> FVariable("n")), "PP") copy(id=Some("NP3")),
           "PP" ~>("Prep", "NP") copy(id=Some("PP1"))
         )
-      )
       //when
       val result = parseGrammar(grammarString)
       //then
-      result should matchPattern { case Success(Grammar(ExpectedGrammar, ExpectedLexicon, _), _) => }
+      result should matchPattern { case Success(GrammarAst(List(ImportDirective("functions.groovy")), ExpectedGrammar, Terminals), _) => }
     }
 
 

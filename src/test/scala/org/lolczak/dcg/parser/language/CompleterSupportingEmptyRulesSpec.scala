@@ -38,7 +38,7 @@ class CompleterSupportingEmptyRulesSpec extends WordSpec with Matchers {
             "VP" ~>("Verb", "Empty", "NP"),
             "Empty" ~>()
           )
-        ), testData.lexicon, List.empty)
+        ), testData.lexicon)
       val edge = Active(0, 1, Term("VP"), List("Empty", "NP"), List(Node("Verb", List.empty)), "VP" ~>("Verb", "Empty", "NP"))
       //when
       val objectUnderTest = CompleterSupportingEmptyRules

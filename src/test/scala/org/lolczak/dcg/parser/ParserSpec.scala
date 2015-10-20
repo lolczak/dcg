@@ -1,5 +1,6 @@
 package org.lolczak.dcg.parser
 
+import org.lolczak.dcg.loader.GrammarLoader
 import org.lolczak.dcg.model.Term
 import org.lolczak.dcg.parser.grammar.GrammarParser._
 import org.lolczak.dcg.parser.language.{Leaf, Node, ChartParser}
@@ -10,7 +11,7 @@ import scala.io.Source
 class ParserSpec  extends WordSpec with Matchers {
 
   val grammarString = Source.fromURL(Thread.currentThread().getContextClassLoader.getResource("gram_guards.dcg"), "UTF-8").mkString
-  val grammar = parseGrammar(grammarString).get
+  val grammar = GrammarLoader.load(grammarString).toOption.get
 
   val objectUnderTest = new ChartParser(grammar)
 
