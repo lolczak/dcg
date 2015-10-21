@@ -16,8 +16,8 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       val TestAssignment = VariableAssignment("x" -> FConst("2"), "y" -> FConst("3"))
       val guardCode = "x != y"
       //when
-      val objectUnderTest = new GroovyGuardEval
-      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      val objectUnderTest = new GroovyExprEval
+      val result = objectUnderTest.evalGuard(guardCode, TestAssignment)
       //then
       result should matchPattern {
         case \/-(EvalResult(TestAssignment, true)) =>
@@ -30,8 +30,8 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       val ExpectedAssignment = TestAssignment.add("z", FConst("5")).get
       val guardCode = "z = x.toInteger() + y.toInteger()"
       //when
-      val objectUnderTest = new GroovyGuardEval
-      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      val objectUnderTest = new GroovyExprEval
+      val result = objectUnderTest.evalGuard(guardCode, TestAssignment)
       //then
       result should matchPattern {
         case \/-(EvalResult(ExpectedAssignment, true)) =>
@@ -44,8 +44,8 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       val ExpectedAssignment = TestAssignment.add("z", FConst("23")).get
       val guardCode = "z = x + y; x != y && z == x + y"
       //when
-      val objectUnderTest = new GroovyGuardEval
-      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      val objectUnderTest = new GroovyExprEval
+      val result = objectUnderTest.evalGuard(guardCode, TestAssignment)
       //then
       result should matchPattern {
         case \/-(EvalResult(ExpectedAssignment, true)) =>
@@ -57,8 +57,8 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       val TestAssignment = VariableAssignment("x" -> FConst("2"), "y" -> FConst("3"))
       val guardCode = "234 423$#@$@# $#@ $23"
       //when
-      val objectUnderTest = new GroovyGuardEval
-      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      val objectUnderTest = new GroovyExprEval
+      val result = objectUnderTest.evalGuard(guardCode, TestAssignment)
       //then
       result should matchPattern {
         case -\/(CompilationFailure(_)) =>
@@ -70,8 +70,8 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       val TestAssignment = VariableAssignment("x" -> FConst("2"), "y" -> FConst("3"))
       val guardCode = "z = qwerty"
       //when
-      val objectUnderTest = new GroovyGuardEval
-      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      val objectUnderTest = new GroovyExprEval
+      val result = objectUnderTest.evalGuard(guardCode, TestAssignment)
       //then
       result should matchPattern {
         case -\/(ExecutionFailure(_)) =>
@@ -84,8 +84,8 @@ class GroovyGuardEvalSpec extends WordSpec with Matchers {
       val ExpectedAssignment = TestAssignment.add("z", FConst("5")).get
       val guardCode = "z = asInt(x) + asInt(y)"
       //when
-      val objectUnderTest = new GroovyGuardEval(List(Resources.load("functions.groovy").get))
-      val result = objectUnderTest.eval(guardCode, TestAssignment)
+      val objectUnderTest = new GroovyExprEval(List(Resources.load("functions.groovy").get))
+      val result = objectUnderTest.evalGuard(guardCode, TestAssignment)
       //then
       result should matchPattern {
         case \/-(EvalResult(ExpectedAssignment, true)) =>

@@ -1,7 +1,8 @@
 package org.lolczak.dcg
 
 import org.lolczak.dcg.loader.GrammarLoader
-import org.lolczak.dcg.parser.language.ChartParser
+import org.lolczak.dcg.model.{FConst, FeatureStruct, Term}
+import org.lolczak.dcg.parser.language.{Node, ChartParser}
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FeatureSpec, Matchers}
@@ -245,11 +246,13 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDriven
         """.
           stripMargin).toOption.get
 
-      val correctSentences = Gen.oneOf("Adam daje książkę właścicielowi",
+      val correctSentences = Gen.oneOf(
+        "Adam daje książkę właścicielowi",
         "właścicielowi daje książkę Adam",
         "książkę właścicielowi Adam daje")
 
-      val incorrectSentences = Gen.oneOf("Adamowie daje książkę właścicielowi",
+      val incorrectSentences = Gen.oneOf(
+        "Adamowie daje książkę właścicielowi",
         "właścicielowi daje książkę Adamowie",
         "książkę właścicielowi Adamowie daje")
 
@@ -298,8 +301,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDriven
 
       forAll(correctSentences) { sentence =>
         //when
-        val
-        objectUnderTest = new ChartParser(grammar)
+        val objectUnderTest = new ChartParser(grammar)
         val result = objectUnderTest.parse(sentence)
         //then
         result should have size 1
@@ -307,11 +309,34 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDriven
 
       forAll(incorrectSentences) { sentence =>
         //when
-        val
-        objectUnderTest = new ChartParser(grammar)
+        val objectUnderTest = new ChartParser(grammar)
         val result = objectUnderTest.parse(sentence)
         //then
         result should have size 0
+      }
+    }
+
+  }
+
+  feature("Support for expressions inside productions") {
+
+    scenario("") {
+      //given
+      val grammar = GrammarLoader.load(
+        """
+          |S[f={a+b}] -> A[f1=a] B[f2=b]
+          |
+          |A[f1="3"] -> 'a'
+          |B[f1="4"] -> 'b'
+        """.
+          stripMargin).toOption.get
+      //when
+      val objectUnderTest = new ChartParser(grammar)
+      val result = objectUnderTest.parse("a b")
+      val Features = Map("f" -> FConst("34"))
+      //then
+      result should matchPattern {
+        case Node(Term("S", FeatureStruct(Features)), _, _) =>
       }
     }
 

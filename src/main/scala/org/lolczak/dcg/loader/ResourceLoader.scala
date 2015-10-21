@@ -22,7 +22,7 @@ object classpathLoader extends ResourceLoader {
   override def loadResource(path: String): Option[String] =
     for {
       url     <- Resources.findUrl(path)
-      content = Source.fromURL(url).mkString
+      content =  Source.fromURL(url).mkString
     } yield content
 
 }

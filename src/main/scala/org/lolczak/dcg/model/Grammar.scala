@@ -1,6 +1,6 @@
 package org.lolczak.dcg.model
 
-import org.lolczak.dcg.parser.language.guard.GuardEval
+import org.lolczak.dcg.parser.language.guard.ExprEval
 
 import scala.language.implicitConversions
 
@@ -29,7 +29,7 @@ case class Nonterminals(start: String, productions: List[Production]) {
 
 }
 
-case class Production(lhs: Term, rhs: List[Term], maybeSnippet: Option[(String, GuardEval)] = None, id: Option[String] = None) {
+case class Production(lhs: Term, rhs: List[Term], maybeSnippet: Option[(String, ExprEval)] = None, id: Option[String] = None) {
 
   val containsGuard: Boolean = maybeSnippet.isDefined
 

@@ -8,11 +8,11 @@ import scala.collection.JavaConversions._
 import scala.util.Try
 import scalaz.\/
 
-class GroovyGuardEval(imports: List[String] = List.empty) extends GuardEval {
+class GroovyExprEval(imports: List[String] = List.empty) extends ExprEval {
 
   private val importedCode = imports.mkString("\n")
 
-  override def eval(guardCode: String, unifiedAssignment: VariableAssignment): EvalFailure \/ EvalResult = {
+  override def evalGuard(guardCode: String, unifiedAssignment: VariableAssignment): EvalFailure \/ EvalResult = {
     val sharedData = new Binding()
     unifiedAssignment.forEach { case (varName, value) => sharedData.setVariable(varName, value.toString) }
     for {

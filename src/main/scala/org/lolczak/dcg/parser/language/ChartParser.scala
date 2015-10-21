@@ -1,7 +1,7 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model._
-import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
+import org.lolczak.dcg.parser.language.guard.{GroovyExprEval, ExprEval}
 import org.lolczak.dcg.parser.language.variable.FeatureFunctions
 import org.lolczak.dcg.parser.language.variable.FeatureFunctions._
 import org.lolczak.util.Generators._
@@ -9,8 +9,6 @@ import org.lolczak.util.Generators._
 import scalaz.{-\/, \/, \/-}
 
 class ChartParser(grammar: Grammar, rootSymbol: Option[String] = None) extends NaturalLangParser {
-
-//  def this(grammar: Grammar) = this(grammar)
 
   private val scan = SimpleScanner.scan(grammar)(_)
 

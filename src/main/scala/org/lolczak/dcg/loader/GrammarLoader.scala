@@ -6,7 +6,7 @@ import org.lolczak.dcg.model._
 import org.lolczak.dcg.parser.grammar.GrammarParser
 import org.lolczak.dcg.parser.grammar.GrammarParser._
 import org.lolczak.dcg.parser.grammar.ast._
-import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
+import org.lolczak.dcg.parser.language.guard.{GroovyExprEval, ExprEval}
 
 import scala.io.Source
 import scalaz.Scalaz._
@@ -35,7 +35,7 @@ object GrammarLoader {
       grammarAst       <- parse(grammarTxt)
       importDirectives = grammarAst.directives.collect { case ImportDirective(file) => file }
       imports          <- loadImports(importDirectives, resourceLoader)
-      guard            = new GroovyGuardEval(imports)
+      guard            = new GroovyExprEval(imports)
       lexicon          = Lexicon.fromProductions(grammarAst.terminals: _*)
       productions      = processNonterminals(grammarAst.nonterminals, guard)
       nonterminals     = Nonterminals(productions.head.lhs.name, productions)
@@ -53,7 +53,7 @@ object GrammarLoader {
       -\/(CodeLoadFailure("Cannot load " + errors.collect { case -\/(path) => path} mkString ","))
   }
 
-  private def processNonterminals(nonterminals: List[AstProduction], guard: GuardEval): List[Production] = {
+  private def processNonterminals(nonterminals: List[AstProduction], guard: ExprEval): List[Production] = {
     nonterminals.flatMap { p =>
       val allRhs = permutate(p.rhs)
       val lhs = Term(p.lhs.name, p.lhs.fStruct)
