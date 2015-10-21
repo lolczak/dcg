@@ -33,8 +33,10 @@ class FileSystemLoader(directories: List[String]) extends ResourceLoader {
 
   override def loadResource(path: String): Option[String] = {
     val file = new File(path)
-    if (file.isAbsolute) Option(Source.fromFile(file).mkString)
-    else dirs.map(new File(_, path)).find(f => f.exists() && f.isFile).map(Source.fromFile(_).mkString)
+    if (file.isAbsolute)
+      Option(Source.fromFile(file).mkString)
+    else
+      dirs.map(new File(_, path)).find(f => f.exists() && f.isFile).map(Source.fromFile(_).mkString)
   }
 
 }

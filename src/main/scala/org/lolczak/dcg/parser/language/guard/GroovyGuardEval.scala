@@ -1,21 +1,16 @@
 package org.lolczak.dcg.parser.language.guard
 
-import java.net.URL
-
-import groovy.lang.{GroovyClassLoader, Binding, GroovyShell, Script}
+import groovy.lang.{Binding, GroovyShell, Script}
 import org.lolczak.dcg.model.FConst
 import org.lolczak.dcg.parser.language.variable.VariableAssignment
-import org.lolczak.util.Resources
 
 import scala.collection.JavaConversions._
-import scala.io.Source
 import scala.util.Try
 import scalaz.\/
 
 class GroovyGuardEval(imports: List[String] = List.empty) extends GuardEval {
 
-  //todo move to loader
-  private val importedSnippets: List[URL] = imports.map(x => Resources.findUrl(x).getOrElse(throw new RuntimeException(s"Cannot load $x")))
+  private val importedCode = imports.mkString("\n")
 
   override def eval(guardCode: String, unifiedAssignment: VariableAssignment): EvalFailure \/ EvalResult = {
     val sharedData = new Binding()
@@ -29,7 +24,7 @@ class GroovyGuardEval(imports: List[String] = List.empty) extends GuardEval {
   }
 
   private def compile(guardCode: String): EvalFailure \/ Script = {
-    val code = importedSnippets.map(Source.fromURL(_).mkString) :+ guardCode mkString "\n"
+    val code = importedCode + "\n" + guardCode
     val shell = new GroovyShell()
     \/.fromTryCatchNonFatal(shell.parse(code)) leftMap { case th => CompilationFailure(th.getMessage) }
   }

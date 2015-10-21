@@ -7,18 +7,32 @@ import org.lolczak.dcg.parser.grammar.ast._
 import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
 
 import scalaz.{\/, -\/, \/-}
+//import scalaz._
+import scalaz.Scalaz._
 
 object GrammarLoader {
 
-  def load(grammarTxt: String): GrammarFailure \/ Grammar = {
+  def load(grammarTxt: String, resourceLoader: ResourceLoader = classpathLoader): GrammarFailure \/ Grammar = {
     for {
       grammarAst       <- parse(grammarTxt)
-      importDirectives = grammarAst.directives.filter(_.isInstanceOf[ImportDirective]).map(_.asInstanceOf[ImportDirective].file)
-      guard            = new GroovyGuardEval(importDirectives) //todo load resources
+      importDirectives = grammarAst.directives.collect { case ImportDirective(file) => file }//todo remove filter(_.isInstanceOf[ImportDirective]).map(_.asInstanceOf[ImportDirective].file)
+      imports          <- loadImports(importDirectives, resourceLoader)
+      guard            = new GroovyGuardEval(imports)
       lexicon          = Lexicon.fromProductions(grammarAst.terminals: _*)
       productions      = processNonterminals(grammarAst.nonterminals, guard)
       nonterminals     = Nonterminals(productions.head.lhs.name, productions)
     } yield Grammar(nonterminals, lexicon)
+  }
+
+  def loadImports(importDirectives: List[String], resourceLoader: ResourceLoader): CodeLoadFailure \/ List[String] = {
+    val imports = importDirectives.map { case path =>
+      resourceLoader.loadResource(path).toRightDisjunction(path)
+    }
+    val (errors, contents) = imports.partition(_.isLeft)
+    if (errors.isEmpty)
+      \/-(contents.collect { case \/-(content) => content})
+    else
+      -\/(CodeLoadFailure( "Cannot load " + errors.collect { case -\/(path) => path} mkString(",")))
   }
 
   def processNonterminals(nonterminals: List[AstProduction], guard: GuardEval): List[Production] = {
@@ -52,4 +66,4 @@ object GrammarLoader {
 sealed trait GrammarFailure
 case class ParsingFailure(msg: String) extends GrammarFailure
 case class CodeLoadFailure(msg: String) extends GrammarFailure
-case class ResourceLoadFailure(msg: String) extends GrammarFailure
+//case class ResourceLoadFailure(msg: String) extends GrammarFailure
