@@ -6,20 +6,19 @@ import org.lolczak.dcg.parser.grammar.GrammarParser._
 import org.lolczak.dcg.parser.grammar.ast._
 import org.lolczak.dcg.parser.language.guard.{GroovyGuardEval, GuardEval}
 
-import scalaz.{-\/, \/, \/-}
+import scalaz.{\/, -\/, \/-}
 
 object GrammarLoader {
 
   def load(grammarTxt: String): GrammarFailure \/ Grammar = {
     for {
-      grammarAst <- parse(grammarTxt)
+      grammarAst       <- parse(grammarTxt)
       importDirectives = grammarAst.directives.filter(_.isInstanceOf[ImportDirective]).map(_.asInstanceOf[ImportDirective].file)
-      guard = new GroovyGuardEval(importDirectives) //todo load resources
-      lexicon = Lexicon.fromProductions(grammarAst.terminals: _*)
-      productions = processNonterminals(grammarAst.nonterminals, guard)
-      nonterminals = Nonterminals(productions.head.lhs.name, productions)
+      guard            = new GroovyGuardEval(importDirectives) //todo load resources
+      lexicon          = Lexicon.fromProductions(grammarAst.terminals: _*)
+      productions      = processNonterminals(grammarAst.nonterminals, guard)
+      nonterminals     = Nonterminals(productions.head.lhs.name, productions)
     } yield Grammar(nonterminals, lexicon)
-
   }
 
   def processNonterminals(nonterminals: List[AstProduction], guard: GuardEval): List[Production] = {
@@ -32,19 +31,20 @@ object GrammarLoader {
 
   def permutate(rhs: List[RhsSymbol]): List[List[Term]] = {
     rhs.foldLeft(List(List.empty[Term])) {
-      case (acc, AstTerm(name, struct)) => acc.map(list => list :+ Term(name, struct))
+      case (acc, AstTerm(name, struct)) =>
+        acc.map(list => list :+ Term(name, struct))
       case (acc, Permutation(terms)) =>
         for {
           prefix <- acc
-          tail <- terms.map(t => Term(t.name, t.fStruct)).permutations.toList
+          tail   <- terms.map(t => Term(t.name, t.fStruct)).permutations.toList
         } yield prefix ++ tail
     }
   }
 
-  def parse(grammarTxt: String): \/[ParsingFailure, GrammarAst] = {
+  def parse(grammarTxt: String): ParsingFailure \/ GrammarAst = {
     GrammarParser.parseGrammar(grammarTxt) match {
       case Success(grammarAst, _) => \/-(grammarAst)
-      case fault: NoSuccess => -\/(ParsingFailure(fault.toString))
+      case fault: NoSuccess       => -\/(ParsingFailure(fault.toString))
     }
   }
 }
