@@ -320,14 +320,14 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDriven
 
   feature("Support for expressions inside productions") {
 
-    scenario("") {
+    scenario("Simple scenario") {
       //given
       val grammar = GrammarLoader.load(
         """
           |S[f={a+b}] -> A[f1=a] B[f2=b]
           |
           |A[f1="3"] -> 'a'
-          |B[f1="4"] -> 'b'
+          |B[f2="4"] -> 'b'
         """.
           stripMargin).toOption.get
       //when
@@ -336,7 +336,7 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDriven
       val Features = Map("f" -> FConst("34"))
       //then
       result should matchPattern {
-        case Node(Term("S", FeatureStruct(Features)), _, _) =>
+        case List(Node(Term("S", FeatureStruct(Features)), _, _)) =>
       }
     }
 

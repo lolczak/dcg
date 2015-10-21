@@ -9,8 +9,8 @@ package object expr {
 
   def evalGuard(production: Production)(unifiedAssignment: VariableAssignment): Option[VariableAssignment] = {
     if (production.containsGuard) {
-      val (snippet, guardEval) = production.maybeSnippet.get
-      val result = guardEval.evalGuard(snippet, unifiedAssignment)
+      val guardCode = production.maybeSnippet.get
+      val result = production.exprVal.evalGuard(guardCode, unifiedAssignment)
       result match {
         case -\/(err) => throw new RuntimeException(err.toString)
         case \/-(EvalResult(_, false)) => None

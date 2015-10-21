@@ -57,7 +57,7 @@ object GrammarLoader {
     nonterminals.flatMap { p =>
       val allRhs = permutate(p.rhs)
       val lhs = Term(p.lhs.name, p.lhs.fStruct)
-      allRhs.map(rhs => Production(lhs, rhs, p.maybeSnippet.map((_, guard)), p.id))
+      allRhs.map(rhs => Production(lhs, rhs, guard, p.maybeSnippet, p.id))
     }
   }
 

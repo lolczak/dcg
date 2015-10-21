@@ -8,7 +8,7 @@ import scala.collection.JavaConversions._
 import scala.util.Try
 import scalaz.\/
 
-class GroovyExprEval(imports: List[String] = List.empty) extends ExprEval {
+case class GroovyExprEval(imports: List[String] = List.empty) extends ExprEval {
 
   def this(importSingle: String) = this(List(importSingle))
 

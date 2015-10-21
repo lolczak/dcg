@@ -31,21 +31,22 @@ class CompleterSupportingEmptyRulesSpec extends WordSpec with Matchers {
 
     "match empty production inside active edge" in {
       //given
+      val ProductionWithEmptyTerm = "VP" ~>("Verb", "Empty", "NP")
       val grammar = Grammar(
         Nonterminals("S",
           List(
             "S" ~>("NP", "VP"),
-            "VP" ~>("Verb", "Empty", "NP"),
+            ProductionWithEmptyTerm,
             "Empty" ~>()
           )
         ), testData.lexicon)
-      val edge = Active(0, 1, Term("VP"), List("Empty", "NP"), List(Node("Verb", List.empty)), "VP" ~>("Verb", "Empty", "NP"))
+      val edge = Active(0, 1, Term("VP"), List("Empty", "NP"), List(Node("Verb", List.empty)), ProductionWithEmptyTerm)
       //when
       val objectUnderTest = CompleterSupportingEmptyRules
       val result = objectUnderTest.completeEmpty(grammar)(edge)
       //then
       result should contain only
-        -\/(Active(0, 1, Term("VP"), List("NP"), List(Node(Term("Empty"), List(Leaf("∅"))), Node(Term("Verb"), List.empty)), "VP" ~>("Verb", "Empty", "NP")))
+        -\/(Active(0, 1, Term("VP"), List("NP"), List(Node(Term("Empty"), List(Leaf("∅"))), Node(Term("Verb"), List.empty)), ProductionWithEmptyTerm))
     }
 
   }

@@ -46,8 +46,10 @@ class ChartParser(grammar: Grammar, rootSymbol: Option[String] = None) extends N
     for {
       unifiedAssignment <- variable.evalVariableAssignment(candidate.production, candidate.parsedTerms)
       finalAssignment   <- expr.evalGuard(candidate.production)(unifiedAssignment)
-      features = FeatureFunctions.substitute(candidate.production.lhs.fStruct, finalAssignment)
-      if !containsVariables(features)
+      //todo refactor it
+      features1 = FeatureFunctions.substitute(candidate.production.lhs.fStruct, finalAssignment)
+      features = FeatureFunctions.evalAllExpressions(features1, finalAssignment, candidate.production.exprVal)
+      if !containsVariables(features) && !containsExpressions(features)
       term = Term(candidate.production.lhs.name, features.asInstanceOf[FeatureStruct])
       tree = Node(term, candidate.parsedTerms, candidate.production.id)
     } yield Passive(candidate.start, candidate.end, term, tree)
