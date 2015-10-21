@@ -31,9 +31,16 @@ case class FConst(value: String) extends FeatureValue {
   override def toString: String = value
 
 }
+
 case class FList(elements: List[FeatureItem]) extends FeatureValue {
 
   override def toString: String = elements.mkString("<", ",", ">")
+
+}
+
+case class FExpr(exprCode: String) extends FeatureItem {
+
+  override def toString: String = "{" + exprCode + "}"
 
 }
 

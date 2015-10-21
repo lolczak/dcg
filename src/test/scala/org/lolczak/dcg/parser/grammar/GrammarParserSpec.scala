@@ -31,6 +31,7 @@ class GrammarParserSpec extends WordSpec with Matchers {
 
   }
 
+
   "Term parser" should {
     "parse simple term containing only symbol" in {
       //given
@@ -98,6 +99,16 @@ class GrammarParserSpec extends WordSpec with Matchers {
       //given
       val nonterminalString = "S -> <<NP VP>>"
       val ExpectedProduction = AstProduction("S", List(Permutation(List("NP", "VP"))))
+      //when
+      val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
+      //then
+      result should matchPattern { case Success(ExpectedProduction, _) => }
+    }
+
+    "parse expressions in lhs terms" in {
+      //given
+      val nonterminalString = "NP[Num={n}] -> Det[Num=n] Noun[Num=n] "
+      val ExpectedProduction = "NP"("Num" -> FExpr("n")) ~>("Det"("Num" -> FVariable("n")), "Noun"("Num" -> FVariable("n")))
       //when
       val result = nonterminal(new GrammarParser.lexical.Scanner(nonterminalString))
       //then
