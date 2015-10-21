@@ -8,11 +8,14 @@ trait ExprEval {
 
   def evalGuard(guardCode: String, unifiedAssignment: VariableAssignment): EvalFailure \/ EvalResult
 
+  def evalExpr[A](exprCode: String, assignment: VariableAssignment): EvalFailure \/ A
+
 }
 
 sealed trait EvalFailure
 case class CompilationFailure(message: String) extends EvalFailure
 case class ExecutionFailure(message: String)   extends EvalFailure
 case class BindingFailure(message: String)     extends EvalFailure
+case class CastFailure(message: String)        extends EvalFailure
 
 case class EvalResult(variableAssignment: VariableAssignment, fulfilled: Boolean)

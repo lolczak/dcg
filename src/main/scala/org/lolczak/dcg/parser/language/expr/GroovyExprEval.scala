@@ -10,7 +10,19 @@ import scalaz.\/
 
 class GroovyExprEval(imports: List[String] = List.empty) extends ExprEval {
 
+  def this(importSingle: String) = this(List(importSingle))
+
   private val importedCode = imports.mkString("\n")
+
+  override def evalExpr[A](exprCode: String, assignment: VariableAssignment): EvalFailure \/ A = {
+    val sharedData = new Binding()
+    assignment.forEach { case (varName, value) => sharedData.setVariable(varName, value.toString) }
+    for {
+      script <- compile(exprCode)
+      result <- run(script, sharedData)
+      value  <- \/.fromTryCatchNonFatal(result.asInstanceOf[A]) leftMap { case th => CastFailure(th.getMessage) }
+    } yield value
+  }
 
   override def evalGuard(guardCode: String, unifiedAssignment: VariableAssignment): EvalFailure \/ EvalResult = {
     val sharedData = new Binding()

@@ -84,12 +84,22 @@ class GroovyExprEvalSpec extends WordSpec with Matchers {
       val ExpectedAssignment = TestAssignment.add("z", FConst("5")).get
       val guardCode = "z = asInt(x) + asInt(y)"
       //when
-      val objectUnderTest = new GroovyExprEval(List(Resources.load("functions.groovy").get))
+      val objectUnderTest = new GroovyExprEval(Resources.load("functions.groovy").get)
       val result = objectUnderTest.evalGuard(guardCode, TestAssignment)
       //then
       result should matchPattern {
         case \/-(EvalResult(ExpectedAssignment, true)) =>
       }
+    }
+
+    "evaluate expression" in {
+      //given
+      val exprCode = "r = asInt(x) + asInt(y); r.toString()"
+      //when
+      val objectUnderTest = new GroovyExprEval(Resources.load("functions.groovy").get)
+      val result = objectUnderTest.evalExpr[String](exprCode, VariableAssignment("x" -> FConst("2"), "y" -> FConst("3")))
+      //then
+      result shouldBe \/-("5")
     }
 
   }
