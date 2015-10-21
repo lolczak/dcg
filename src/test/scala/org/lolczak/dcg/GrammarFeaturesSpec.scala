@@ -1,13 +1,12 @@
 package org.lolczak.dcg
 
 import org.lolczak.dcg.loader.GrammarLoader
-import org.lolczak.dcg.parser.grammar.GrammarParser
 import org.lolczak.dcg.parser.language.ChartParser
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{FeatureSpec, Matchers}
 
-class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDrivenPropertyChecks  {
+class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDrivenPropertyChecks {
 
   info("Grammar should")
 
@@ -273,8 +272,47 @@ class GrammarFeaturesSpec extends FeatureSpec with Matchers with GeneratorDriven
       }
     }
 
-    scenario("a few permutations in production") {
+    scenario("A few permutations in production") {
+      val grammar = GrammarLoader.load(
+        """
+          |S -> << A B >> C <<D E>>
+          |
+          |A -> 'a'
+          |B -> 'b'
+          |C -> 'c'
+          |D -> 'd'
+          |E -> 'e'
+        """.
+          stripMargin).toOption.get
 
+      val correctSentences = Gen.oneOf(
+        "a b c d e",
+        "b a c d e",
+        "b a c e d",
+        "a b c e d")
+
+      val incorrectSentences = Gen.oneOf(
+        "a a c d e",
+        "a b c d c",
+        "a b d e")
+
+      forAll(correctSentences) { sentence =>
+        //when
+        val
+        objectUnderTest = new ChartParser(grammar)
+        val result = objectUnderTest.parse(sentence)
+        //then
+        result should have size 1
+      }
+
+      forAll(incorrectSentences) { sentence =>
+        //when
+        val
+        objectUnderTest = new ChartParser(grammar)
+        val result = objectUnderTest.parse(sentence)
+        //then
+        result should have size 0
+      }
     }
 
   }
