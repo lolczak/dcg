@@ -1,14 +1,13 @@
-package org.lolczak.dcg.parser.language.guard
+package org.lolczak.dcg.parser.language.expr
 
 import org.lolczak.dcg.model.FConst
-import org.lolczak.dcg.parser.language.expr.{ExecutionFailure, CompilationFailure, EvalResult, GroovyExprEval}
 import org.lolczak.dcg.parser.language.variable.VariableAssignment
 import org.lolczak.util.Resources
 import org.scalatest.{Matchers, WordSpec}
 
 import scalaz.{-\/, \/-}
 
-class GroovyGuardEvalSpec extends WordSpec with Matchers {
+class GroovyExprEvalSpec extends WordSpec with Matchers {
 
   "Groovy eval" should {
 
