@@ -14,13 +14,13 @@ class GroovyExprEval(imports: List[String] = List.empty) extends ExprEval {
 
   private val importedCode = imports.mkString("\n")
 
-  override def evalExpr[A](exprCode: String, assignment: VariableAssignment): EvalFailure \/ A = {
+  override def evalExpr(exprCode: String, assignment: VariableAssignment): EvalFailure \/ String = {
     val sharedData = new Binding()
     assignment.forEach { case (varName, value) => sharedData.setVariable(varName, value.toString) }
     for {
       script <- compile(exprCode)
       result <- run(script, sharedData)
-      value  <- \/.fromTryCatchNonFatal(result.asInstanceOf[A]) leftMap { case th => CastFailure(th.getMessage) }
+      value  <- \/.fromTryCatchNonFatal(result.toString) leftMap { case th => CastFailure(th.getMessage) }
     } yield value
   }
 

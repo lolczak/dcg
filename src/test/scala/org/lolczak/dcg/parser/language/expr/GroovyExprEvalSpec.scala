@@ -97,10 +97,20 @@ class GroovyExprEvalSpec extends WordSpec with Matchers {
       val exprCode = "r = asInt(x) + asInt(y); r.toString()"
       //when
       val objectUnderTest = new GroovyExprEval(Resources.load("functions.groovy").get)
-      val result = objectUnderTest.evalExpr[String](exprCode, VariableAssignment("x" -> FConst("2"), "y" -> FConst("3")))
+      val result = objectUnderTest.evalExpr(exprCode, VariableAssignment("x" -> FConst("2"), "y" -> FConst("3")))
       //then
       result shouldBe \/-("5")
     }
+
+//    "return cast failure if returned value has wrong type" in {
+//      //given
+//      val exprCode = "r = asInt(x) + asInt(y)"
+//      //when
+//      val objectUnderTest = new GroovyExprEval(Resources.load("functions.groovy").get)
+//      val result = objectUnderTest.evalExpr[VariableAssignment](exprCode, VariableAssignment("x" -> FConst("2"), "y" -> FConst("3")))
+//      //then
+//      result should matchPattern { case -\/(CastFailure(_)) => }
+//    }
 
   }
 

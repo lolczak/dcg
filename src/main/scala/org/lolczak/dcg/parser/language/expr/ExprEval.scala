@@ -8,7 +8,7 @@ trait ExprEval {
 
   def evalGuard(guardCode: String, unifiedAssignment: VariableAssignment): EvalFailure \/ EvalResult
 
-  def evalExpr[A](exprCode: String, assignment: VariableAssignment): EvalFailure \/ A
+  def evalExpr(exprCode: String, assignment: VariableAssignment): EvalFailure \/ String
 
 }
 
