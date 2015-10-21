@@ -1,6 +1,6 @@
 package org.lolczak.dcg.model
 
-import org.lolczak.dcg.parser.language.guard.ExprEval
+import org.lolczak.dcg.parser.language.expr.ExprEval
 
 import scala.language.implicitConversions
 

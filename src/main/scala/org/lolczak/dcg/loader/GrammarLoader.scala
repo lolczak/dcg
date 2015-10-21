@@ -6,7 +6,7 @@ import org.lolczak.dcg.model._
 import org.lolczak.dcg.parser.grammar.GrammarParser
 import org.lolczak.dcg.parser.grammar.GrammarParser._
 import org.lolczak.dcg.parser.grammar.ast._
-import org.lolczak.dcg.parser.language.guard.{GroovyExprEval, ExprEval}
+import org.lolczak.dcg.parser.language.expr.{GroovyExprEval, ExprEval}
 
 import scala.io.Source
 import scalaz.Scalaz._

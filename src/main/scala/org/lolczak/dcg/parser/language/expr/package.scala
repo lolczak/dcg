@@ -3,9 +3,9 @@ package org.lolczak.dcg.parser.language
 import org.lolczak.dcg.model.Production
 import org.lolczak.dcg.parser.language.variable.VariableAssignment
 
-import scalaz.{\/-, -\/}
+import scalaz.{-\/, \/-}
 
-package object guard {
+package object expr {
 
   def evalGuard(production: Production)(unifiedAssignment: VariableAssignment): Option[VariableAssignment] = {
     if (production.containsGuard) {

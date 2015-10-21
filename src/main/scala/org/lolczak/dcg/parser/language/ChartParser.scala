@@ -1,7 +1,6 @@
 package org.lolczak.dcg.parser.language
 
 import org.lolczak.dcg.model._
-import org.lolczak.dcg.parser.language.guard.{GroovyExprEval, ExprEval}
 import org.lolczak.dcg.parser.language.variable.FeatureFunctions
 import org.lolczak.dcg.parser.language.variable.FeatureFunctions._
 import org.lolczak.util.Generators._
@@ -46,7 +45,7 @@ class ChartParser(grammar: Grammar, rootSymbol: Option[String] = None) extends N
   private def tryCreatePassive(candidate: PassiveCandidate): Option[Passive] =
     for {
       unifiedAssignment <- variable.evalVariableAssignment(candidate.production, candidate.parsedTerms)
-      finalAssignment   <- guard.evalGuard(candidate.production)(unifiedAssignment)
+      finalAssignment   <- expr.evalGuard(candidate.production)(unifiedAssignment)
       features = FeatureFunctions.substitute(candidate.production.lhs.fStruct, finalAssignment)
       if !containsVariables(features)
       term = Term(candidate.production.lhs.name, features.asInstanceOf[FeatureStruct])
