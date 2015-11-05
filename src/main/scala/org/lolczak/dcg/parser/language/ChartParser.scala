@@ -44,14 +44,14 @@ class ChartParser(grammar: Grammar, rootSymbol: Option[String] = None) extends N
 
   private def tryCreatePassive(candidate: PassiveCandidate): Option[Passive] =
     for {
-      unifiedAssignment <- variable.evalVariableAssignment(candidate.production, candidate.parsedTerms)
-      finalAssignment   <- expr.evalGuard(candidate.production)(unifiedAssignment)
+      unifiedAssignment  <- variable.evalVariableAssignment(candidate.production, candidate.parsedTerms)
+      finalAssignment    <- expr.evalGuard(candidate.production)(unifiedAssignment)
       //todo refactor it
-      features1 = FeatureFunctions.substitute(candidate.production.lhs.fStruct, finalAssignment)
-      features = FeatureFunctions.evalAllExpressions(features1, finalAssignment, candidate.production.exprVal)
-      if !containsVariables(features) && !containsExpressions(features)
-      term = Term(candidate.production.lhs.name, features.asInstanceOf[FeatureStruct])
-      tree = Node(term, candidate.parsedTerms, candidate.production.id)
+      substitutedFeatures = FeatureFunctions.substitute(candidate.production.lhs.fStruct, finalAssignment)
+      evaluatedFeatures   = FeatureFunctions.evalAllExpressions(substitutedFeatures, finalAssignment, candidate.production.exprVal)
+      if !containsVariables(evaluatedFeatures) && !containsExpressions(evaluatedFeatures)
+      term                = Term(candidate.production.lhs.name, evaluatedFeatures.asInstanceOf[FeatureStruct])
+      tree                = Node(term, candidate.parsedTerms, candidate.production.id)
     } yield Passive(candidate.start, candidate.end, term, tree)
 
 }
