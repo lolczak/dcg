@@ -46,7 +46,6 @@ class ChartParser(grammar: Grammar, rootSymbol: Option[String] = None) extends N
     for {
       unifiedAssignment  <- variable.evalVariableAssignment(candidate.production, candidate.parsedTerms)
       finalAssignment    <- expr.evalGuard(candidate.production)(unifiedAssignment)
-      //todo refactor it
       substitutedFeatures = FeatureFunctions.substitute(candidate.production.lhs.fStruct, finalAssignment)
       evaluatedFeatures   = FeatureFunctions.evalAllExpressions(substitutedFeatures, finalAssignment, candidate.production.exprVal)
       if !containsVariables(evaluatedFeatures) && !containsExpressions(evaluatedFeatures)

@@ -43,10 +43,11 @@ object FeatureFunctions {
   def containsExpressions(root: FeatureItem): Boolean = findExpressions(root).nonEmpty
 
   def evalAllExpressions(root: FeatureItem, substitution: VariableAssignment, exprEval: ExprEval): FeatureItem = {
-    //todo refactor it
     findExpressions(root).map(_.breadcrumbs).foldLeft(root) {
       case (item, path) => FeatureZipper.alter {
-        case e@FExpr(code) => exprEval.evalExpr(code, substitution).fold(l = failure => item /*todo*/, r = value => FConst(value))
+        case e@FExpr(code) => exprEval.evalExpr(code, substitution).fold(
+          l = failure => throw new RuntimeException(s"Cannot evaluate $code. Error occurred: $failure"),
+          r = value   => FConst(value))
       } (path) (item)
     }
   }
