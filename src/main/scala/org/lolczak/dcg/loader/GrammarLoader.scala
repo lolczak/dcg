@@ -63,7 +63,7 @@ object GrammarLoader {
     if (errors.isEmpty)
       \/-(grammars.collect { case \/-(grammar) => grammar})
     else
-      -\/(ResourceLoadFailure("Errors occurred: " + errors mkString ","))
+      -\/(ResourceLoadFailure("Errors occurred: " + errors.collect { case -\/(err) => err}.mkString(","))) //todo refactor it
   }
 
   private def loadImports(importDirectives: List[String], resourceLoader: ResourceLoader): CodeLoadFailure \/ List[String] = {
