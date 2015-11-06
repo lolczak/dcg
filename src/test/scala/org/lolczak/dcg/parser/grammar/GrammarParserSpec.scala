@@ -13,18 +13,27 @@ class GrammarParserSpec extends WordSpec with Matchers {
 
   "Directive parser" should {
 
-    "parse list of import directives" in {
+    "parse list of directives" in {
       import scala.Predef.augmentString
       //given
       val directiveTxt =
         """
           |import "functions.groovy"
+          |include "lexicon.dcg"
           |import "/home/abs/fun.groovy"
+          |include "/other/rules.dcg"
         """.stripMargin
       //when
       val result = parseGrammar(directiveTxt)
       //then
-      result should matchPattern { case Success(GrammarAst(List(ImportDirective("functions.groovy"), ImportDirective("/home/abs/fun.groovy")), List(), List()), _) => }
+      result should matchPattern {
+        case Success(GrammarAst(List(
+          ImportDirective("functions.groovy"),
+          IncludeDirective("lexicon.dcg"),
+          ImportDirective("/home/abs/fun.groovy"),
+          IncludeDirective("/other/rules.dcg")
+        ), List(), List()), _) =>
+      }
     }
 
   }

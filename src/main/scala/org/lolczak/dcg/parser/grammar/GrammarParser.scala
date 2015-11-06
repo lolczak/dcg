@@ -19,14 +19,16 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
     commentLine = "//",
     identStart = _.isLetter,
     identLetter = x => x.isLetter | x.isDigit | x == '.',
-    reservedNames = Set("import", "id"),
+    reservedNames = Set("import", "id", "include"),
     delimiters = List("<<",">>","[", "]", "=", ",", "?", "->", "|", "<", ">", "_", "(/)", "∅", "#"),
     snippet = Some("{", "}")
   )
 
   def parseGrammar(content: String): ParseResult[GrammarAst] = grammar(new lexical.Scanner(content))
 
-  lazy val directive: Parser[ImportDirective] = "import" ~> stringLit ^^ {case path => ImportDirective(path)}
+  lazy val directive: Parser[Directive] =
+    ( "import"  ~> stringLit ^^ {case path => ImportDirective(path)}
+    | "include" ~> stringLit ^^ {case path => IncludeDirective(path)})
 
   lazy val grammar: Parser[GrammarAst] =
     for {
