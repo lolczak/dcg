@@ -11,7 +11,7 @@ import scala.io.Source
 
 class GrammarParserSpec extends WordSpec with Matchers {
 
-  "Import parser" should {
+  "Directive parser" should {
 
     "parse list of import directives" in {
       import scala.Predef.augmentString
