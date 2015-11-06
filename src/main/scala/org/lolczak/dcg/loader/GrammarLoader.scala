@@ -32,20 +32,42 @@ object GrammarLoader {
 
   def load(grammarTxt: String, resourceLoader: ResourceLoader = classpathLoader): GrammarFailure \/ Grammar = {
     for {
-      grammarAst       <- parse(grammarTxt)
-      importDirectives = grammarAst.directives.collect { case ImportDirective(file) => file }
-      imports          <- loadImports(importDirectives, resourceLoader)
-      guard            = new GroovyExprEval(imports)
-      lexicon          = Lexicon.fromProductions(grammarAst.terminals: _*)
-      productions      = processNonterminals(grammarAst.nonterminals, guard)
-      nonterminals     = Nonterminals(productions.head.lhs.name, productions)
-    } yield Grammar(nonterminals, lexicon)
+      grammarAst        <- parse(grammarTxt)
+      includeDirectives =  grammarAst.directives.collect { case IncludeDirective(file) => file }
+      modules           <- loadModules(includeDirectives, resourceLoader)
+      importDirectives  =  grammarAst.directives.collect { case ImportDirective(file)  => file }
+      imports           <- loadImports(importDirectives, resourceLoader)
+      guard             =  new GroovyExprEval(imports)
+      lexicon           =  Lexicon.fromProductions(grammarAst.terminals: _*)
+      productions       =  processNonterminals(grammarAst.nonterminals, guard)
+      nonterminals      =  Nonterminals(productions.headOption.map(_.lhs.name).getOrElse(""), productions) //todo refactor it
+    } yield combine(Grammar(nonterminals, lexicon), modules)
+  }
+
+  private def combine(main: Grammar, modules: List[Grammar]): Grammar = {
+    val finalLexicon     = modules.foldLeft(main.lexicon) { case (acc, Grammar(_, lexicon)) => acc + lexicon }
+    val finalProductions = modules.foldLeft(main.nonterminals.productions) {
+      case (acc, Grammar(Nonterminals(_, productions), _)) => acc ++ productions
+    }
+    Grammar(Nonterminals(main.nonterminals.start, finalProductions), finalLexicon)
+  }
+
+  private def loadModules(importDirectives: List[String], resourceLoader: ResourceLoader): GrammarFailure \/ List[Grammar] = {
+    val modules = importDirectives map { path =>
+      for {
+        content <- resourceLoader.loadResource(path).toRightDisjunction(ResourceLoadFailure(s"Cannot load $path"))
+        grammar <- load(content, resourceLoader)
+      } yield grammar
+    }
+    val (errors, grammars) = modules.partition(_.isLeft)
+    if (errors.isEmpty)
+      \/-(grammars.collect { case \/-(grammar) => grammar})
+    else
+      -\/(ResourceLoadFailure("Errors occurred: " + errors mkString ","))
   }
 
   private def loadImports(importDirectives: List[String], resourceLoader: ResourceLoader): CodeLoadFailure \/ List[String] = {
-    val imports = importDirectives.map { case path =>
-      resourceLoader.loadResource(path).toRightDisjunction(path)
-    }
+    val imports = importDirectives.map { case path => resourceLoader.loadResource(path).toRightDisjunction(path) }
     val (errors, contents) = imports.partition(_.isLeft)
     if (errors.isEmpty)
       \/-(contents.collect { case \/-(content) => content})

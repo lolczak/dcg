@@ -1,0 +1,7 @@
+// Simple grammar
+import "main_fun.groovy"
+include "lexicon.dcg"
+include "rules.dcg"
+
+// nonterminal symbols
+S -> NP VP /* main symbol */

@@ -1,0 +1,8 @@
+// terminal symbols
+Verb -> 'fly'
+Verb -> 'like'
+Noun[Num='pl'] -> 'planes'
+Noun[Num='sg'] -> 'arrow' | 'fly'
+Det[Num='sg'] -> 'an'
+Det[Num='pl'] -> 'these'
+Prep -> 'like'
