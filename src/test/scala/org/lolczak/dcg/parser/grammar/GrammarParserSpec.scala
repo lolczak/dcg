@@ -22,15 +22,12 @@ class GrammarParserSpec extends WordSpec with Matchers {
           |import "/home/abs/fun.groovy"
         """.stripMargin
       //when
-      val result = importDirectives(new GrammarParser.lexical.Scanner(directiveTxt))
+      val result = parseGrammar(directiveTxt)
       //then
-      result should matchPattern {
-        case Success(List(ImportDirective("functions.groovy"), ImportDirective("/home/abs/fun.groovy")), _) =>
-      }
+      result should matchPattern { case Success(GrammarAst(List(ImportDirective("functions.groovy"), ImportDirective("/home/abs/fun.groovy")), List(), List()), _) => }
     }
 
   }
-
 
   "Term parser" should {
     "parse simple term containing only symbol" in {

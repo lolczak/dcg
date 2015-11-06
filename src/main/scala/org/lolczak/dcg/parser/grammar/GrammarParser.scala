@@ -26,11 +26,11 @@ object GrammarParser extends GenericTokenParsers with HelperParsers {
 
   def parseGrammar(content: String): ParseResult[GrammarAst] = grammar(new lexical.Scanner(content))
 
-  lazy val importDirectives: Parser[List[ImportDirective]] = rep("import" ~> stringLit ^^ {case path => ImportDirective(path)})
+  lazy val directive: Parser[ImportDirective] = "import" ~> stringLit ^^ {case path => ImportDirective(path)}
 
   lazy val grammar: Parser[GrammarAst] =
     for {
-      directives   <- importDirectives
+      directives   <- rep(directive)
       productions  <- rep(production)
       nonterminals = productions filter (_.isRight) map { case \/-(r) => r }
       terminals    = productions filter (_.isLeft)  map { case -\/(l) => l }
